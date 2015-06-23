@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		7FF5F399BB71DFA877BE19FA /* libPods-AL-Masdar.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 6670BD0A3CA460F7A52C2282 /* libPods-AL-Masdar.a */; };
 		E8C36F351B39D26800D0453E /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = E8C36F341B39D26800D0453E /* main.m */; };
 		E8C36F381B39D26800D0453E /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = E8C36F371B39D26800D0453E /* AppDelegate.m */; };
 		E8C36F3B1B39D26800D0453E /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = E8C36F3A1B39D26800D0453E /* ViewController.m */; };
@@ -31,6 +32,9 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		5BF2D4E2EEF27E8E945DA18C /* Pods-AL-Masdar.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-AL-Masdar.release.xcconfig"; path = "Pods/Target Support Files/Pods-AL-Masdar/Pods-AL-Masdar.release.xcconfig"; sourceTree = "<group>"; };
+		6670BD0A3CA460F7A52C2282 /* libPods-AL-Masdar.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-AL-Masdar.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		C8F53F59F7EE46E97900FA3B /* Pods-AL-Masdar.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-AL-Masdar.debug.xcconfig"; path = "Pods/Target Support Files/Pods-AL-Masdar/Pods-AL-Masdar.debug.xcconfig"; sourceTree = "<group>"; };
 		E8C36F2F1B39D26800D0453E /* AL-Masdar.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "AL-Masdar.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		E8C36F331B39D26800D0453E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		E8C36F341B39D26800D0453E /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
@@ -58,6 +62,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				7FF5F399BB71DFA877BE19FA /* libPods-AL-Masdar.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -71,12 +76,31 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		8E1263F41BE0B1B4A1BC2BDA /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				6670BD0A3CA460F7A52C2282 /* libPods-AL-Masdar.a */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		CCEAFC3CB39C8B48BF0A691B /* Pods */ = {
+			isa = PBXGroup;
+			children = (
+				C8F53F59F7EE46E97900FA3B /* Pods-AL-Masdar.debug.xcconfig */,
+				5BF2D4E2EEF27E8E945DA18C /* Pods-AL-Masdar.release.xcconfig */,
+			);
+			name = Pods;
+			sourceTree = "<group>";
+		};
 		E8C36F261B39D26800D0453E = {
 			isa = PBXGroup;
 			children = (
 				E8C36F311B39D26800D0453E /* AL-Masdar */,
 				E8C36F4B1B39D26800D0453E /* AL-MasdarTests */,
 				E8C36F301B39D26800D0453E /* Products */,
+				CCEAFC3CB39C8B48BF0A691B /* Pods */,
+				8E1263F41BE0B1B4A1BC2BDA /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -168,9 +192,11 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = E8C36F521B39D26800D0453E /* Build configuration list for PBXNativeTarget "AL-Masdar" */;
 			buildPhases = (
+				5557E8E96BEBBC258FBB65DA /* Check Pods Manifest.lock */,
 				E8C36F2B1B39D26800D0453E /* Sources */,
 				E8C36F2C1B39D26800D0453E /* Frameworks */,
 				E8C36F2D1B39D26800D0453E /* Resources */,
+				31FF968A2DC7AFCB87A6DCED /* Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -256,6 +282,39 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		31FF968A2DC7AFCB87A6DCED /* Copy Pods Resources */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "Copy Pods Resources";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-AL-Masdar/Pods-AL-Masdar-resources.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		5557E8E96BEBBC258FBB65DA /* Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "Check Pods Manifest.lock";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_ROOT}/../Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [[ $? != 0 ]] ; then\n    cat << EOM\nerror: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\nEOM\n    exit 1\nfi\n";
+			showEnvVarsInLog = 0;
+		};
+/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		E8C36F2B1B39D26800D0453E /* Sources */ = {
@@ -391,6 +450,7 @@
 		};
 		E8C36F531B39D26800D0453E /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = C8F53F59F7EE46E97900FA3B /* Pods-AL-Masdar.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				INFOPLIST_FILE = "AL-Masdar/Info.plist";
@@ -401,6 +461,7 @@
 		};
 		E8C36F541B39D26800D0453E /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 5BF2D4E2EEF27E8E945DA18C /* Pods-AL-Masdar.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				INFOPLIST_FILE = "AL-Masdar/Info.plist";
@@ -462,6 +523,7 @@
 				E8C36F541B39D26800D0453E /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		E8C36F551B39D26800D0453E /* Build configuration list for PBXNativeTarget "AL-MasdarTests" */ = {
 			isa = XCConfigurationList;
@@ -470,6 +532,7 @@
 				E8C36F571B39D26800D0453E /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};

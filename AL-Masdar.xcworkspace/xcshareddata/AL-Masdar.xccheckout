@@ -5,7 +5,7 @@
 	<key>IDESourceControlProjectFavoriteDictionaryKey</key>
 	<false/>
 	<key>IDESourceControlProjectIdentifier</key>
-	<string>21BFA59B-AB93-4536-A508-F22C67235519</string>
+	<string>955F8AA2-A8DD-4219-AD0B-3ABAB12E05B4</string>
 	<key>IDESourceControlProjectName</key>
 	<string>AL-Masdar</string>
 	<key>IDESourceControlProjectOriginsDictionary</key>
@@ -14,11 +14,11 @@
 		<string>https://github.com/osamagucCitySoc/AL-Masdar.git</string>
 	</dict>
 	<key>IDESourceControlProjectPath</key>
-	<string>AL-Masdar.xcodeproj</string>
+	<string>AL-Masdar.xcworkspace</string>
 	<key>IDESourceControlProjectRelativeInstallPathDictionary</key>
 	<dict>
 		<key>6DF0CD4915BEC11574DD1419019A099937D45101</key>
-		<string>../..</string>
+		<string>..</string>
 	</dict>
 	<key>IDESourceControlProjectURL</key>
 	<string>https://github.com/osamagucCitySoc/AL-Masdar.git</string>
