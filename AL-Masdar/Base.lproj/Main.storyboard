@@ -2,6 +2,7 @@
 <document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="7702" systemVersion="14B25" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" initialViewController="vXZ-lx-hvc">
     <dependencies>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="7701"/>
+        <capability name="Alignment constraints with different attributes" minToolsVersion="5.1"/>
         <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
     </dependencies>
     <scenes>
@@ -16,14 +17,80 @@
                     <view key="view" contentMode="scaleToFill" id="kh9-bI-dsS">
                         <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                        <subviews>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="تحديد المصادر الإخبارية" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="erw-7Y-Ng7">
+                                <rect key="frame" x="0.0" y="-21" width="42" height="21"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="44" sectionHeaderHeight="22" sectionFooterHeight="22" translatesAutoresizingMaskIntoConstraints="NO" id="MDy-nJ-lS6">
+                                <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
+                                <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                <prototypes>
+                                    <tableViewCell contentMode="scaleToFill" selectionStyle="default" accessoryType="disclosureIndicator" indentationWidth="10" reuseIdentifier="sourcesCell" id="Sgv-79-4mt">
+                                        <rect key="frame" x="0.0" y="0.0" width="320" height="44"/>
+                                        <autoresizingMask key="autoresizingMask"/>
+                                        <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="Sgv-79-4mt" id="D0Y-sR-fsH">
+                                            <autoresizingMask key="autoresizingMask"/>
+                                        </tableViewCellContentView>
+                                    </tableViewCell>
+                                </prototypes>
+                                <connections>
+                                    <outlet property="dataSource" destination="vXZ-lx-hvc" id="OFq-zj-HWQ"/>
+                                    <outlet property="delegate" destination="vXZ-lx-hvc" id="fRJ-TA-XHX"/>
+                                </connections>
+                            </tableView>
+                        </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
+                        <constraints>
+                            <constraint firstItem="erw-7Y-Ng7" firstAttribute="trailing" secondItem="kh9-bI-dsS" secondAttribute="trailingMargin" id="Egk-LC-tAf"/>
+                            <constraint firstItem="2fi-mo-0CV" firstAttribute="top" secondItem="MDy-nJ-lS6" secondAttribute="bottom" id="GVU-1X-iQv"/>
+                            <constraint firstItem="MDy-nJ-lS6" firstAttribute="top" secondItem="erw-7Y-Ng7" secondAttribute="bottom" constant="8" id="PlV-Ue-F0y"/>
+                            <constraint firstItem="MDy-nJ-lS6" firstAttribute="leading" secondItem="kh9-bI-dsS" secondAttribute="leadingMargin" constant="-16" id="eBh-Gf-5Yr"/>
+                            <constraint firstItem="erw-7Y-Ng7" firstAttribute="leading" secondItem="kh9-bI-dsS" secondAttribute="leadingMargin" id="m20-JD-dmI"/>
+                            <constraint firstItem="erw-7Y-Ng7" firstAttribute="top" secondItem="jyV-Pf-zRb" secondAttribute="bottom" constant="8" id="qkh-Pl-Oex"/>
+                            <constraint firstAttribute="trailingMargin" secondItem="MDy-nJ-lS6" secondAttribute="trailing" constant="-16" id="vQO-Yx-cFP"/>
+                        </constraints>
+                        <variation key="default">
+                            <mask key="subviews">
+                                <exclude reference="erw-7Y-Ng7"/>
+                                <exclude reference="MDy-nJ-lS6"/>
+                            </mask>
+                            <mask key="constraints">
+                                <exclude reference="Egk-LC-tAf"/>
+                                <exclude reference="m20-JD-dmI"/>
+                                <exclude reference="qkh-Pl-Oex"/>
+                                <exclude reference="PlV-Ue-F0y"/>
+                                <exclude reference="eBh-Gf-5Yr"/>
+                                <exclude reference="vQO-Yx-cFP"/>
+                                <exclude reference="GVU-1X-iQv"/>
+                            </mask>
+                        </variation>
+                        <variation key="heightClass=regular-widthClass=compact">
+                            <mask key="subviews">
+                                <include reference="erw-7Y-Ng7"/>
+                                <include reference="MDy-nJ-lS6"/>
+                            </mask>
+                            <mask key="constraints">
+                                <include reference="Egk-LC-tAf"/>
+                                <include reference="m20-JD-dmI"/>
+                                <include reference="qkh-Pl-Oex"/>
+                                <include reference="PlV-Ue-F0y"/>
+                                <include reference="eBh-Gf-5Yr"/>
+                                <include reference="vQO-Yx-cFP"/>
+                                <include reference="GVU-1X-iQv"/>
+                            </mask>
+                        </variation>
                     </view>
                     <connections>
+                        <outlet property="tableView" destination="MDy-nJ-lS6" id="91D-r5-Ux1"/>
                         <segue destination="LnK-nW-ihS" kind="modal" identifier="NoConnectionSeg" modalTransitionStyle="crossDissolve" id="zMk-EA-Bcu"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="x5A-6p-PRh" sceneMemberID="firstResponder"/>
             </objects>
+            <point key="canvasLocation" x="304.5" y="291.75"/>
         </scene>
         <!--No Internet Connection View Controller-->
         <scene sceneID="rqC-FC-QYJ">
@@ -34,6 +101,7 @@
                         <viewControllerLayoutGuide type="bottom" id="w9q-ct-M96"/>
                     </layoutGuides>
                     <view key="view" contentMode="scaleToFill" id="01j-AN-YZh">
+                        <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="يجب أن تكون متصلاً بالإنترنت" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="WSe-KJ-FYr">
@@ -71,8 +139,8 @@
                                 <exclude reference="9Y7-IT-qnZ"/>
                                 <exclude reference="LO7-uy-vqA"/>
                                 <exclude reference="uyO-BS-9ON"/>
-                                <exclude reference="pos-rW-KYS"/>
                                 <exclude reference="J0G-ts-YRl"/>
+                                <exclude reference="pos-rW-KYS"/>
                             </mask>
                         </variation>
                         <variation key="heightClass=regular-widthClass=compact">
@@ -85,8 +153,8 @@
                                 <include reference="9Y7-IT-qnZ"/>
                                 <include reference="LO7-uy-vqA"/>
                                 <include reference="uyO-BS-9ON"/>
-                                <include reference="pos-rW-KYS"/>
                                 <include reference="J0G-ts-YRl"/>
+                                <include reference="pos-rW-KYS"/>
                             </mask>
                         </variation>
                     </view>

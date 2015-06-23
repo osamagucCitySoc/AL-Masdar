@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		7FF5F399BB71DFA877BE19FA /* libPods-AL-Masdar.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 6670BD0A3CA460F7A52C2282 /* libPods-AL-Masdar.a */; };
+		E81F60111B39F82C006C5B9F /* CoreLocation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E81F60101B39F82C006C5B9F /* CoreLocation.framework */; };
 		E8C36F351B39D26800D0453E /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = E8C36F341B39D26800D0453E /* main.m */; };
 		E8C36F381B39D26800D0453E /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = E8C36F371B39D26800D0453E /* AppDelegate.m */; };
 		E8C36F3B1B39D26800D0453E /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = E8C36F3A1B39D26800D0453E /* ViewController.m */; };
@@ -35,6 +36,7 @@
 		5BF2D4E2EEF27E8E945DA18C /* Pods-AL-Masdar.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-AL-Masdar.release.xcconfig"; path = "Pods/Target Support Files/Pods-AL-Masdar/Pods-AL-Masdar.release.xcconfig"; sourceTree = "<group>"; };
 		6670BD0A3CA460F7A52C2282 /* libPods-AL-Masdar.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-AL-Masdar.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		C8F53F59F7EE46E97900FA3B /* Pods-AL-Masdar.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-AL-Masdar.debug.xcconfig"; path = "Pods/Target Support Files/Pods-AL-Masdar/Pods-AL-Masdar.debug.xcconfig"; sourceTree = "<group>"; };
+		E81F60101B39F82C006C5B9F /* CoreLocation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreLocation.framework; path = System/Library/Frameworks/CoreLocation.framework; sourceTree = SDKROOT; };
 		E8C36F2F1B39D26800D0453E /* AL-Masdar.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "AL-Masdar.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		E8C36F331B39D26800D0453E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		E8C36F341B39D26800D0453E /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
@@ -62,6 +64,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				E81F60111B39F82C006C5B9F /* CoreLocation.framework in Frameworks */,
 				7FF5F399BB71DFA877BE19FA /* libPods-AL-Masdar.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -79,6 +82,7 @@
 		8E1263F41BE0B1B4A1BC2BDA /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				E81F60101B39F82C006C5B9F /* CoreLocation.framework */,
 				6670BD0A3CA460F7A52C2282 /* libPods-AL-Masdar.a */,
 			);
 			name = Frameworks;
