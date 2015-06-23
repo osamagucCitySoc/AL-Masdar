@@ -3,6 +3,7 @@
 
 target 'AL-Masdar' do
 pod 'PQFCustomLoaders', '~> 1.0.1'
+pod 'AFNetworking', '~> 2.0'
 end
 
 target 'AL-MasdarTests' do
