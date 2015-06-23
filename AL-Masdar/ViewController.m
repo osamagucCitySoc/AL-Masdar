@@ -9,6 +9,7 @@
 #import "ViewController.h"
 #import "ReverseGeocodeCountry.h"
 #import "Reachability.h"
+#import "AFHTTPRequestOperationManager.h"
 #import <PQFCustomLoaders/PQFCustomLoaders.h>
 
 @interface ViewController ()
@@ -37,11 +38,24 @@
         [self performSegueWithIdentifier:@"NoConnectionSeg" sender:self];
     }else
     {
-        self.bouncingBalls = [PQFBouncingBalls createModalLoader];
+        self.bouncingBalls = [PQFBouncingBalls createLoaderOnView:self.view];
         self.bouncingBalls.jumpAmount = 50;
         self.bouncingBalls.zoomAmount = 20;
         self.bouncingBalls.separation = 20;
+        self.bouncingBalls.loaderColor = [UIColor blackColor];
         [self.bouncingBalls showLoader];
+        
+        AFHTTPRequestOperationManager *manager = [AFHTTPRequestOperationManager manager];
+        manager.responseSerializer = [AFHTTPResponseSerializer serializer];
+
+        
+        [manager POST:@"http://moh2013.com/arabDevs/almasdar/getSources.php" parameters:nil success:^(AFHTTPRequestOperation *operation, id responseObject) {
+            dataSource = [NSJSONSerialization JSONObjectWithData:responseObject options:NSJSONReadingAllowFragments error:nil];
+            [self.bouncingBalls removeLoader];
+        }failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+            [self.bouncingBalls removeLoader];
+            NSLog(@"Error: %@", error);
+        }];
     }
 }
 
