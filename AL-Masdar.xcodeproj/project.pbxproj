@@ -1,0 +1,431 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		E8C36F351B39D26800D0453E /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = E8C36F341B39D26800D0453E /* main.m */; };
+		E8C36F381B39D26800D0453E /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = E8C36F371B39D26800D0453E /* AppDelegate.m */; };
+		E8C36F3B1B39D26800D0453E /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = E8C36F3A1B39D26800D0453E /* ViewController.m */; };
+		E8C36F3E1B39D26800D0453E /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = E8C36F3C1B39D26800D0453E /* Main.storyboard */; };
+		E8C36F401B39D26800D0453E /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = E8C36F3F1B39D26800D0453E /* Images.xcassets */; };
+		E8C36F431B39D26800D0453E /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = E8C36F411B39D26800D0453E /* LaunchScreen.xib */; };
+		E8C36F4F1B39D26800D0453E /* AL_MasdarTests.m in Sources */ = {isa = PBXBuildFile; fileRef = E8C36F4E1B39D26800D0453E /* AL_MasdarTests.m */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		E8C36F491B39D26800D0453E /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = E8C36F271B39D26800D0453E /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = E8C36F2E1B39D26800D0453E;
+			remoteInfo = "AL-Masdar";
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		E8C36F2F1B39D26800D0453E /* AL-Masdar.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "AL-Masdar.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		E8C36F331B39D26800D0453E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		E8C36F341B39D26800D0453E /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
+		E8C36F361B39D26800D0453E /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
+		E8C36F371B39D26800D0453E /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
+		E8C36F391B39D26800D0453E /* ViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ViewController.h; sourceTree = "<group>"; };
+		E8C36F3A1B39D26800D0453E /* ViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ViewController.m; sourceTree = "<group>"; };
+		E8C36F3D1B39D26800D0453E /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
+		E8C36F3F1B39D26800D0453E /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
+		E8C36F421B39D26800D0453E /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/LaunchScreen.xib; sourceTree = "<group>"; };
+		E8C36F481B39D26800D0453E /* AL-MasdarTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "AL-MasdarTests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
+		E8C36F4D1B39D26800D0453E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		E8C36F4E1B39D26800D0453E /* AL_MasdarTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AL_MasdarTests.m; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		E8C36F2C1B39D26800D0453E /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		E8C36F451B39D26800D0453E /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		E8C36F261B39D26800D0453E = {
+			isa = PBXGroup;
+			children = (
+				E8C36F311B39D26800D0453E /* AL-Masdar */,
+				E8C36F4B1B39D26800D0453E /* AL-MasdarTests */,
+				E8C36F301B39D26800D0453E /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		E8C36F301B39D26800D0453E /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				E8C36F2F1B39D26800D0453E /* AL-Masdar.app */,
+				E8C36F481B39D26800D0453E /* AL-MasdarTests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		E8C36F311B39D26800D0453E /* AL-Masdar */ = {
+			isa = PBXGroup;
+			children = (
+				E8C36F361B39D26800D0453E /* AppDelegate.h */,
+				E8C36F371B39D26800D0453E /* AppDelegate.m */,
+				E8C36F391B39D26800D0453E /* ViewController.h */,
+				E8C36F3A1B39D26800D0453E /* ViewController.m */,
+				E8C36F3C1B39D26800D0453E /* Main.storyboard */,
+				E8C36F3F1B39D26800D0453E /* Images.xcassets */,
+				E8C36F411B39D26800D0453E /* LaunchScreen.xib */,
+				E8C36F321B39D26800D0453E /* Supporting Files */,
+			);
+			path = "AL-Masdar";
+			sourceTree = "<group>";
+		};
+		E8C36F321B39D26800D0453E /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				E8C36F331B39D26800D0453E /* Info.plist */,
+				E8C36F341B39D26800D0453E /* main.m */,
+			);
+			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		E8C36F4B1B39D26800D0453E /* AL-MasdarTests */ = {
+			isa = PBXGroup;
+			children = (
+				E8C36F4E1B39D26800D0453E /* AL_MasdarTests.m */,
+				E8C36F4C1B39D26800D0453E /* Supporting Files */,
+			);
+			path = "AL-MasdarTests";
+			sourceTree = "<group>";
+		};
+		E8C36F4C1B39D26800D0453E /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				E8C36F4D1B39D26800D0453E /* Info.plist */,
+			);
+			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		E8C36F2E1B39D26800D0453E /* AL-Masdar */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = E8C36F521B39D26800D0453E /* Build configuration list for PBXNativeTarget "AL-Masdar" */;
+			buildPhases = (
+				E8C36F2B1B39D26800D0453E /* Sources */,
+				E8C36F2C1B39D26800D0453E /* Frameworks */,
+				E8C36F2D1B39D26800D0453E /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = "AL-Masdar";
+			productName = "AL-Masdar";
+			productReference = E8C36F2F1B39D26800D0453E /* AL-Masdar.app */;
+			productType = "com.apple.product-type.application";
+		};
+		E8C36F471B39D26800D0453E /* AL-MasdarTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = E8C36F551B39D26800D0453E /* Build configuration list for PBXNativeTarget "AL-MasdarTests" */;
+			buildPhases = (
+				E8C36F441B39D26800D0453E /* Sources */,
+				E8C36F451B39D26800D0453E /* Frameworks */,
+				E8C36F461B39D26800D0453E /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				E8C36F4A1B39D26800D0453E /* PBXTargetDependency */,
+			);
+			name = "AL-MasdarTests";
+			productName = "AL-MasdarTests";
+			productReference = E8C36F481B39D26800D0453E /* AL-MasdarTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		E8C36F271B39D26800D0453E /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 0630;
+				ORGANIZATIONNAME = "Osama Rabie";
+				TargetAttributes = {
+					E8C36F2E1B39D26800D0453E = {
+						CreatedOnToolsVersion = 6.3.1;
+					};
+					E8C36F471B39D26800D0453E = {
+						CreatedOnToolsVersion = 6.3.1;
+						TestTargetID = E8C36F2E1B39D26800D0453E;
+					};
+				};
+			};
+			buildConfigurationList = E8C36F2A1B39D26800D0453E /* Build configuration list for PBXProject "AL-Masdar" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = E8C36F261B39D26800D0453E;
+			productRefGroup = E8C36F301B39D26800D0453E /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				E8C36F2E1B39D26800D0453E /* AL-Masdar */,
+				E8C36F471B39D26800D0453E /* AL-MasdarTests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		E8C36F2D1B39D26800D0453E /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				E8C36F3E1B39D26800D0453E /* Main.storyboard in Resources */,
+				E8C36F431B39D26800D0453E /* LaunchScreen.xib in Resources */,
+				E8C36F401B39D26800D0453E /* Images.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		E8C36F461B39D26800D0453E /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		E8C36F2B1B39D26800D0453E /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				E8C36F3B1B39D26800D0453E /* ViewController.m in Sources */,
+				E8C36F381B39D26800D0453E /* AppDelegate.m in Sources */,
+				E8C36F351B39D26800D0453E /* main.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		E8C36F441B39D26800D0453E /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				E8C36F4F1B39D26800D0453E /* AL_MasdarTests.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		E8C36F4A1B39D26800D0453E /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = E8C36F2E1B39D26800D0453E /* AL-Masdar */;
+			targetProxy = E8C36F491B39D26800D0453E /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin PBXVariantGroup section */
+		E8C36F3C1B39D26800D0453E /* Main.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				E8C36F3D1B39D26800D0453E /* Base */,
+			);
+			name = Main.storyboard;
+			sourceTree = "<group>";
+		};
+		E8C36F411B39D26800D0453E /* LaunchScreen.xib */ = {
+			isa = PBXVariantGroup;
+			children = (
+				E8C36F421B39D26800D0453E /* Base */,
+			);
+			name = LaunchScreen.xib;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
+
+/* Begin XCBuildConfiguration section */
+		E8C36F501B39D26800D0453E /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.3;
+				MTL_ENABLE_DEBUG_INFO = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+			};
+			name = Debug;
+		};
+		E8C36F511B39D26800D0453E /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.3;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				SDKROOT = iphoneos;
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		E8C36F531B39D26800D0453E /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				INFOPLIST_FILE = "AL-Masdar/Info.plist";
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Debug;
+		};
+		E8C36F541B39D26800D0453E /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				INFOPLIST_FILE = "AL-Masdar/Info.plist";
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Release;
+		};
+		E8C36F561B39D26800D0453E /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(SDKROOT)/Developer/Library/Frameworks",
+					"$(inherited)",
+				);
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				INFOPLIST_FILE = "AL-MasdarTests/Info.plist";
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/AL-Masdar.app/AL-Masdar";
+			};
+			name = Debug;
+		};
+		E8C36F571B39D26800D0453E /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(SDKROOT)/Developer/Library/Frameworks",
+					"$(inherited)",
+				);
+				INFOPLIST_FILE = "AL-MasdarTests/Info.plist";
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/AL-Masdar.app/AL-Masdar";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		E8C36F2A1B39D26800D0453E /* Build configuration list for PBXProject "AL-Masdar" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				E8C36F501B39D26800D0453E /* Debug */,
+				E8C36F511B39D26800D0453E /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		E8C36F521B39D26800D0453E /* Build configuration list for PBXNativeTarget "AL-Masdar" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				E8C36F531B39D26800D0453E /* Debug */,
+				E8C36F541B39D26800D0453E /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+		};
+		E8C36F551B39D26800D0453E /* Build configuration list for PBXNativeTarget "AL-MasdarTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				E8C36F561B39D26800D0453E /* Debug */,
+				E8C36F571B39D26800D0453E /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = E8C36F271B39D26800D0453E /* Project object */;
+}
