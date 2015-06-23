@@ -1,13 +1,14 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="6211" systemVersion="14A298i" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" initialViewController="vXZ-lx-hvc">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="7702" systemVersion="14B25" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" initialViewController="vXZ-lx-hvc">
     <dependencies>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="6204"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="7701"/>
+        <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
     </dependencies>
     <scenes>
         <!--View Controller-->
         <scene sceneID="ufC-wZ-h7g">
             <objects>
-                <viewController id="vXZ-lx-hvc" customClass="ViewController" customModuleProvider="" sceneMemberID="viewController">
+                <viewController id="vXZ-lx-hvc" customClass="ViewController" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="jyV-Pf-zRb"/>
                         <viewControllerLayoutGuide type="bottom" id="2fi-mo-0CV"/>
@@ -17,9 +18,83 @@
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
                     </view>
+                    <connections>
+                        <segue destination="LnK-nW-ihS" kind="modal" modalTransitionStyle="crossDissolve" id="zMk-EA-Bcu"/>
+                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="x5A-6p-PRh" sceneMemberID="firstResponder"/>
             </objects>
+        </scene>
+        <!--No Internet Connection View Controller-->
+        <scene sceneID="rqC-FC-QYJ">
+            <objects>
+                <viewController id="LnK-nW-ihS" customClass="NoInternetConnectionViewController" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="14U-cf-TKn"/>
+                        <viewControllerLayoutGuide type="bottom" id="w9q-ct-M96"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="01j-AN-YZh">
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="يجب أن تكون متصلاً بالإنترنت" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="WSe-KJ-FYr">
+                                <rect key="frame" x="0.0" y="-21" width="42" height="21"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="QAK-li-ls3">
+                                <rect key="frame" x="-23" y="-15" width="46" height="30"/>
+                                <state key="normal" title="إعادة المحاولة">
+                                    <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                </state>
+                                <connections>
+                                    <action selector="RetryButtonClicked:" destination="LnK-nW-ihS" eventType="touchUpInside" id="rMx-rk-pd0"/>
+                                </connections>
+                            </button>
+                        </subviews>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                        <constraints>
+                            <constraint firstAttribute="centerX" secondItem="WSe-KJ-FYr" secondAttribute="centerX" id="0Nj-mf-3Zw"/>
+                            <constraint firstAttribute="centerY" secondItem="WSe-KJ-FYr" secondAttribute="centerY" id="9Y7-IT-qnZ"/>
+                            <constraint firstItem="w9q-ct-M96" firstAttribute="top" secondItem="QAK-li-ls3" secondAttribute="bottom" constant="20" id="J0G-ts-YRl"/>
+                            <constraint firstItem="WSe-KJ-FYr" firstAttribute="leading" secondItem="01j-AN-YZh" secondAttribute="leadingMargin" id="LO7-uy-vqA"/>
+                            <constraint firstAttribute="centerX" secondItem="QAK-li-ls3" secondAttribute="centerX" id="pos-rW-KYS"/>
+                            <constraint firstItem="WSe-KJ-FYr" firstAttribute="trailing" secondItem="01j-AN-YZh" secondAttribute="trailingMargin" id="uyO-BS-9ON"/>
+                        </constraints>
+                        <variation key="default">
+                            <mask key="subviews">
+                                <exclude reference="WSe-KJ-FYr"/>
+                                <exclude reference="QAK-li-ls3"/>
+                            </mask>
+                            <mask key="constraints">
+                                <exclude reference="0Nj-mf-3Zw"/>
+                                <exclude reference="9Y7-IT-qnZ"/>
+                                <exclude reference="LO7-uy-vqA"/>
+                                <exclude reference="uyO-BS-9ON"/>
+                                <exclude reference="pos-rW-KYS"/>
+                                <exclude reference="J0G-ts-YRl"/>
+                            </mask>
+                        </variation>
+                        <variation key="heightClass=regular-widthClass=compact">
+                            <mask key="subviews">
+                                <include reference="WSe-KJ-FYr"/>
+                                <include reference="QAK-li-ls3"/>
+                            </mask>
+                            <mask key="constraints">
+                                <include reference="0Nj-mf-3Zw"/>
+                                <include reference="9Y7-IT-qnZ"/>
+                                <include reference="LO7-uy-vqA"/>
+                                <include reference="uyO-BS-9ON"/>
+                                <include reference="pos-rW-KYS"/>
+                                <include reference="J0G-ts-YRl"/>
+                            </mask>
+                        </variation>
+                    </view>
+                    <navigationItem key="navigationItem" id="Lhc-eh-rvI"/>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="TAL-aD-u4W" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="324" y="1095"/>
         </scene>
     </scenes>
 </document>
