@@ -17,6 +17,13 @@
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
     // Override point for customization after application launch.
+    
+    if(![[NSUserDefaults standardUserDefaults] objectForKey:@"subscriptions"])
+    {
+        [[NSUserDefaults standardUserDefaults]setObject:[[NSMutableArray alloc] init] forKey:@"subscriptions"];
+        [[NSUserDefaults standardUserDefaults]synchronize];
+    }
+    
     return YES;
 }
 
