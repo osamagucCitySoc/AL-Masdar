@@ -81,11 +81,34 @@
     {
         cell = [[UITableViewCell alloc]initWithStyle:UITableViewCellStyleDefault reuseIdentifier:cellID];
     }
-    
+    [cell setAccessoryType:UITableViewCellAccessoryNone];
     [[cell textLabel]setText:[[myDataSource objectAtIndex:indexPath.row] objectForKey:@"name"]];
+    
+    if([[[NSUserDefaults standardUserDefaults] objectForKey:@"subscriptions"] containsObject:[[myDataSource objectAtIndex:indexPath.row] objectForKey:@"name"]])
+    {
+        [cell setAccessoryType:UITableViewCellAccessoryCheckmark];
+    }
     
     return cell;
 }
+
+-(void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    if([[[NSUserDefaults standardUserDefaults] objectForKey:@"subscriptions"] containsObject:[[myDataSource objectAtIndex:indexPath.row] objectForKey:@"name"]])
+    {
+        [[self.tableView cellForRowAtIndexPath:indexPath] setAccessoryType:UITableViewCellAccessoryNone];
+      
+        [[[NSUserDefaults standardUserDefaults] objectForKey:@"subscriptions"] removeObject:[[myDataSource objectAtIndex:indexPath.row] objectForKey:@"name"]];
+        [[NSUserDefaults standardUserDefaults] synchronize];
+    }else
+    {
+        [[self.tableView cellForRowAtIndexPath:indexPath] setAccessoryType:UITableViewCellAccessoryCheckmark];
+        
+        [[[NSUserDefaults standardUserDefaults] objectForKey:@"subscriptions"] addObject:[[myDataSource objectAtIndex:indexPath.row] objectForKey:@"name"]];
+        [[NSUserDefaults standardUserDefaults] synchronize];
+    }
+}
+
 
 /*
 // Override to support conditional editing of the table view.
