@@ -20,7 +20,7 @@
     
     if(![[NSUserDefaults standardUserDefaults] objectForKey:@"subscriptions"])
     {
-        [[NSUserDefaults standardUserDefaults]setObject:[[NSMutableArray alloc] init] forKey:@"subscriptions"];
+        [[NSUserDefaults standardUserDefaults]setObject:[[NSArray alloc] init] forKey:@"subscriptions"];
         [[NSUserDefaults standardUserDefaults]synchronize];
     }
     

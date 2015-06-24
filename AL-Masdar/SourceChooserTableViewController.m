@@ -98,13 +98,20 @@
     {
         [[self.tableView cellForRowAtIndexPath:indexPath] setAccessoryType:UITableViewCellAccessoryNone];
       
-        [[[NSUserDefaults standardUserDefaults] objectForKey:@"subscriptions"] removeObject:[[myDataSource objectAtIndex:indexPath.row] objectForKey:@"name"]];
+        NSMutableArray* mutArray = [[NSMutableArray alloc]initWithArray:[[NSUserDefaults standardUserDefaults] objectForKey:@"subscriptions"] copyItems:YES];
+        [mutArray removeObject:[[myDataSource objectAtIndex:indexPath.row] objectForKey:@"name"]];
+        
+        [[NSUserDefaults standardUserDefaults]setObject:mutArray forKey:@"subscriptions"];
+        
         [[NSUserDefaults standardUserDefaults] synchronize];
     }else
     {
         [[self.tableView cellForRowAtIndexPath:indexPath] setAccessoryType:UITableViewCellAccessoryCheckmark];
         
-        [[[NSUserDefaults standardUserDefaults] objectForKey:@"subscriptions"] addObject:[[myDataSource objectAtIndex:indexPath.row] objectForKey:@"name"]];
+        NSMutableArray* mutArray = [[NSMutableArray alloc]initWithArray:[[NSUserDefaults standardUserDefaults] objectForKey:@"subscriptions"] copyItems:YES];
+        [mutArray addObject:[[myDataSource objectAtIndex:indexPath.row] objectForKey:@"name"]];
+        
+        [[NSUserDefaults standardUserDefaults]setObject:mutArray forKey:@"subscriptions"];
         [[NSUserDefaults standardUserDefaults] synchronize];
     }
 }
