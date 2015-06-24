@@ -11,6 +11,8 @@
 #import "Reachability.h"
 #import "AFHTTPRequestOperationManager.h"
 #import "CountryChooserTableViewController.h"
+#import "SourceChooserTableViewController.h"
+
 #import <PQFCustomLoaders/PQFCustomLoaders.h>
 #import <CoreLocation/CoreLocation.h>
 
@@ -39,7 +41,20 @@
     {
         CountryChooserTableViewController* dst = (CountryChooserTableViewController*)[segue destinationViewController];
         [dst setDataSource:dataSource];
+    }else if([[segue identifier]isEqualToString:@"sourcesSeg2"])
+    {
+        SourceChooserTableViewController* dst = (SourceChooserTableViewController*)[segue destinationViewController];
+        [dst setDataSourcee:dataSource];
+        [dst setSection:@""];
+        [dst setCountry:userCountry];
+    }else if([[segue identifier]isEqualToString:@"sourcesSeg1"])
+    {
+        SourceChooserTableViewController* dst = (SourceChooserTableViewController*)[segue destinationViewController];
+        [dst setDataSourcee:dataSource];
+        [dst setSection:[sectionsAvailble objectAtIndex:tableView.indexPathForSelectedRow.row]];
+        [dst setCountry:@""];
     }
+
 }
 
 - (void)viewDidLoad {
@@ -237,12 +252,18 @@
 
 -(void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    if([[sectionsAvailble objectAtIndex:indexPath.row] isEqualToString:@"صحف عربية"])
+    if(![userCountry isEqualToString:@""] && indexPath.section == 0)
     {
-        [self performSegueWithIdentifier:@"countrySeg" sender:self];
+        [self performSegueWithIdentifier:@"sourcesSeg2" sender:self];
     }else
     {
-        [self performSegueWithIdentifier:@"sourcesSeg1" sender:self];
+        if([[sectionsAvailble objectAtIndex:indexPath.row] isEqualToString:@"صحف عربية"])
+        {
+            [self performSegueWithIdentifier:@"countrySeg" sender:self];
+        }else
+        {
+            [self performSegueWithIdentifier:@"sourcesSeg1" sender:self];
+        }
     }
 }
 
