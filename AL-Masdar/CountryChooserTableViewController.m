@@ -7,7 +7,6 @@
 //
 
 #import "CountryChooserTableViewController.h"
-#import "SourceChooserTableViewController.h"
 
 @interface CountryChooserTableViewController ()
 
@@ -16,18 +15,6 @@
 @implementation CountryChooserTableViewController
 {
     NSMutableArray* countries;
-}
-
-
--(void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
-{
-    if([[segue identifier]isEqualToString:@"sourcesSeg3"])
-    {
-        SourceChooserTableViewController* dst = (SourceChooserTableViewController*)[segue destinationViewController];
-        [dst setDataSourcee:self.dataSource];
-        [dst setSection:@""];
-        [dst setCountry:[countries objectAtIndex:self.tableView.indexPathForSelectedRow.row]];
-    }
 }
 
 - (void)viewDidLoad {
@@ -82,10 +69,6 @@
     return cell;
 }
 
--(void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
-{
-    [self performSegueWithIdentifier:@"sourcesSeg3" sender:self];
-}
 
 /*
 // Override to support conditional editing of the table view.

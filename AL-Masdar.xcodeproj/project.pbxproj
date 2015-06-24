@@ -13,7 +13,6 @@
 		7FF5F399BB71DFA877BE19FA /* libPods-AL-Masdar.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 6670BD0A3CA460F7A52C2282 /* libPods-AL-Masdar.a */; };
 		E81F60111B39F82C006C5B9F /* CoreLocation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E81F60101B39F82C006C5B9F /* CoreLocation.framework */; };
 		E81F60141B3AC0CE006C5B9F /* CountryChooserTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = E81F60131B3AC0CE006C5B9F /* CountryChooserTableViewController.m */; };
-		E81F60171B3AC38F006C5B9F /* SourceChooserTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = E81F60161B3AC38F006C5B9F /* SourceChooserTableViewController.m */; };
 		E8C36F351B39D26800D0453E /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = E8C36F341B39D26800D0453E /* main.m */; };
 		E8C36F381B39D26800D0453E /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = E8C36F371B39D26800D0453E /* AppDelegate.m */; };
 		E8C36F3B1B39D26800D0453E /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = E8C36F3A1B39D26800D0453E /* ViewController.m */; };
@@ -47,8 +46,6 @@
 		E81F60101B39F82C006C5B9F /* CoreLocation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreLocation.framework; path = System/Library/Frameworks/CoreLocation.framework; sourceTree = SDKROOT; };
 		E81F60121B3AC0CE006C5B9F /* CountryChooserTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CountryChooserTableViewController.h; sourceTree = "<group>"; };
 		E81F60131B3AC0CE006C5B9F /* CountryChooserTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CountryChooserTableViewController.m; sourceTree = "<group>"; };
-		E81F60151B3AC38F006C5B9F /* SourceChooserTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SourceChooserTableViewController.h; sourceTree = "<group>"; };
-		E81F60161B3AC38F006C5B9F /* SourceChooserTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SourceChooserTableViewController.m; sourceTree = "<group>"; };
 		E8C36F2F1B39D26800D0453E /* AL-Masdar.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "AL-Masdar.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		E8C36F331B39D26800D0453E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		E8C36F341B39D26800D0453E /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
@@ -156,8 +153,6 @@
 				E8C36F641B39E07200D0453E /* NoInternetConnectionViewController.m */,
 				E81F60121B3AC0CE006C5B9F /* CountryChooserTableViewController.h */,
 				E81F60131B3AC0CE006C5B9F /* CountryChooserTableViewController.m */,
-				E81F60151B3AC38F006C5B9F /* SourceChooserTableViewController.h */,
-				E81F60161B3AC38F006C5B9F /* SourceChooserTableViewController.m */,
 			);
 			path = "AL-Masdar";
 			sourceTree = "<group>";
@@ -355,7 +350,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				E81F60171B3AC38F006C5B9F /* SourceChooserTableViewController.m in Sources */,
 				E8C36F5E1B39DD4B00D0453E /* ReverseGeocodeCountry.m in Sources */,
 				E8C36F3B1B39D26800D0453E /* ViewController.m in Sources */,
 				E8C36F651B39E07200D0453E /* NoInternetConnectionViewController.m in Sources */,
