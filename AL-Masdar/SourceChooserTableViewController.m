@@ -15,7 +15,7 @@
 
 @implementation SourceChooserTableViewController
 {
-    NSMutableArray* myDataSource;
+    NSMutableArray* sectionedSource;
 }
 
 @synthesize country,dataSourcee,section;
@@ -23,8 +23,8 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     
-    myDataSource = [[NSMutableArray alloc]init];
-    
+    NSMutableArray* myDataSource = [[NSMutableArray alloc]init];
+    sectionedSource = [[NSMutableArray alloc]init];
     
     if(![country isEqualToString:@""])
     {
@@ -45,13 +45,70 @@
         }
     }
     
+    
     NSArray *aSortedArray = [myDataSource sortedArrayUsingComparator:^(NSDictionary *obj1,NSDictionary *obj2) {
-        NSString *num1 =[obj1 objectForKey:@"name"];
-        NSString *num2 =[obj2 objectForKey:@"name"];
+        NSString *num1 =[obj1 objectForKey:@"subSection"];
+        NSString *num2 =[obj2 objectForKey:@"subSection"];
         return (NSComparisonResult) [num1 compare:num2 options:(NSNumericSearch)];
     }];
     
     myDataSource = [[NSMutableArray alloc]initWithArray:aSortedArray copyItems:YES];
+    
+    while([myDataSource count]>0)
+    {
+        NSMutableArray* groupArray = [[NSMutableArray alloc]init];
+        
+        NSDictionary* sampleDict = [myDataSource objectAtIndex:0];
+        
+        [groupArray addObject:sampleDict];
+        [myDataSource removeObjectAtIndex:0];
+        for(NSDictionary* dict in myDataSource)
+        {
+            if([[dict objectForKey:@"subSection"]isEqualToString:[sampleDict objectForKey:@"subSection"]])
+            {
+                [groupArray addObject:dict];
+                [myDataSource removeObject:dict];
+            }else
+            {
+                
+                NSArray *aSortedArray = [groupArray sortedArrayUsingComparator:^(NSDictionary *obj1,NSDictionary *obj2) {
+                    NSString *num1 =[obj1 objectForKey:@"name"];
+                    NSString *num2 =[obj2 objectForKey:@"name"];
+                    return (NSComparisonResult) [num1 compare:num2 options:(NSNumericSearch)];
+                }];
+                
+                groupArray = [[NSMutableArray alloc]initWithArray:aSortedArray copyItems:YES];
+
+                
+                NSDictionary* groupDict = [[NSDictionary alloc]initWithObjects:@[groupArray] forKeys:@[[sampleDict objectForKey:@"subSection"]]];
+                [sectionedSource addObject:groupDict];
+                
+                groupArray = [[NSMutableArray alloc]init];
+                
+                break;
+            }
+        }
+        
+        if([groupArray count]>0)
+        {
+            NSArray *aSortedArray = [groupArray sortedArrayUsingComparator:^(NSDictionary *obj1,NSDictionary *obj2) {
+                NSString *num1 =[obj1 objectForKey:@"name"];
+                NSString *num2 =[obj2 objectForKey:@"name"];
+                return (NSComparisonResult) [num1 compare:num2 options:(NSNumericSearch)];
+            }];
+            
+            groupArray = [[NSMutableArray alloc]initWithArray:aSortedArray copyItems:YES];
+            
+            
+            NSDictionary* groupDict = [[NSDictionary alloc]initWithObjects:@[groupArray] forKeys:@[[sampleDict objectForKey:@"subSection"]]];
+            [sectionedSource addObject:groupDict];
+            
+            groupArray = [[NSMutableArray alloc]init];
+
+        }
+    }
+    
+   
     
     [self.tableView reloadData];
     [self.tableView setNeedsDisplay];
@@ -65,11 +122,19 @@
 #pragma mark - Table view data source
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
-    return 1;
+    return sectionedSource.count;
 }
 
-- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-    return myDataSource.count;
+- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)sectionn {
+
+    NSDictionary* dict = [sectionedSource objectAtIndex:sectionn];
+    return [[dict objectForKey:[[dict allKeys] lastObject]] count];
+}
+
+-(NSString*)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)sectionn
+{
+    NSDictionary* dict = [sectionedSource objectAtIndex:sectionn];
+    return [[[dict objectForKey:[[dict allKeys] lastObject]] lastObject] objectForKey:@"subSection"];
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
@@ -82,9 +147,15 @@
         cell = [[UITableViewCell alloc]initWithStyle:UITableViewCellStyleDefault reuseIdentifier:cellID];
     }
     [cell setAccessoryType:UITableViewCellAccessoryNone];
-    [[cell textLabel]setText:[[myDataSource objectAtIndex:indexPath.row] objectForKey:@"name"]];
     
-    if([[[NSUserDefaults standardUserDefaults] objectForKey:@"subscriptions"] containsObject:[[myDataSource objectAtIndex:indexPath.row] objectForKey:@"name"]])
+    NSDictionary* dict = [sectionedSource objectAtIndex:indexPath.section];
+    NSDictionary* dict2 = [[dict objectForKey:[[dict allKeys] lastObject]] objectAtIndex:indexPath.row];
+
+    
+    [[cell textLabel]setText:[dict2 objectForKey:@"name"]];
+    
+    
+    if([[[NSUserDefaults standardUserDefaults] objectForKey:@"subscriptions"] containsObject:[dict2 objectForKey:@"name"]])
     {
         [cell setAccessoryType:UITableViewCellAccessoryCheckmark];
     }
@@ -94,12 +165,17 @@
 
 -(void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    if([[[NSUserDefaults standardUserDefaults] objectForKey:@"subscriptions"] containsObject:[[myDataSource objectAtIndex:indexPath.row] objectForKey:@"name"]])
+    
+    NSDictionary* dict = [sectionedSource objectAtIndex:indexPath.section];
+    NSDictionary* dict2 = [[dict objectForKey:[[dict allKeys] lastObject]] objectAtIndex:indexPath.row];
+
+    
+    if([[[NSUserDefaults standardUserDefaults] objectForKey:@"subscriptions"] containsObject:[dict2 objectForKey:@"name"]])
     {
         [[self.tableView cellForRowAtIndexPath:indexPath] setAccessoryType:UITableViewCellAccessoryNone];
       
         NSMutableArray* mutArray = [[NSMutableArray alloc]initWithArray:[[NSUserDefaults standardUserDefaults] objectForKey:@"subscriptions"] copyItems:YES];
-        [mutArray removeObject:[[myDataSource objectAtIndex:indexPath.row] objectForKey:@"name"]];
+        [mutArray removeObject:[dict2 objectForKey:@"name"]];
         
         [[NSUserDefaults standardUserDefaults]setObject:mutArray forKey:@"subscriptions"];
         
@@ -109,7 +185,7 @@
         [[self.tableView cellForRowAtIndexPath:indexPath] setAccessoryType:UITableViewCellAccessoryCheckmark];
         
         NSMutableArray* mutArray = [[NSMutableArray alloc]initWithArray:[[NSUserDefaults standardUserDefaults] objectForKey:@"subscriptions"] copyItems:YES];
-        [mutArray addObject:[[myDataSource objectAtIndex:indexPath.row] objectForKey:@"name"]];
+        [mutArray addObject:[dict2 objectForKey:@"name"]];
         
         [[NSUserDefaults standardUserDefaults]setObject:mutArray forKey:@"subscriptions"];
         [[NSUserDefaults standardUserDefaults] synchronize];
