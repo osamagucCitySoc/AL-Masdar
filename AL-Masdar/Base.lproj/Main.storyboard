@@ -1,15 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<<<<<<< HEAD
-<<<<<<< HEAD
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="7531" systemVersion="14D136" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" initialViewController="vXZ-lx-hvc">
-=======
 <document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="7702" systemVersion="14B25" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" initialViewController="Phf-6w-klP">
->>>>>>> origin/master
-=======
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="7702" systemVersion="14B25" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" initialViewController="Phf-6w-klP">
->>>>>>> origin/master
     <dependencies>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="7520"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="7701"/>
         <capability name="Alignment constraints with different attributes" minToolsVersion="5.1"/>
         <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
     </dependencies>
@@ -57,28 +49,11 @@
                                 <exclude reference="MDy-nJ-lS6"/>
                             </mask>
                             <mask key="constraints">
-<<<<<<< HEAD
-<<<<<<< HEAD
                                 <exclude reference="GVU-1X-iQv"/>
-                                <exclude reference="Egk-LC-tAf"/>
-                                <exclude reference="m20-JD-dmI"/>
-                                <exclude reference="qkh-Pl-Oex"/>
-                                <exclude reference="PlV-Ue-F0y"/>
-=======
->>>>>>> origin/master
                                 <exclude reference="eBh-Gf-5Yr"/>
                                 <exclude reference="ePP-21-QXL"/>
                                 <exclude reference="vQO-Yx-cFP"/>
-<<<<<<< HEAD
-=======
-=======
-                                <exclude reference="eBh-Gf-5Yr"/>
-                                <exclude reference="ePP-21-QXL"/>
-                                <exclude reference="vQO-Yx-cFP"/>
->>>>>>> origin/master
                                 <exclude reference="yZF-xY-ftr"/>
-                                <exclude reference="GVU-1X-iQv"/>
->>>>>>> origin/master
                             </mask>
                         </variation>
                         <variation key="heightClass=regular-widthClass=compact">
@@ -86,28 +61,11 @@
                                 <include reference="MDy-nJ-lS6"/>
                             </mask>
                             <mask key="constraints">
-<<<<<<< HEAD
-<<<<<<< HEAD
                                 <include reference="GVU-1X-iQv"/>
-                                <include reference="Egk-LC-tAf"/>
-                                <include reference="m20-JD-dmI"/>
-                                <include reference="qkh-Pl-Oex"/>
-                                <include reference="PlV-Ue-F0y"/>
-=======
->>>>>>> origin/master
                                 <include reference="eBh-Gf-5Yr"/>
                                 <include reference="ePP-21-QXL"/>
                                 <include reference="vQO-Yx-cFP"/>
-<<<<<<< HEAD
-=======
-=======
-                                <include reference="eBh-Gf-5Yr"/>
-                                <include reference="ePP-21-QXL"/>
-                                <include reference="vQO-Yx-cFP"/>
->>>>>>> origin/master
                                 <exclude reference="yZF-xY-ftr"/>
-                                <include reference="GVU-1X-iQv"/>
->>>>>>> origin/master
                             </mask>
                         </variation>
                     </view>
@@ -117,17 +75,11 @@
                         <segue destination="LnK-nW-ihS" kind="modal" identifier="NoConnectionSeg" modalTransitionStyle="crossDissolve" id="zMk-EA-Bcu"/>
                         <segue destination="kpC-DG-xcL" kind="push" identifier="sourcesSeg1" id="KVi-hw-z37"/>
                         <segue destination="UB6-Dg-6si" kind="push" identifier="countrySeg" id="5Pa-9L-yqh"/>
-                        <segue destination="kpC-DG-xcL" kind="push" identifier="sourcesSeg2" id="asr-7d-4co"/>
+                        <segue destination="kpC-DG-xcL" kind="push" identifier="sourcesSeg2" id="vko-P7-B1t"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="x5A-6p-PRh" sceneMemberID="firstResponder"/>
             </objects>
-<<<<<<< HEAD
-<<<<<<< HEAD
-            <point key="canvasLocation" x="-388.5" y="247.5"/>
-=======
-=======
->>>>>>> origin/master
             <point key="canvasLocation" x="1222.5" y="291.75"/>
         </scene>
         <!--Country Chooser Table View Controller-->
@@ -135,6 +87,7 @@
             <objects>
                 <tableViewController id="UB6-Dg-6si" customClass="CountryChooserTableViewController" sceneMemberID="viewController">
                     <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="44" sectionHeaderHeight="22" sectionFooterHeight="22" id="xhe-k5-Fd0">
+                        <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <prototypes>
@@ -164,6 +117,7 @@
             <objects>
                 <tableViewController id="kpC-DG-xcL" customClass="SourceChooserTableViewController" sceneMemberID="viewController">
                     <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="44" sectionHeaderHeight="22" sectionFooterHeight="22" id="6pV-DK-h3O">
+                        <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <prototypes>
@@ -184,10 +138,6 @@
                 <placeholder placeholderIdentifier="IBFirstResponder" id="vQb-IF-dkk" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="1981.5" y="-199.5"/>
-<<<<<<< HEAD
->>>>>>> origin/master
-=======
->>>>>>> origin/master
         </scene>
         <!--No Internet Connection View Controller-->
         <scene sceneID="rqC-FC-QYJ">
@@ -259,25 +209,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="TAL-aD-u4W" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="459" y="252"/>
-        </scene>
-        <!--Navigation Controller-->
-        <scene sceneID="xpJ-t9-mHG">
-            <objects>
-                <navigationController automaticallyAdjustsScrollViewInsets="NO" id="Phf-6w-klP" sceneMemberID="viewController">
-                    <toolbarItems/>
-                    <navigationBar key="navigationBar" contentMode="scaleToFill" id="7KQ-LI-kWO">
-                        <rect key="frame" x="0.0" y="0.0" width="320" height="44"/>
-                        <autoresizingMask key="autoresizingMask"/>
-                    </navigationBar>
-                    <nil name="viewControllers"/>
-                    <connections>
-                        <segue destination="vXZ-lx-hvc" kind="relationship" relationship="rootViewController" id="gQZ-ia-bPq"/>
-                    </connections>
-                </navigationController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="eFk-zX-GJu" userLabel="First Responder" sceneMemberID="firstResponder"/>
-            </objects>
-            <point key="canvasLocation" x="304.5" y="291.75"/>
+            <point key="canvasLocation" x="324" y="1095"/>
         </scene>
         <!--Navigation Controller-->
         <scene sceneID="xpJ-t9-mHG">
