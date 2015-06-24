@@ -10,6 +10,7 @@
 #import "ReverseGeocodeCountry.h"
 #import "Reachability.h"
 #import "AFHTTPRequestOperationManager.h"
+#import "CountryChooserTableViewController.h"
 #import <PQFCustomLoaders/PQFCustomLoaders.h>
 #import <CoreLocation/CoreLocation.h>
 
@@ -30,6 +31,15 @@
     CLLocation* myLocation;
     NSString* userCountry;
     __weak IBOutlet UITableView *tableView;
+}
+
+-(void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
+{
+    if([[segue identifier]isEqualToString:@"countrySeg"])
+    {
+        CountryChooserTableViewController* dst = (CountryChooserTableViewController*)[segue destinationViewController];
+        [dst setDataSource:dataSource];
+    }
 }
 
 - (void)viewDidLoad {
@@ -223,6 +233,17 @@
     }
     
     return @"";
+}
+
+-(void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    if([[sectionsAvailble objectAtIndex:indexPath.row] isEqualToString:@"صحف عربية"])
+    {
+        [self performSegueWithIdentifier:@"countrySeg" sender:self];
+    }else
+    {
+        [self performSegueWithIdentifier:@"sourcesSeg1" sender:self];
+    }
 }
 
 
