@@ -12,6 +12,9 @@
 #import "AFHTTPRequestOperationManager.h"
 #import "CountryChooserTableViewController.h"
 #import "SourceChooserTableViewController.h"
+#import "CRToastManager.h"
+#import "CRToast.h"
+
 
 #import <PQFCustomLoaders/PQFCustomLoaders.h>
 #import <CoreLocation/CoreLocation.h>
@@ -330,6 +333,23 @@
 }
 
 - (IBAction)doneClicked:(id)sender {
+    if([[[NSUserDefaults standardUserDefaults] objectForKey:@"subscriptions"]count] == 0)
+    {
+        NSDictionary *options = @{
+                                  kCRToastTextKey : @"يجب تحديد مصدر واحد على الأقل",
+                                  kCRToastTextAlignmentKey : @(NSTextAlignmentCenter),
+                                  kCRToastBackgroundColorKey : [UIColor redColor],
+                                  kCRToastAnimationInTypeKey : @(CRToastAnimationTypeLinear),
+                                  kCRToastAnimationOutTypeKey : @(CRToastAnimationTypeLinear),
+                                  kCRToastAnimationInDirectionKey : @(CRToastAnimationDirectionTop),
+                                  kCRToastAnimationOutDirectionKey : @(CRToastAnimationDirectionBottom)
+                                  };
+        [CRToastManager showNotificationWithOptions:options
+                                    completionBlock:^{
+                                        NSLog(@"Completed");
+                                    }];
+
+    }
 }
 
 @end

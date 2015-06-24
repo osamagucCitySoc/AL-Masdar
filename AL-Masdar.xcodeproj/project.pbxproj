@@ -25,6 +25,11 @@
 		E8C36F5E1B39DD4B00D0453E /* ReverseGeocodeCountry.m in Sources */ = {isa = PBXBuildFile; fileRef = E8C36F5C1B39DD4B00D0453E /* ReverseGeocodeCountry.m */; };
 		E8C36F611B39DF8E00D0453E /* Reachability.m in Sources */ = {isa = PBXBuildFile; fileRef = E8C36F601B39DF8E00D0453E /* Reachability.m */; };
 		E8C36F651B39E07200D0453E /* NoInternetConnectionViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = E8C36F641B39E07200D0453E /* NoInternetConnectionViewController.m */; };
+		E8E037E81B3AD4770088FDCE /* CRToast.m in Sources */ = {isa = PBXBuildFile; fileRef = E8E037DE1B3AD4770088FDCE /* CRToast.m */; };
+		E8E037E91B3AD4770088FDCE /* CRToastManager.m in Sources */ = {isa = PBXBuildFile; fileRef = E8E037E11B3AD4770088FDCE /* CRToastManager.m */; };
+		E8E037EA1B3AD4770088FDCE /* CRToastView.m in Sources */ = {isa = PBXBuildFile; fileRef = E8E037E31B3AD4770088FDCE /* CRToastView.m */; };
+		E8E037EB1B3AD4770088FDCE /* CRToastViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = E8E037E51B3AD4770088FDCE /* CRToastViewController.m */; };
+		E8E037EC1B3AD4770088FDCE /* CRToastWindow.m in Sources */ = {isa = PBXBuildFile; fileRef = E8E037E71B3AD4770088FDCE /* CRToastWindow.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -69,6 +74,17 @@
 		E8C36F601B39DF8E00D0453E /* Reachability.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Reachability.m; sourceTree = "<group>"; };
 		E8C36F631B39E07200D0453E /* NoInternetConnectionViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NoInternetConnectionViewController.h; sourceTree = "<group>"; };
 		E8C36F641B39E07200D0453E /* NoInternetConnectionViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NoInternetConnectionViewController.m; sourceTree = "<group>"; };
+		E8E037DD1B3AD4770088FDCE /* CRToast.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CRToast.h; sourceTree = "<group>"; };
+		E8E037DE1B3AD4770088FDCE /* CRToast.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CRToast.m; sourceTree = "<group>"; };
+		E8E037DF1B3AD4770088FDCE /* CRToastLayoutHelpers.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CRToastLayoutHelpers.h; sourceTree = "<group>"; };
+		E8E037E01B3AD4770088FDCE /* CRToastManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CRToastManager.h; sourceTree = "<group>"; };
+		E8E037E11B3AD4770088FDCE /* CRToastManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CRToastManager.m; sourceTree = "<group>"; };
+		E8E037E21B3AD4770088FDCE /* CRToastView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CRToastView.h; sourceTree = "<group>"; };
+		E8E037E31B3AD4770088FDCE /* CRToastView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CRToastView.m; sourceTree = "<group>"; };
+		E8E037E41B3AD4770088FDCE /* CRToastViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CRToastViewController.h; sourceTree = "<group>"; };
+		E8E037E51B3AD4770088FDCE /* CRToastViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CRToastViewController.m; sourceTree = "<group>"; };
+		E8E037E61B3AD4770088FDCE /* CRToastWindow.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CRToastWindow.h; sourceTree = "<group>"; };
+		E8E037E71B3AD4770088FDCE /* CRToastWindow.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CRToastWindow.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -151,13 +167,13 @@
 				E8C36F3C1B39D26800D0453E /* Main.storyboard */,
 				E8C36F3F1B39D26800D0453E /* Images.xcassets */,
 				E8C36F411B39D26800D0453E /* LaunchScreen.xib */,
-				E8C36F321B39D26800D0453E /* Supporting Files */,
 				E8C36F631B39E07200D0453E /* NoInternetConnectionViewController.h */,
 				E8C36F641B39E07200D0453E /* NoInternetConnectionViewController.m */,
 				E81F60121B3AC0CE006C5B9F /* CountryChooserTableViewController.h */,
 				E81F60131B3AC0CE006C5B9F /* CountryChooserTableViewController.m */,
 				E8B604701B3ACD9900EF74E5 /* SourceChooserTableViewController.h */,
 				E8B604711B3ACD9900EF74E5 /* SourceChooserTableViewController.m */,
+				E8C36F321B39D26800D0453E /* Supporting Files */,
 			);
 			path = "AL-Masdar";
 			sourceTree = "<group>";
@@ -167,6 +183,7 @@
 			children = (
 				E8C36F331B39D26800D0453E /* Info.plist */,
 				E8C36F341B39D26800D0453E /* main.m */,
+				E8E037ED1B3AD4800088FDCE /* Notification */,
 			);
 			name = "Supporting Files";
 			sourceTree = "<group>";
@@ -214,6 +231,24 @@
 				E8C36F601B39DF8E00D0453E /* Reachability.m */,
 			);
 			name = InternetConnectivity;
+			sourceTree = "<group>";
+		};
+		E8E037ED1B3AD4800088FDCE /* Notification */ = {
+			isa = PBXGroup;
+			children = (
+				E8E037DD1B3AD4770088FDCE /* CRToast.h */,
+				E8E037DE1B3AD4770088FDCE /* CRToast.m */,
+				E8E037DF1B3AD4770088FDCE /* CRToastLayoutHelpers.h */,
+				E8E037E01B3AD4770088FDCE /* CRToastManager.h */,
+				E8E037E11B3AD4770088FDCE /* CRToastManager.m */,
+				E8E037E21B3AD4770088FDCE /* CRToastView.h */,
+				E8E037E31B3AD4770088FDCE /* CRToastView.m */,
+				E8E037E41B3AD4770088FDCE /* CRToastViewController.h */,
+				E8E037E51B3AD4770088FDCE /* CRToastViewController.m */,
+				E8E037E61B3AD4770088FDCE /* CRToastWindow.h */,
+				E8E037E71B3AD4770088FDCE /* CRToastWindow.m */,
+			);
+			name = Notification;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -356,11 +391,16 @@
 			buildActionMask = 2147483647;
 			files = (
 				E8B604721B3ACD9900EF74E5 /* SourceChooserTableViewController.m in Sources */,
+				E8E037EB1B3AD4770088FDCE /* CRToastViewController.m in Sources */,
 				E8C36F5E1B39DD4B00D0453E /* ReverseGeocodeCountry.m in Sources */,
+				E8E037EA1B3AD4770088FDCE /* CRToastView.m in Sources */,
 				E8C36F3B1B39D26800D0453E /* ViewController.m in Sources */,
 				E8C36F651B39E07200D0453E /* NoInternetConnectionViewController.m in Sources */,
+				E8E037E91B3AD4770088FDCE /* CRToastManager.m in Sources */,
 				E8C36F381B39D26800D0453E /* AppDelegate.m in Sources */,
+				E8E037E81B3AD4770088FDCE /* CRToast.m in Sources */,
 				E8C36F351B39D26800D0453E /* main.m in Sources */,
+				E8E037EC1B3AD4770088FDCE /* CRToastWindow.m in Sources */,
 				E81F60141B3AC0CE006C5B9F /* CountryChooserTableViewController.m in Sources */,
 				E8C36F611B39DF8E00D0453E /* Reachability.m in Sources */,
 			);
