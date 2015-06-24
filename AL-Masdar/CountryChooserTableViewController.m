@@ -29,6 +29,8 @@
             [countries addObject:[dict objectForKey:@"countryAR"]];
         }
     }
+   
+    [countries sortUsingSelector:@selector( localizedCaseInsensitiveCompare: )];
     
     [self setTitle:@"الصحف العربية"];
     
