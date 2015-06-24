@@ -22,6 +22,7 @@
 @implementation ViewController
 {
     NSMutableArray* dataSource;
+    NSMutableArray* sectionsAvailble;
     CLLocationManager* locationManager;
     CLLocation* currentLocation;
     BOOL locationDone;
@@ -35,6 +36,7 @@
     [super viewDidLoad];
     
     dataSource = [[NSMutableArray alloc]init];
+    sectionsAvailble = [[NSMutableArray alloc]init];
     
     [tableView setDelegate:self];
     [tableView setNeedsDisplay];
@@ -82,6 +84,15 @@
         
         [manager POST:@"http://moh2013.com/arabDevs/almasdar/getSources.php" parameters:nil success:^(AFHTTPRequestOperation *operation, id responseObject) {
             dataSource = [NSJSONSerialization JSONObjectWithData:responseObject options:NSJSONReadingAllowFragments error:nil];
+
+            for(NSDictionary* dict in dataSource)
+            {
+                if(![sectionsAvailble containsObject:[dict objectForKey:@"section"]])
+                {
+                    [sectionsAvailble addObject:[dict objectForKey:@"section"]];
+                }
+            }
+            
             sourcesDone = YES;
             if(locationDone && sourcesDone)
             {
@@ -150,7 +161,7 @@
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
     if([userCountry isEqualToString:@""])
     {
-        return 2;
+        return sectionsAvailble.count;
     }else
     {
         if(section == 0)
@@ -158,7 +169,7 @@
             return 1;
         }else
         {
-            return 2;
+            return sectionsAvailble.count;
         }
     }
 }
@@ -176,28 +187,18 @@
     
     if([userCountry isEqualToString:@""])
     {
-        if(indexPath.row == 0)
-        {
-            [[cell textLabel]setText:@"المصادر العربية"];
-        }else
-        {
-            [[cell textLabel]setText:@"المصادر العالمية"];
-        }
+        [[cell textLabel]setText:[sectionsAvailble objectAtIndex:indexPath.row]];
     }else
     {
         if(indexPath.section == 0 && indexPath.row == 0)
         {
             [[cell textLabel]setText:userCountry];
         }
-        else if(indexPath.section == 1 && indexPath.row == 0)
+        else if(indexPath.section == 1)
         {
-            [[cell textLabel]setText:@"المصادر العربية"];
-        }else if(indexPath.section == 1 && indexPath.row == 1)
-        {
-            [[cell textLabel]setText:@"المصادر العالمية"];
+            [[cell textLabel]setText:[sectionsAvailble objectAtIndex:indexPath.row]];
         }
     }
-    
     
     return cell;
 }
