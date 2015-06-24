@@ -48,6 +48,12 @@
 #define COCOAPODS_VERSION_MINOR_AFNetworking_UIKit 5
 #define COCOAPODS_VERSION_PATCH_AFNetworking_UIKit 4
 
+// Haneke
+#define COCOAPODS_POD_AVAILABLE_Haneke
+#define COCOAPODS_VERSION_MAJOR_Haneke 1
+#define COCOAPODS_VERSION_MINOR_Haneke 0
+#define COCOAPODS_VERSION_PATCH_Haneke 1
+
 // PQFCustomLoaders
 #define COCOAPODS_POD_AVAILABLE_PQFCustomLoaders
 #define COCOAPODS_VERSION_MAJOR_PQFCustomLoaders 1

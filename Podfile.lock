@@ -20,6 +20,7 @@ PODS:
   - AFNetworking/UIKit (2.5.4):
     - AFNetworking/NSURLConnection
     - AFNetworking/NSURLSession
+  - Haneke (1.0.1)
   - pop (1.0.7)
   - PQFCustomLoaders (1.0.1):
     - pop (~> 1.0)
@@ -28,10 +29,12 @@ PODS:
 
 DEPENDENCIES:
   - AFNetworking (~> 2.0)
+  - Haneke (~> 1.0)
   - PQFCustomLoaders (~> 1.0.1)
 
 SPEC CHECKSUMS:
   AFNetworking: 05edc0ac4c4c8cf57bcf4b84be5b0744b6d8e71e
+  Haneke: d60be8b96b228633b24708dd153169d6849d6f78
   pop: 628ffc631644601567ee8bfaaaea493ebd7d0923
   PQFCustomLoaders: 3352250e86c2961bfc3d0cccd91def07794c2aa9
   UIColor+FlatColors: 6c699df7a575281794c688c64cee6c44fd1f93b4
