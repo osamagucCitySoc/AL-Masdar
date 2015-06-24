@@ -329,5 +329,7 @@
     locationDone = YES;
 }
 
+- (IBAction)doneClicked:(id)sender {
+}
 
 @end

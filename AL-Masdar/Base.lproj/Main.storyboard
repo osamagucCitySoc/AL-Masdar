@@ -69,7 +69,13 @@
                             </mask>
                         </variation>
                     </view>
-                    <navigationItem key="navigationItem" title="تحديد المصادر الإخبارية" id="cJT-7n-Jeh"/>
+                    <navigationItem key="navigationItem" title="تحديد المصادر الإخبارية" id="cJT-7n-Jeh">
+                        <barButtonItem key="rightBarButtonItem" title="تم" id="rjL-IY-ivN">
+                            <connections>
+                                <action selector="doneClicked:" destination="vXZ-lx-hvc" id="qdl-Ei-nB3"/>
+                            </connections>
+                        </barButtonItem>
+                    </navigationItem>
                     <connections>
                         <outlet property="tableView" destination="MDy-nJ-lS6" id="91D-r5-Ux1"/>
                         <segue destination="LnK-nW-ihS" kind="modal" identifier="NoConnectionSeg" modalTransitionStyle="crossDissolve" id="zMk-EA-Bcu"/>
@@ -231,6 +237,6 @@
         </scene>
     </scenes>
     <inferredMetricsTieBreakers>
-        <segue reference="4Rs-Cz-KED"/>
+        <segue reference="vko-P7-B1t"/>
     </inferredMetricsTieBreakers>
 </document>
