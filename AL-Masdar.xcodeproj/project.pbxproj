@@ -7,6 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		1E7F24C71B3ADE7100F95742 /* al-masdar-splash.png in Resources */ = {isa = PBXBuildFile; fileRef = 1E7F24C41B3ADE7100F95742 /* al-masdar-splash.png */; };
+		1E7F24C81B3ADE7100F95742 /* al-masdar-splash@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 1E7F24C51B3ADE7100F95742 /* al-masdar-splash@2x.png */; };
+		1E7F24C91B3ADE7100F95742 /* al-masdar-splash@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 1E7F24C61B3ADE7100F95742 /* al-masdar-splash@3x.png */; };
 		7FF5F399BB71DFA877BE19FA /* libPods-AL-Masdar.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 6670BD0A3CA460F7A52C2282 /* libPods-AL-Masdar.a */; };
 		E81F60111B39F82C006C5B9F /* CoreLocation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E81F60101B39F82C006C5B9F /* CoreLocation.framework */; };
 		E81F60141B3AC0CE006C5B9F /* CountryChooserTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = E81F60131B3AC0CE006C5B9F /* CountryChooserTableViewController.m */; };
@@ -35,6 +38,9 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		1E7F24C41B3ADE7100F95742 /* al-masdar-splash.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "al-masdar-splash.png"; sourceTree = "<group>"; };
+		1E7F24C51B3ADE7100F95742 /* al-masdar-splash@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "al-masdar-splash@2x.png"; sourceTree = "<group>"; };
+		1E7F24C61B3ADE7100F95742 /* al-masdar-splash@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "al-masdar-splash@3x.png"; sourceTree = "<group>"; };
 		5BF2D4E2EEF27E8E945DA18C /* Pods-AL-Masdar.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-AL-Masdar.release.xcconfig"; path = "Pods/Target Support Files/Pods-AL-Masdar/Pods-AL-Masdar.release.xcconfig"; sourceTree = "<group>"; };
 		6670BD0A3CA460F7A52C2282 /* libPods-AL-Masdar.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-AL-Masdar.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		C8F53F59F7EE46E97900FA3B /* Pods-AL-Masdar.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-AL-Masdar.debug.xcconfig"; path = "Pods/Target Support Files/Pods-AL-Masdar/Pods-AL-Masdar.debug.xcconfig"; sourceTree = "<group>"; };
@@ -85,6 +91,16 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		1E7F24C31B3ADE5E00F95742 /* Images */ = {
+			isa = PBXGroup;
+			children = (
+				1E7F24C41B3ADE7100F95742 /* al-masdar-splash.png */,
+				1E7F24C51B3ADE7100F95742 /* al-masdar-splash@2x.png */,
+				1E7F24C61B3ADE7100F95742 /* al-masdar-splash@3x.png */,
+			);
+			name = Images;
+			sourceTree = "<group>";
+		};
 		8E1263F41BE0B1B4A1BC2BDA /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
@@ -127,6 +143,7 @@
 			isa = PBXGroup;
 			children = (
 				E8C36F581B39DD1300D0453E /* ThirdParty */,
+				1E7F24C31B3ADE5E00F95742 /* Images */,
 				E8C36F361B39D26800D0453E /* AppDelegate.h */,
 				E8C36F371B39D26800D0453E /* AppDelegate.m */,
 				E8C36F391B39D26800D0453E /* ViewController.h */,
@@ -281,10 +298,13 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				1E7F24C81B3ADE7100F95742 /* al-masdar-splash@2x.png in Resources */,
 				E8C36F5D1B39DD4B00D0453E /* ReverseGeocodeCountry.json in Resources */,
 				E8C36F3E1B39D26800D0453E /* Main.storyboard in Resources */,
 				E8C36F431B39D26800D0453E /* LaunchScreen.xib in Resources */,
+				1E7F24C71B3ADE7100F95742 /* al-masdar-splash.png in Resources */,
 				E8C36F401B39D26800D0453E /* Images.xcassets in Resources */,
+				1E7F24C91B3ADE7100F95742 /* al-masdar-splash@3x.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
