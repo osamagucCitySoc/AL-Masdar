@@ -133,6 +133,7 @@
                         <segue destination="LnK-nW-ihS" kind="modal" identifier="NoConnectionSeg" modalTransitionStyle="crossDissolve" id="zMk-EA-Bcu"/>
                         <segue destination="kpC-DG-xcL" kind="push" identifier="sourcesSeg1" id="KVi-hw-z37"/>
                         <segue destination="UB6-Dg-6si" kind="push" identifier="countrySeg" id="5Pa-9L-yqh"/>
+                        <segue destination="kpC-DG-xcL" kind="push" identifier="sourcesSeg2" id="asr-7d-4co"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="x5A-6p-PRh" sceneMemberID="firstResponder"/>
@@ -170,22 +171,22 @@
                     </tableView>
                     <navigationItem key="navigationItem" id="wIp-TQ-P7j"/>
                     <connections>
-                        <segue destination="kpC-DG-xcL" kind="push" identifier="sourcesSeg2" id="4Rs-Cz-KED"/>
+                        <segue destination="kpC-DG-xcL" kind="push" identifier="sourcesSeg3" id="4Rs-Cz-KED"/>
                     </connections>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="I7f-o6-5Uc" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="1974" y="504.75"/>
         </scene>
-        <!--Table View Controller-->
+        <!--Source Chooser Table View Controller-->
         <scene sceneID="OHE-Ne-8Rh">
             <objects>
-                <tableViewController id="kpC-DG-xcL" sceneMemberID="viewController">
+                <tableViewController id="kpC-DG-xcL" customClass="SourceChooserTableViewController" sceneMemberID="viewController">
                     <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="44" sectionHeaderHeight="22" sectionFooterHeight="22" id="6pV-DK-h3O">
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <prototypes>
-                            <tableViewCell contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" id="gsi-dZ-tgw">
+                            <tableViewCell contentMode="scaleToFill" selectionStyle="default" accessoryType="checkmark" indentationWidth="10" reuseIdentifier="sourceCell" id="gsi-dZ-tgw">
                                 <autoresizingMask key="autoresizingMask"/>
                                 <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="gsi-dZ-tgw" id="7ow-i8-V2H">
                                     <autoresizingMask key="autoresizingMask"/>

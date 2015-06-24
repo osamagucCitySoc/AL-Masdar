@@ -1,51 +1,57 @@
 //
-//  CountryChooserTableViewController.m
+//  SourceChooserTableViewController.m
 //  AL-Masdar
 //
 //  Created by Osama Rabie on 6/24/15.
 //  Copyright (c) 2015 Osama Rabie. All rights reserved.
 //
 
-#import "CountryChooserTableViewController.h"
 #import "SourceChooserTableViewController.h"
 
-@interface CountryChooserTableViewController ()
+@interface SourceChooserTableViewController ()
 
 @end
 
-@implementation CountryChooserTableViewController
+
+@implementation SourceChooserTableViewController
 {
-    NSMutableArray* countries;
+    NSMutableArray* myDataSource;
 }
 
-
--(void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
-{
-    if([[segue identifier]isEqualToString:@"sourcesSeg3"])
-    {
-        SourceChooserTableViewController* dst = (SourceChooserTableViewController*)[segue destinationViewController];
-        [dst setDataSourcee:self.dataSource];
-        [dst setSection:@""];
-        [dst setCountry:[countries objectAtIndex:self.tableView.indexPathForSelectedRow.row]];
-    }
-}
+@synthesize country,dataSourcee,section;
 
 - (void)viewDidLoad {
     [super viewDidLoad];
     
-    countries = [[NSMutableArray alloc]init];
+    myDataSource = [[NSMutableArray alloc]init];
     
-    for(NSDictionary* dict in self.dataSource)
+    
+    if(![country isEqualToString:@""])
     {
-        if(![countries containsObject:[dict objectForKey:@"countryAR"]] && [[dict objectForKey:@"section"]isEqualToString:@"صحف عربية"])
+        [self setTitle:country];
+    }else
+    {
+        [self setTitle:section];
+    }
+    
+    for(NSDictionary* dict in dataSourcee)
+    {
+        if([[dict objectForKey:@"section"]isEqualToString:section])
         {
-            [countries addObject:[dict objectForKey:@"countryAR"]];
+            [myDataSource addObject:dict];
+        }else if([[dict objectForKey:@"countryAR"]isEqualToString:country])
+        {
+            [myDataSource addObject:dict];
         }
     }
-   
-    [countries sortUsingSelector:@selector( localizedCaseInsensitiveCompare: )];
     
-    [self setTitle:@"الصحف العربية"];
+    NSArray *aSortedArray = [myDataSource sortedArrayUsingComparator:^(NSDictionary *obj1,NSDictionary *obj2) {
+        NSString *num1 =[obj1 objectForKey:@"name"];
+        NSString *num2 =[obj2 objectForKey:@"name"];
+        return (NSComparisonResult) [num1 compare:num2 options:(NSNumericSearch)];
+    }];
+    
+    myDataSource = [[NSMutableArray alloc]initWithArray:aSortedArray copyItems:YES];
     
     [self.tableView reloadData];
     [self.tableView setNeedsDisplay];
@@ -63,13 +69,12 @@
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-    return countries.count;
+    return myDataSource.count;
 }
 
-
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
-
-    static NSString* cellID = @"countryCell";
+    
+    static NSString* cellID = @"sourceCell";
     UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:cellID forIndexPath:indexPath];
     
     if(!cell)
@@ -77,14 +82,9 @@
         cell = [[UITableViewCell alloc]initWithStyle:UITableViewCellStyleDefault reuseIdentifier:cellID];
     }
     
-    [[cell textLabel]setText:[countries objectAtIndex:indexPath.row]];
+    [[cell textLabel]setText:[[myDataSource objectAtIndex:indexPath.row] objectForKey:@"name"]];
     
     return cell;
-}
-
--(void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
-{
-    [self performSegueWithIdentifier:@"sourcesSeg3" sender:self];
 }
 
 /*
