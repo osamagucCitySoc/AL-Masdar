@@ -133,23 +133,23 @@
                 NSMutableArray* newNews = [[NSMutableArray alloc]initWithArray:[NSJSONSerialization JSONObjectWithData:responseObject options:NSJSONReadingAllowFragments error:nil]];
                 if([newNews count]>0)
                 {
-                    [newNews addObjectsFromArray:dataSource];
-                    dataSource = [[NSMutableArray alloc]initWithArray:newNews copyItems:YES];
+                    //[newNews addObjectsFromArray:dataSource];
+                    //dataSource = [[NSMutableArray alloc]initWithArray:newNews copyItems:YES];
                     upperCurrentID = [[dataSource objectAtIndex:0] objectForKey:@"tweetID"];
                     
-                    NSMutableArray* indicesArray = [[NSMutableArray alloc]init];
-                    for(int i = 0 ; i < newNews.count ; i++)
+                    for(int i = (int)newNews.count-1 ; i >= 0 ; i--)
                     {
-                        [indicesArray addObject:[NSIndexPath indexPathForRow:i inSection:0]];
+                        [dataSource insertObject:[newNews objectAtIndex:i] atIndex:0];
+                        [tableView beginUpdates];
+                        [tableView insertRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:0 inSection:0]] withRowAnimation:UITableViewRowAnimationRight];
+                        [tableView endUpdates];
                     }
-                    [tableView beginUpdates];
-                    [tableView insertRowsAtIndexPaths:indicesArray withRowAnimation:UITableViewRowAnimationRight];
-                    [tableView endUpdates];
+                    
                     
                     NSDictionary *options = @{
                                               kCRToastTextKey : [NSString stringWithFormat:@"%lu %@",(unsigned long)newNews.count,@"خبر جديد"],
                                               kCRToastTextAlignmentKey : @(NSTextAlignmentCenter),
-                                              kCRToastBackgroundColorKey : [UIColor yellowColor],
+                                              kCRToastBackgroundColorKey : [UIColor redColor],
                                               kCRToastAnimationInTypeKey : @(CRToastAnimationTypeLinear),
                                               kCRToastAnimationOutTypeKey : @(CRToastAnimationTypeLinear),
                                               kCRToastAnimationInDirectionKey : @(CRToastAnimationDirectionTop),
