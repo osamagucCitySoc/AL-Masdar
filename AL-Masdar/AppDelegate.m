@@ -24,6 +24,12 @@
         [[NSUserDefaults standardUserDefaults]synchronize];
     }
     
+    if(![[NSUserDefaults standardUserDefaults] objectForKey:@"favs"])
+    {
+        [[NSUserDefaults standardUserDefaults]setObject:[[NSArray alloc] init] forKey:@"favs"];
+        [[NSUserDefaults standardUserDefaults]synchronize];
+    }
+    
     return YES;
 }
 

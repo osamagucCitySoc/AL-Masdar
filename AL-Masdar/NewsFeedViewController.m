@@ -36,6 +36,9 @@
     __weak IBOutlet UIButton *retryButton;
     __weak IBOutlet UITextField *searchTextField;
     __weak IBOutlet UISegmentedControl *searchSegment;
+    
+    BOOL showingFav;
+    NSMutableArray* favTempStoring;
 }
 
 -(void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
@@ -104,7 +107,7 @@
 
 -(void)getData
 {
-    if(!loadingData)
+    if(!showingFav && !loadingData)
     {
         loadingData = YES;
         AFHTTPRequestOperationManager *manager = [AFHTTPRequestOperationManager manager];
@@ -397,7 +400,14 @@
 }
 
 - (IBAction)optionsClicked:(id)sender {
-    UIActionSheet* sheet = [[UIActionSheet alloc]initWithTitle:@"خيارات الخبر" delegate:self cancelButtonTitle:@"إلغاء" destructiveButtonTitle:@"تحديث" otherButtonTitles:@"البحث",@"يحدث في مدينتي",@"المفضلة",nil];
+    UIActionSheet* sheet;
+    if(showingFav)
+    {
+        sheet = [[UIActionSheet alloc]initWithTitle:@"خيارات الخبر" delegate:self cancelButtonTitle:@"إلغاء" destructiveButtonTitle:@"الأخبار" otherButtonTitles:nil];
+    }else
+    {
+        sheet = [[UIActionSheet alloc]initWithTitle:@"خيارات الخبر" delegate:self cancelButtonTitle:@"إلغاء" destructiveButtonTitle:@"تحديث" otherButtonTitles:@"البحث",@"يحدث في مدينتي",@"المفضلة",nil];
+    }
     sheet.tag = 3;
     [sheet showInView:self.view];
 }
@@ -498,7 +508,7 @@
         [(UIImageView*)[cell viewWithTag:5] hnk_setImageFromURL:[NSURL URLWithString:[news objectForKey:@"mediaURL"]] placeholder:[UIImage imageNamed:@"Wait-icon-2.png"]];
     }
     
-    if(indexPath.row > dataSource.count-5)
+    if(!showingFav && indexPath.row > dataSource.count-5)
     {
         if(searchView.alpha>0)
         {
@@ -537,6 +547,41 @@
         UIActionSheet* sheet = [[UIActionSheet alloc]initWithTitle:@"خيارات الخبر" delegate:self cancelButtonTitle:@"إلغاء" destructiveButtonTitle:@"التفاصيل من المصدر" otherButtonTitles:@"مشاركة",@"تفضيل",nil];
         sheet.tag = 2;
         [sheet showInView:self.view];
+    }
+}
+
+-(BOOL)tableView:(UITableView *)tableView canEditRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    if(showingFav)
+    {
+        return YES;
+    }else
+    {
+        return NO;
+    }
+}
+
+-(void)tableView:(UITableView *)tableVieww commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    if (editingStyle == UITableViewCellEditingStyleDelete) {
+        // Delete the row from the data source
+        [dataSource removeObjectAtIndex:indexPath.row];
+        NSArray* newFavs = [[NSArray alloc]initWithArray:dataSource copyItems:YES];
+
+        [[NSUserDefaults standardUserDefaults]setObject:newFavs forKey:@"favs"];
+        [[NSUserDefaults standardUserDefaults]synchronize];
+        
+        [tableVieww beginUpdates];
+        [tableVieww deleteRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationFade];
+        [tableVieww endUpdates];
+        
+        if(dataSource.count == 0)
+        {
+            showingFav = NO;
+            dataSource = [[NSMutableArray alloc]initWithArray:favTempStoring copyItems:YES];
+            [tableView reloadData];
+            [tableView setNeedsDisplay];
+        }
     }
 }
 
@@ -626,7 +671,11 @@
             [self presentViewController:activityViewController animated:YES completion:nil];
         }else if(buttonIndex == 1)
         {
-            
+            NSMutableArray* favs = [[NSMutableArray alloc]initWithArray:[[NSUserDefaults standardUserDefaults] objectForKey:@"favs"] copyItems:YES];
+            [favs addObject:[dataSource objectAtIndex:tableView.indexPathForSelectedRow.row]];
+            NSArray* newFavs = [[NSArray alloc]initWithArray:favs copyItems:YES];
+            [[NSUserDefaults standardUserDefaults]setObject:newFavs forKey:@"favs"];
+            [[NSUserDefaults standardUserDefaults]synchronize];
         }
     }else if(actionSheet.tag == 2)
     {
@@ -655,13 +704,26 @@
             [self presentViewController:activityViewController animated:YES completion:nil];
         }else if(buttonIndex == 2)
         {
-            
+            NSMutableArray* favs = [[NSMutableArray alloc]initWithArray:[[NSUserDefaults standardUserDefaults] objectForKey:@"favs"] copyItems:YES];
+            [favs addObject:[dataSource objectAtIndex:tableView.indexPathForSelectedRow.row]];
+            NSArray* newFavs = [[NSArray alloc]initWithArray:favs copyItems:YES];
+            [[NSUserDefaults standardUserDefaults]setObject:newFavs forKey:@"favs"];
+            [[NSUserDefaults standardUserDefaults]synchronize];
         }
     }else if(actionSheet.tag == 3)
     {
         if(buttonIndex == 0)
         {
-            [self getData];
+            if(showingFav)
+            {
+                showingFav = NO;
+                dataSource = [[NSMutableArray alloc]initWithArray:favTempStoring copyItems:YES];
+                [tableView reloadData];
+                [tableView setNeedsDisplay];
+            }else
+            {
+                [self getData];
+            }
         }else if(buttonIndex == 1)
         {
             verticalLayout.constant = 0;
@@ -673,6 +735,61 @@
                                  [tableView setFrame:frame];
                              }
                              completion:^(BOOL finished){}];
+        }else if(buttonIndex == 3)
+        {
+            NSMutableArray* favs = [[NSMutableArray alloc]initWithArray:[[NSUserDefaults standardUserDefaults] objectForKey:@"favs"] copyItems:YES];
+            if(favs.count == 0)
+            {
+                NSDictionary *options = @{
+                                          kCRToastTextKey : @"لم تقم بتفضيل أي خبر من قبل",
+                                          kCRToastTextAlignmentKey : @(NSTextAlignmentCenter),
+                                          kCRToastBackgroundColorKey : [UIColor redColor],
+                                          kCRToastAnimationInTypeKey : @(CRToastAnimationTypeLinear),
+                                          kCRToastAnimationOutTypeKey : @(CRToastAnimationTypeLinear),
+                                          kCRToastAnimationInDirectionKey : @(CRToastAnimationDirectionTop),
+                                          kCRToastAnimationOutDirectionKey : @(CRToastAnimationDirectionBottom),
+                                          kCRToastAnimationInTimeIntervalKey: @(3)
+                                          };
+                [CRToastManager showNotificationWithOptions:options
+                                            completionBlock:^{
+                                                NSLog(@"Completed");
+                                            }];
+                
+            }else
+            {
+                showingFav = YES;
+                if(searchView.alpha>0)
+                {
+                    [verticalLayout setConstant:-86];
+                    [searchTextField resignFirstResponder];
+                    lowerCurrentID = @"-1";
+                    upperCurrentID = @"-1";
+                    searchLimit = 0;
+                    moreSearch = YES;
+                    loadingData = NO;
+                    
+                    CGRect frame = tableView.frame;
+                    frame.origin.y -= 100;
+                    [UIView animateWithDuration:1.0 delay:0.0 options:UIViewAnimationOptionCurveEaseInOut
+                                     animations:^(void) {
+                                         searchView.alpha = 0.0f;
+                                         [tableView setFrame:frame];
+                                     }
+                                     completion:^(BOOL finished){
+                                         favTempStoring = [[NSMutableArray alloc]initWithArray:dataSource copyItems:YES];
+                                         dataSource = [[NSMutableArray alloc]initWithArray:favs copyItems:YES];
+                                         [tableView reloadData];
+                                         [tableView setNeedsDisplay];
+                                     }];
+                    
+                }else
+                {
+                    favTempStoring = [[NSMutableArray alloc]initWithArray:dataSource copyItems:YES];
+                    dataSource = [[NSMutableArray alloc]initWithArray:favs copyItems:YES];
+                    [tableView reloadData];
+                    [tableView setNeedsDisplay];
+                }
+            }
         }
     }
 }
