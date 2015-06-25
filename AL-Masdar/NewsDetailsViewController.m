@@ -15,8 +15,6 @@
 @implementation NewsDetailsViewController
 {
     __weak IBOutlet UIWebView *webView;
-
-    
     __weak IBOutlet UIView *loadingView;
 }
 @synthesize url;

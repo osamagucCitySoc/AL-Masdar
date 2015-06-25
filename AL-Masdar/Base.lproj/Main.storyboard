@@ -333,13 +333,13 @@
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="R8o-5T-KKU">
                                 <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
                                 <subviews>
-                                    <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="كلمة البحث" textAlignment="center" minimumFontSize="17" clearButtonMode="always" translatesAutoresizingMaskIntoConstraints="NO" id="cDB-LU-4TX">
+                                    <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder=" يمكن البحث بأكثر من شيء : تطور،جمهورية مصر، قناة السويس" textAlignment="natural" minimumFontSize="17" clearButtonMode="always" translatesAutoresizingMaskIntoConstraints="NO" id="cDB-LU-4TX">
                                         <rect key="frame" x="0.0" y="-30" width="97" height="30"/>
                                         <constraints>
                                             <constraint firstAttribute="height" constant="30" id="pJE-Rd-8Sb"/>
                                         </constraints>
                                         <fontDescription key="fontDescription" type="system" pointSize="14"/>
-                                        <textInputTraits key="textInputTraits"/>
+                                        <textInputTraits key="textInputTraits" returnKeyType="search"/>
                                         <variation key="default">
                                             <mask key="constraints">
                                                 <exclude reference="pJE-Rd-8Sb"/>
@@ -350,6 +350,9 @@
                                                 <include reference="pJE-Rd-8Sb"/>
                                             </mask>
                                         </variation>
+                                        <connections>
+                                            <outlet property="delegate" destination="PDR-Ez-yZT" id="vK6-cZ-L6K"/>
+                                        </connections>
                                     </textField>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="kcO-6z-Qzk">
                                         <rect key="frame" x="-23" y="-15" width="46" height="30"/>
@@ -372,6 +375,9 @@
                                                 <include reference="t5Z-fD-fR6"/>
                                             </mask>
                                         </variation>
+                                        <connections>
+                                            <action selector="searchClicked:" destination="PDR-Ez-yZT" eventType="touchUpInside" id="BVb-AJ-uzn"/>
+                                        </connections>
                                     </button>
                                     <segmentedControl opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="plain" selectedSegmentIndex="1" translatesAutoresizingMaskIntoConstraints="NO" id="QUP-dV-Knf">
                                         <rect key="frame" x="-61" y="-14" width="123" height="29"/>
@@ -392,6 +398,9 @@
                                                 <include reference="J0t-1s-z0f"/>
                                             </mask>
                                         </variation>
+                                        <connections>
+                                            <action selector="searchSegmentChanged:" destination="PDR-Ez-yZT" eventType="valueChanged" id="WbM-12-LNI"/>
+                                        </connections>
                                     </segmentedControl>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="GnH-nn-tGZ">
                                         <rect key="frame" x="-23" y="-15" width="46" height="30"/>
@@ -448,13 +457,13 @@
                                     </mask>
                                     <mask key="constraints">
                                         <exclude reference="Xpn-lS-X5Q"/>
-                                        <exclude reference="Od5-1S-CvC"/>
-                                        <exclude reference="iFH-MF-2yY"/>
-                                        <exclude reference="lTm-i8-8zT"/>
-                                        <exclude reference="tsl-Cq-GO8"/>
                                         <exclude reference="B9y-as-s24"/>
                                         <exclude reference="pdI-wU-A6H"/>
                                         <exclude reference="qwz-Nc-1Ub"/>
+                                        <exclude reference="lTm-i8-8zT"/>
+                                        <exclude reference="tsl-Cq-GO8"/>
+                                        <exclude reference="Od5-1S-CvC"/>
+                                        <exclude reference="iFH-MF-2yY"/>
                                         <exclude reference="fEd-rC-Vig"/>
                                         <exclude reference="s9I-Hc-SOI"/>
                                         <exclude reference="yqK-8H-jeM"/>
@@ -469,13 +478,13 @@
                                     </mask>
                                     <mask key="constraints">
                                         <include reference="Xpn-lS-X5Q"/>
-                                        <include reference="Od5-1S-CvC"/>
-                                        <include reference="iFH-MF-2yY"/>
-                                        <include reference="lTm-i8-8zT"/>
-                                        <include reference="tsl-Cq-GO8"/>
                                         <include reference="B9y-as-s24"/>
                                         <include reference="pdI-wU-A6H"/>
                                         <include reference="qwz-Nc-1Ub"/>
+                                        <include reference="lTm-i8-8zT"/>
+                                        <include reference="tsl-Cq-GO8"/>
+                                        <include reference="Od5-1S-CvC"/>
+                                        <include reference="iFH-MF-2yY"/>
                                         <include reference="fEd-rC-Vig"/>
                                         <include reference="s9I-Hc-SOI"/>
                                         <include reference="yqK-8H-jeM"/>
@@ -504,6 +513,10 @@
                                 <exclude reference="R8o-5T-KKU"/>
                             </mask>
                             <mask key="constraints">
+                                <exclude reference="5Oa-cn-Efk"/>
+                                <exclude reference="8bK-j7-hn9"/>
+                                <exclude reference="gAa-ok-FKY"/>
+                                <exclude reference="lAt-R9-Oag"/>
                                 <exclude reference="OEV-by-FyP"/>
                                 <exclude reference="b3O-cS-FiH"/>
                                 <exclude reference="dnq-Jt-Aa6"/>
@@ -511,10 +524,6 @@
                                 <exclude reference="ERp-sL-0Fy"/>
                                 <exclude reference="Heg-I8-7P8"/>
                                 <exclude reference="UvR-lT-09F"/>
-                                <exclude reference="5Oa-cn-Efk"/>
-                                <exclude reference="8bK-j7-hn9"/>
-                                <exclude reference="gAa-ok-FKY"/>
-                                <exclude reference="lAt-R9-Oag"/>
                             </mask>
                         </variation>
                         <variation key="heightClass=regular-widthClass=compact">
@@ -524,6 +533,10 @@
                                 <include reference="R8o-5T-KKU"/>
                             </mask>
                             <mask key="constraints">
+                                <include reference="5Oa-cn-Efk"/>
+                                <include reference="8bK-j7-hn9"/>
+                                <include reference="gAa-ok-FKY"/>
+                                <include reference="lAt-R9-Oag"/>
                                 <include reference="OEV-by-FyP"/>
                                 <include reference="b3O-cS-FiH"/>
                                 <include reference="dnq-Jt-Aa6"/>
@@ -531,10 +544,6 @@
                                 <include reference="ERp-sL-0Fy"/>
                                 <include reference="Heg-I8-7P8"/>
                                 <include reference="UvR-lT-09F"/>
-                                <include reference="5Oa-cn-Efk"/>
-                                <include reference="8bK-j7-hn9"/>
-                                <include reference="gAa-ok-FKY"/>
-                                <include reference="lAt-R9-Oag"/>
                             </mask>
                         </variation>
                     </view>
@@ -552,6 +561,8 @@
                     </navigationItem>
                     <connections>
                         <outlet property="retryButton" destination="hZs-98-myw" id="pYf-XE-smW"/>
+                        <outlet property="searchSegment" destination="QUP-dV-Knf" id="gzV-M9-aSe"/>
+                        <outlet property="searchTextField" destination="cDB-LU-4TX" id="9da-wO-XKG"/>
                         <outlet property="searchView" destination="R8o-5T-KKU" id="uxg-lY-9El"/>
                         <outlet property="tableView" destination="vy1-84-nCy" id="3xs-VL-dIx"/>
                         <outlet property="verticalLayout" destination="3k2-m2-TLK" id="1zd-Pd-865"/>

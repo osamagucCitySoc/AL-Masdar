@@ -15,7 +15,7 @@
 #import "CRToast.h"
 #import "NewsDetailsViewController.h"
 
-@interface NewsFeedViewController ()<UITableViewDataSource,UITableViewDelegate,UIActionSheetDelegate>
+@interface NewsFeedViewController ()<UITableViewDataSource,UITableViewDelegate,UIActionSheetDelegate,UITextFieldDelegate>
 
 @end
 
@@ -29,10 +29,14 @@
     NSString* lowerCurrentID;
     NSString* upperCurrentID;
     BOOL loadingData;
-    NSMutableArray* sources;
     
+    BOOL moreSearch;
+    NSMutableArray* sources;
+    int searchLimit;
     __weak IBOutlet UIView *searchView;
     __weak IBOutlet UIButton *retryButton;
+    __weak IBOutlet UITextField *searchTextField;
+    __weak IBOutlet UISegmentedControl *searchSegment;
 }
 
 -(void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
@@ -51,12 +55,14 @@
     loader = [PQFBarsInCircle createLoaderOnView:self.view];
     loader.loaderColor = [UIColor blackColor];
     tableView.alpha = 0;
+    searchLimit = 0;
+    moreSearch = YES;
     lowerCurrentID = @"-1";
     upperCurrentID = @"-1";
     loadingData = NO;
     dataSource = [[NSMutableArray alloc]init];
     
-   // [tableView setTranslatesAutoresizingMaskIntoConstraints:YES];
+    // [tableView setTranslatesAutoresizingMaskIntoConstraints:YES];
     
 }
 
@@ -73,8 +79,6 @@
     {
         [sources addObject:[dict objectForKey:@"twitterID"]];
     }
-    
-    
     [searchView setAlpha:0.0];
 }
 -(void)viewDidAppear:(BOOL)animated
@@ -85,17 +89,17 @@
     [self.view setNeedsLayout];
     [tableView setNeedsLayout];
     [tableView setNeedsDisplay];
-
+    
     
     if([self connected])
     {
-        [tableView setAlpha:0.0];
+        [tableView setAlpha:1];
         [retryButton setAlpha:0.0];
         [self getData];
     }else
     {
         loadingData = NO;
-        [tableView setAlpha:0.0];
+        [tableView setAlpha:1];
         [retryButton setAlpha:1.0];
     }
 }
@@ -245,6 +249,115 @@
  // Pass the selected object to the new view controller.
  }
  */
+- (BOOL)textFieldShouldReturn:(UITextField *)textField
+{
+    [searchTextField resignFirstResponder];
+    [self searchClicked:nil];
+    return YES;
+}
+- (IBAction)searchSegmentChanged:(id)sender {
+    [self searchClicked:nil];
+}
+- (IBAction)searchClicked:(id)sender {
+    if(![self connected])
+    {
+        NSDictionary *options = @{
+                                  kCRToastTextKey : @"يجب أن تكون متصلاً بالإنترنت",
+                                  kCRToastTextAlignmentKey : @(NSTextAlignmentCenter),
+                                  kCRToastBackgroundColorKey : [UIColor redColor],
+                                  kCRToastAnimationInTypeKey : @(CRToastAnimationTypeLinear),
+                                  kCRToastAnimationOutTypeKey : @(CRToastAnimationTypeLinear),
+                                  kCRToastAnimationInDirectionKey : @(CRToastAnimationDirectionTop),
+                                  kCRToastAnimationOutDirectionKey : @(CRToastAnimationDirectionBottom),
+                                  kCRToastAnimationInTimeIntervalKey: @(3)
+                                  };
+        [CRToastManager showNotificationWithOptions:options
+                                    completionBlock:^{
+                                        NSLog(@"Completed");
+                                    }];
+        
+    }else
+    {
+        if(searchTextField.text.length < 3)
+        {
+            NSDictionary *options = @{
+                                      kCRToastTextKey : @"يجب إدخال كلمة واحدة من ٣ أحرف على الأقل",
+                                      kCRToastTextAlignmentKey : @(NSTextAlignmentCenter),
+                                      kCRToastBackgroundColorKey : [UIColor redColor],
+                                      kCRToastAnimationInTypeKey : @(CRToastAnimationTypeLinear),
+                                      kCRToastAnimationOutTypeKey : @(CRToastAnimationTypeLinear),
+                                      kCRToastAnimationInDirectionKey : @(CRToastAnimationDirectionTop),
+                                      kCRToastAnimationOutDirectionKey : @(CRToastAnimationDirectionBottom),
+                                      kCRToastAnimationInTimeIntervalKey: @(3)
+                                      };
+            [CRToastManager showNotificationWithOptions:options
+                                        completionBlock:^{
+                                            NSLog(@"Completed");
+                                        }];
+        }else
+        {
+            lowerCurrentID = @"-1";
+            upperCurrentID = @"-1";
+            
+            dataSource = [[NSMutableArray alloc] init];
+            [tableView reloadData];
+            [tableView setNeedsDisplay];
+            searchLimit = 0;
+            moreSearch = YES;
+            [tableView setAlpha:1];
+            [loader showLoader];
+            
+            [self getSearchData];
+        }
+    }
+    
+}
+
+-(void)getSearchData
+{
+    [searchTextField resignFirstResponder];
+    NSString* keywords = [[searchTextField.text stringByReplacingOccurrencesOfString:@" ،" withString:@"،"] stringByReplacingOccurrencesOfString:@"، " withString:@"،"];
+    NSDictionary* params;
+    
+    if(searchSegment.selectedSegmentIndex == 0)
+    {
+        params = @{@"limit":[NSString stringWithFormat:@"%i",searchLimit],@"keyword":keywords};
+    }else
+    {
+        params = @{@"limit":[NSString stringWithFormat:@"%i",searchLimit],@"sources":[sources componentsJoinedByString:@","],@"keyword":keywords};
+    }
+    
+    AFHTTPRequestOperationManager *manager = [AFHTTPRequestOperationManager manager];
+    manager.responseSerializer = [AFHTTPResponseSerializer serializer];
+    
+    [manager POST:@"http://moh2013.com/arabDevs/almasdar/getSearchNews.php" parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
+        [tableView setAlpha:1.0];
+        [loader removeLoader];
+        NSMutableArray* dataSourcee = [[NSMutableArray alloc]initWithArray:[NSJSONSerialization JSONObjectWithData:responseObject options:NSJSONReadingAllowFragments error:nil]];
+        
+        [dataSource addObjectsFromArray:dataSourcee];
+        if(dataSourcee.count > 0)
+        {
+            searchLimit += dataSourcee.count;
+            moreSearch = YES;
+        }else
+        {
+            moreSearch = NO;
+        }
+        [tableView reloadData];
+        [tableView setNeedsDisplay];
+        
+    } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+        [tableView setAlpha:1.0];
+        [loader removeLoader];
+        NSLog(@"Error: %@", error);}];
+}
+
+-(void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event
+{
+    [[self view]endEditing:YES];
+    [searchTextField resignFirstResponder];
+}
 - (IBAction)retryClicked:(id)sender {
     if([self connected])
     {
@@ -253,11 +366,24 @@
         [self getData];
     }else
     {
-        [tableView setAlpha:0.0];
+        [tableView setAlpha:1.0];
         [retryButton setAlpha:1.0];
     }
 }
-- (IBAction)cancelSearchClicked:(id)sender {
+- (IBAction)cancelSearchClicked:(id)sender
+{
+    [verticalLayout setConstant:-86];
+    [searchTextField resignFirstResponder];
+    lowerCurrentID = @"-1";
+    upperCurrentID = @"-1";
+    searchLimit = 0;
+    moreSearch = YES;
+    loadingData = NO;
+    dataSource = [[NSMutableArray alloc] init];
+    [tableView reloadData];
+    [tableView setNeedsDisplay];
+    [self getData];
+    
     CGRect frame = tableView.frame;
     frame.origin.y -= 100;
     [UIView animateWithDuration:1.0 delay:0.0 options:UIViewAnimationOptionCurveEaseInOut
@@ -376,7 +502,13 @@
     
     if(indexPath.row > dataSource.count-5)
     {
-        [self getData];
+        if(searchView.alpha>0)
+        {
+            [self getSearchData];
+        }else
+        {
+            [self getData];
+        }
     }
     
     return cell;
@@ -522,7 +654,7 @@
             UIActivityViewController *activityViewController = [[UIActivityViewController alloc]
                                                                 initWithActivityItems:sharedObjects applicationActivities:nil];
             activityViewController.popoverPresentationController.sourceView = self.view;
-            [self presentViewController:activityViewController animated:YES completion:nil];            
+            [self presentViewController:activityViewController animated:YES completion:nil];
         }else if(buttonIndex == 2)
         {
             
@@ -534,6 +666,7 @@
             [self getData];
         }else if(buttonIndex == 1)
         {
+            verticalLayout.constant = 0;
             CGRect frame = tableView.frame;
             frame.origin.y += 100;
             [UIView animateWithDuration:1.0 delay:0.0 options:UIViewAnimationOptionCurveEaseInOut
