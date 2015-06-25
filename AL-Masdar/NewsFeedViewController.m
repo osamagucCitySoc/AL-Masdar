@@ -301,6 +301,20 @@
     
     returnedSecondString = [self replacePattern:@"https://" withReplacement:@"" forString:returnedSecondString usingCharacterSet:characterSet];
     
+    
+    NSMutableArray* splitting = [[NSMutableArray alloc]initWithArray:[returnedSecondString componentsSeparatedByString:@" "]];
+    int currentLength = 0;
+    for(int i = 0 ; i < splitting.count ; i++)
+    {
+        currentLength+= [[splitting objectAtIndex:i] length];
+        if(currentLength>=50)
+        {
+            [splitting replaceObjectAtIndex:i withObject:[[splitting objectAtIndex:i]stringByAppendingString:@"\n"]];
+            break;
+        }
+    }
+    
+    returnedSecondString = [splitting componentsJoinedByString:@" "];
     [(UILabel*)[cell viewWithTag:4] setText:returnedSecondString];
     
     if([[news objectForKey:@"mediaType"]isEqualToString:@""])
@@ -325,7 +339,7 @@
     NSDictionary* news = [dataSource objectAtIndex:indexPath.row];
     if([[news objectForKey:@"mediaType"]isEqualToString:@""])
     {
-        return 106;
+        return 116;
     }else
     {
         return 475;
