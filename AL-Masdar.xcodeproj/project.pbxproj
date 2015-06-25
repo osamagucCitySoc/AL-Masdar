@@ -13,6 +13,9 @@
 		7FF5F399BB71DFA877BE19FA /* libPods-AL-Masdar.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 6670BD0A3CA460F7A52C2282 /* libPods-AL-Masdar.a */; };
 		E81F60111B39F82C006C5B9F /* CoreLocation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E81F60101B39F82C006C5B9F /* CoreLocation.framework */; };
 		E81F60141B3AC0CE006C5B9F /* CountryChooserTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = E81F60131B3AC0CE006C5B9F /* CountryChooserTableViewController.m */; };
+		E865218E1B3C128600483201 /* Wait-icon-2.png in Resources */ = {isa = PBXBuildFile; fileRef = E865218D1B3C128600483201 /* Wait-icon-2.png */; };
+		E86521901B3C128C00483201 /* Wait-icon.png in Resources */ = {isa = PBXBuildFile; fileRef = E865218F1B3C128C00483201 /* Wait-icon.png */; };
+		E89629EC1B3C0285004BFA08 /* NewsFeedViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = E89629EB1B3C0285004BFA08 /* NewsFeedViewController.m */; };
 		E8B604721B3ACD9900EF74E5 /* SourceChooserTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = E8B604711B3ACD9900EF74E5 /* SourceChooserTableViewController.m */; };
 		E8C36F351B39D26800D0453E /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = E8C36F341B39D26800D0453E /* main.m */; };
 		E8C36F381B39D26800D0453E /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = E8C36F371B39D26800D0453E /* AppDelegate.m */; };
@@ -52,6 +55,10 @@
 		E81F60101B39F82C006C5B9F /* CoreLocation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreLocation.framework; path = System/Library/Frameworks/CoreLocation.framework; sourceTree = SDKROOT; };
 		E81F60121B3AC0CE006C5B9F /* CountryChooserTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CountryChooserTableViewController.h; sourceTree = "<group>"; };
 		E81F60131B3AC0CE006C5B9F /* CountryChooserTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CountryChooserTableViewController.m; sourceTree = "<group>"; };
+		E865218D1B3C128600483201 /* Wait-icon-2.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Wait-icon-2.png"; sourceTree = "<group>"; };
+		E865218F1B3C128C00483201 /* Wait-icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Wait-icon.png"; sourceTree = "<group>"; };
+		E89629EA1B3C0285004BFA08 /* NewsFeedViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NewsFeedViewController.h; sourceTree = "<group>"; };
+		E89629EB1B3C0285004BFA08 /* NewsFeedViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NewsFeedViewController.m; sourceTree = "<group>"; };
 		E8B604701B3ACD9900EF74E5 /* SourceChooserTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SourceChooserTableViewController.h; sourceTree = "<group>"; };
 		E8B604711B3ACD9900EF74E5 /* SourceChooserTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SourceChooserTableViewController.m; sourceTree = "<group>"; };
 		E8C36F2F1B39D26800D0453E /* AL-Masdar.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "AL-Masdar.app"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -110,6 +117,8 @@
 		1E7F24C31B3ADE5E00F95742 /* Images */ = {
 			isa = PBXGroup;
 			children = (
+				E865218F1B3C128C00483201 /* Wait-icon.png */,
+				E865218D1B3C128600483201 /* Wait-icon-2.png */,
 				1E7F24C41B3ADE7100F95742 /* al-masdar-splash.png */,
 				1E7F24C51B3ADE7100F95742 /* al-masdar-splash@2x.png */,
 				1E7F24C61B3ADE7100F95742 /* al-masdar-splash@3x.png */,
@@ -173,6 +182,8 @@
 				E81F60131B3AC0CE006C5B9F /* CountryChooserTableViewController.m */,
 				E8B604701B3ACD9900EF74E5 /* SourceChooserTableViewController.h */,
 				E8B604711B3ACD9900EF74E5 /* SourceChooserTableViewController.m */,
+				E89629EA1B3C0285004BFA08 /* NewsFeedViewController.h */,
+				E89629EB1B3C0285004BFA08 /* NewsFeedViewController.m */,
 				E8C36F321B39D26800D0453E /* Supporting Files */,
 			);
 			path = "AL-Masdar";
@@ -336,7 +347,9 @@
 				1E7F24C81B3ADE7100F95742 /* al-masdar-splash@2x.png in Resources */,
 				E8C36F5D1B39DD4B00D0453E /* ReverseGeocodeCountry.json in Resources */,
 				E8C36F3E1B39D26800D0453E /* Main.storyboard in Resources */,
+				E86521901B3C128C00483201 /* Wait-icon.png in Resources */,
 				E8C36F431B39D26800D0453E /* LaunchScreen.xib in Resources */,
+				E865218E1B3C128600483201 /* Wait-icon-2.png in Resources */,
 				1E7F24C71B3ADE7100F95742 /* al-masdar-splash.png in Resources */,
 				E8C36F401B39D26800D0453E /* Images.xcassets in Resources */,
 				1E7F24C91B3ADE7100F95742 /* al-masdar-splash@3x.png in Resources */,
@@ -391,6 +404,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				E8B604721B3ACD9900EF74E5 /* SourceChooserTableViewController.m in Sources */,
+				E89629EC1B3C0285004BFA08 /* NewsFeedViewController.m in Sources */,
 				E8E037EB1B3AD4770088FDCE /* CRToastViewController.m in Sources */,
 				E8C36F5E1B39DD4B00D0453E /* ReverseGeocodeCountry.m in Sources */,
 				E8E037EA1B3AD4770088FDCE /* CRToastView.m in Sources */,

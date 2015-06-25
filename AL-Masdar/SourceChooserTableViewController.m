@@ -155,7 +155,7 @@
     [[cell textLabel]setText:[dict2 objectForKey:@"name"]];
     
     
-    if([[[NSUserDefaults standardUserDefaults] objectForKey:@"subscriptions"] containsObject:[dict2 objectForKey:@"name"]])
+    if([[[NSUserDefaults standardUserDefaults] objectForKey:@"subscriptions"] containsObject:dict2])
     {
         [cell setAccessoryType:UITableViewCellAccessoryCheckmark];
     }
@@ -170,12 +170,12 @@
     NSDictionary* dict2 = [[dict objectForKey:[[dict allKeys] lastObject]] objectAtIndex:indexPath.row];
 
     
-    if([[[NSUserDefaults standardUserDefaults] objectForKey:@"subscriptions"] containsObject:[dict2 objectForKey:@"name"]])
+    if([[[NSUserDefaults standardUserDefaults] objectForKey:@"subscriptions"] containsObject:dict2])
     {
         [[self.tableView cellForRowAtIndexPath:indexPath] setAccessoryType:UITableViewCellAccessoryNone];
       
         NSMutableArray* mutArray = [[NSMutableArray alloc]initWithArray:[[NSUserDefaults standardUserDefaults] objectForKey:@"subscriptions"] copyItems:YES];
-        [mutArray removeObject:[dict2 objectForKey:@"name"]];
+        [mutArray removeObject:dict2];
         
         [[NSUserDefaults standardUserDefaults]setObject:mutArray forKey:@"subscriptions"];
         
@@ -185,7 +185,7 @@
         [[self.tableView cellForRowAtIndexPath:indexPath] setAccessoryType:UITableViewCellAccessoryCheckmark];
         
         NSMutableArray* mutArray = [[NSMutableArray alloc]initWithArray:[[NSUserDefaults standardUserDefaults] objectForKey:@"subscriptions"] copyItems:YES];
-        [mutArray addObject:[dict2 objectForKey:@"name"]];
+        [mutArray addObject:dict2];
         
         [[NSUserDefaults standardUserDefaults]setObject:mutArray forKey:@"subscriptions"];
         [[NSUserDefaults standardUserDefaults] synchronize];

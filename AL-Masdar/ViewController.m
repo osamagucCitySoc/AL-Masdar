@@ -349,6 +349,9 @@
                                         NSLog(@"Completed");
                                     }];
 
+    }else
+    {
+        [self performSegueWithIdentifier:@"newsSeg" sender:self];
     }
 }
 
