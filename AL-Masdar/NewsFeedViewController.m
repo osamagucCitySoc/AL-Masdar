@@ -299,6 +299,8 @@
     
     NSString *returnedSecondString = [self replacePattern:@"http://" withReplacement:@"" forString:[news objectForKey:@"body"] usingCharacterSet:characterSet];
     
+    returnedSecondString = [self replacePattern:@"https://" withReplacement:@"" forString:returnedSecondString usingCharacterSet:characterSet];
+    
     [(UILabel*)[cell viewWithTag:4] setText:returnedSecondString];
     
     if([[news objectForKey:@"mediaType"]isEqualToString:@""])
@@ -326,7 +328,7 @@
         return 106;
     }else
     {
-        return 465;
+        return 475;
     }
 }
 

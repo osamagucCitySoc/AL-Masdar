@@ -136,7 +136,7 @@
                                 <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                 <prototypes>
-                                    <tableViewCell contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="newsFeedCell" rowHeight="465" id="xSo-ng-6YX">
+                                    <tableViewCell contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="newsFeedCell" rowHeight="475" id="xSo-ng-6YX">
                                         <rect key="frame" x="0.0" y="0.0" width="320" height="44"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="xSo-ng-6YX" id="1Us-he-AxK">
@@ -228,11 +228,11 @@
                                                     <rect key="frame" x="0.0" y="-21" width="42" height="21"/>
                                                     <constraints>
                                                         <constraint firstAttribute="height" constant="21" id="Mec-Mn-wL0"/>
-                                                        <constraint firstAttribute="height" constant="50" id="RTJ-c4-eJn"/>
+                                                        <constraint firstAttribute="height" constant="60" id="RTJ-c4-eJn"/>
                                                         <constraint firstAttribute="width" constant="155" id="Xpn-hK-Ei5"/>
                                                         <constraint firstAttribute="height" relation="greaterThanOrEqual" constant="83" id="oHs-09-1Wa"/>
                                                     </constraints>
-                                                    <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                                    <fontDescription key="fontDescription" type="system" pointSize="19"/>
                                                     <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
                                                     <nil key="highlightedColor"/>
                                                     <variation key="default">
