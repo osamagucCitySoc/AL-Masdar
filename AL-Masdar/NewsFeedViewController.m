@@ -135,13 +135,23 @@
                 {
                     //[newNews addObjectsFromArray:dataSource];
                     //dataSource = [[NSMutableArray alloc]initWithArray:newNews copyItems:YES];
-                    upperCurrentID = [[dataSource objectAtIndex:0] objectForKey:@"tweetID"];
+                    upperCurrentID = [[newNews objectAtIndex:0] objectForKey:@"tweetID"];
                     
                     for(int i = (int)newNews.count-1 ; i >= 0 ; i--)
                     {
+                        CGPoint offset = tableView.contentOffset;
+                        
                         [dataSource insertObject:[newNews objectAtIndex:i] atIndex:0];
                         [tableView beginUpdates];
                         [tableView insertRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:0 inSection:0]] withRowAnimation:UITableViewRowAnimationRight];
+                        if([[[newNews objectAtIndex:i] objectForKey:@"mediaURL"] isEqualToString:@""])
+                        {
+                            offset.y += 116;
+                        }else
+                        {
+                            offset.y += 475;
+                        }
+                        [tableView setContentOffset:offset animated:NO];
                         [tableView endUpdates];
                     }
                     
@@ -238,6 +248,12 @@
     [[self navigationController] popViewControllerAnimated:YES];
 }
 
+- (IBAction)optionsClicked:(id)sender {
+    UIActionSheet* sheet = [[UIActionSheet alloc]initWithTitle:@"خيارات الخبر" delegate:self cancelButtonTitle:@"إلغاء" destructiveButtonTitle:@"تحديث" otherButtonTitles:@"يحدث في مدينتي",@"المفضلة",nil];
+    sheet.tag = 3;
+    [sheet showInView:self.view];
+
+}
 
 - (BOOL)connected
 {
@@ -487,6 +503,12 @@
         }else if(buttonIndex == 2)
         {
             
+        }
+    }else if(actionSheet.tag == 3)
+    {
+        if(buttonIndex == 0)
+        {
+            [self getData];
         }
     }
 }

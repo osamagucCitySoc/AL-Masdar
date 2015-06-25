@@ -54,19 +54,31 @@
     
     myDataSource = [[NSMutableArray alloc]initWithArray:aSortedArray copyItems:YES];
     
-    while([myDataSource count]>0)
+    while(YES)
     {
+        if(myDataSource.count == 0)
+        {
+            break;
+        }
         NSMutableArray* groupArray = [[NSMutableArray alloc]init];
         
         NSDictionary* sampleDict = [myDataSource objectAtIndex:0];
         
-        [groupArray addObject:sampleDict];
-        [myDataSource removeObjectAtIndex:0];
-        for(NSDictionary* dict in myDataSource)
+        if(![groupArray containsObject:sampleDict])
         {
+            [groupArray addObject:sampleDict];
+        }
+        [myDataSource removeObjectAtIndex:0];
+        for(int k = 0 ; k <myDataSource.count ; k++)
+        {
+            NSDictionary* dict = [myDataSource objectAtIndex:k];
             if([[dict objectForKey:@"subSection"]isEqualToString:[sampleDict objectForKey:@"subSection"]])
             {
-                [groupArray addObject:dict];
+                if(![groupArray containsObject:dict])
+                {
+                    [groupArray addObject:dict];
+                }
+                k--;
                 [myDataSource removeObject:dict];
             }else
             {
@@ -88,6 +100,8 @@
                 break;
             }
         }
+        
+       // [myDataSource removeObjectsInArray:groupArray];
         
         if([groupArray count]>0)
         {
