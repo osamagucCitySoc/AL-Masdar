@@ -430,12 +430,31 @@
 #pragma mark action sheet delegate
 -(void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex
 {
+    NSDictionary* news = [dataSource objectAtIndex:tableView.indexPathForSelectedRow.row];
+    
     if(actionSheet.tag == 1)
     {
         
         if(buttonIndex == 0)
         {
+            NSString *sharedMsg=[news objectForKey:@"body"];
+            NSArray* sharedObjects;
             
+            if([[news objectForKey:@"mediaURL"]isEqualToString:@""])
+            {
+                sharedObjects=[NSArray arrayWithObjects:sharedMsg, nil];
+            }else
+            {
+                UITableViewCell* cell = [tableView cellForRowAtIndexPath:tableView.indexPathForSelectedRow];
+                UIImageView* imageView = (UIImageView*)[cell viewWithTag:5];
+                UIImage* sharedImg=imageView.image;
+                sharedObjects=[NSArray arrayWithObjects:sharedMsg, sharedImg, nil];
+            }
+            
+            UIActivityViewController *activityViewController = [[UIActivityViewController alloc]
+                                                                initWithActivityItems:sharedObjects applicationActivities:nil];
+            activityViewController.popoverPresentationController.sourceView = self.view;
+            [self presentViewController:activityViewController animated:YES completion:nil];
         }else if(buttonIndex == 1)
         {
             
@@ -447,7 +466,24 @@
             [self performSegueWithIdentifier:@"detailsSeg" sender:self];
         }else if(buttonIndex == 1)
         {
+            NSString *sharedMsg=[news objectForKey:@"body"];
+            NSArray* sharedObjects;
             
+            if([[news objectForKey:@"mediaURL"]isEqualToString:@""])
+            {
+                sharedObjects=[NSArray arrayWithObjects:sharedMsg, nil];
+            }else
+            {
+                UITableViewCell* cell = [tableView cellForRowAtIndexPath:tableView.indexPathForSelectedRow];
+                UIImageView* imageView = (UIImageView*)[cell viewWithTag:5];
+                UIImage* sharedImg=imageView.image;
+                sharedObjects=[NSArray arrayWithObjects:sharedMsg, sharedImg, nil];
+            }
+            
+            UIActivityViewController *activityViewController = [[UIActivityViewController alloc]
+                                                                initWithActivityItems:sharedObjects applicationActivities:nil];
+            activityViewController.popoverPresentationController.sourceView = self.view;
+            [self presentViewController:activityViewController animated:YES completion:nil];            
         }else if(buttonIndex == 2)
         {
             
