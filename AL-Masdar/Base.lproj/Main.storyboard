@@ -491,6 +491,10 @@
                                     </mask>
                                 </variation>
                             </view>
+                            <activityIndicatorView opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" animating="YES" style="whiteLarge" translatesAutoresizingMaskIntoConstraints="NO" id="hcd-Ta-7Ds">
+                                <rect key="frame" x="-10" y="-10" width="20" height="20"/>
+                                <color key="color" red="0.098039215690000001" green="0.098039215690000001" blue="0.098039215690000001" alpha="0.96999999999999997" colorSpace="calibratedRGB"/>
+                            </activityIndicatorView>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <constraints>
@@ -500,6 +504,8 @@
                             <constraint firstItem="vy1-84-nCy" firstAttribute="leading" secondItem="5AS-ya-wQw" secondAttribute="leadingMargin" constant="-16" id="ERp-sL-0Fy"/>
                             <constraint firstAttribute="trailingMargin" secondItem="vy1-84-nCy" secondAttribute="trailing" constant="-16" id="Heg-I8-7P8"/>
                             <constraint firstAttribute="trailingMargin" secondItem="R8o-5T-KKU" secondAttribute="trailing" constant="-16" id="OEV-by-FyP"/>
+                            <constraint firstAttribute="centerY" secondItem="hcd-Ta-7Ds" secondAttribute="centerY" id="Q56-nD-z1h"/>
+                            <constraint firstAttribute="centerX" secondItem="hcd-Ta-7Ds" secondAttribute="centerX" id="QPE-Qv-czb"/>
                             <constraint firstAttribute="bottomMargin" secondItem="vy1-84-nCy" secondAttribute="bottom" id="UvR-lT-09F"/>
                             <constraint firstItem="R8o-5T-KKU" firstAttribute="leading" secondItem="5AS-ya-wQw" secondAttribute="leadingMargin" constant="-16" id="b3O-cS-FiH"/>
                             <constraint firstItem="R8o-5T-KKU" firstAttribute="top" secondItem="zS3-tO-shF" secondAttribute="bottom" id="dnq-Jt-Aa6"/>
@@ -511,12 +517,9 @@
                                 <exclude reference="vy1-84-nCy"/>
                                 <exclude reference="hZs-98-myw"/>
                                 <exclude reference="R8o-5T-KKU"/>
+                                <exclude reference="hcd-Ta-7Ds"/>
                             </mask>
                             <mask key="constraints">
-                                <exclude reference="5Oa-cn-Efk"/>
-                                <exclude reference="8bK-j7-hn9"/>
-                                <exclude reference="gAa-ok-FKY"/>
-                                <exclude reference="lAt-R9-Oag"/>
                                 <exclude reference="OEV-by-FyP"/>
                                 <exclude reference="b3O-cS-FiH"/>
                                 <exclude reference="dnq-Jt-Aa6"/>
@@ -524,6 +527,12 @@
                                 <exclude reference="ERp-sL-0Fy"/>
                                 <exclude reference="Heg-I8-7P8"/>
                                 <exclude reference="UvR-lT-09F"/>
+                                <exclude reference="5Oa-cn-Efk"/>
+                                <exclude reference="8bK-j7-hn9"/>
+                                <exclude reference="gAa-ok-FKY"/>
+                                <exclude reference="lAt-R9-Oag"/>
+                                <exclude reference="Q56-nD-z1h"/>
+                                <exclude reference="QPE-Qv-czb"/>
                             </mask>
                         </variation>
                         <variation key="heightClass=regular-widthClass=compact">
@@ -531,12 +540,9 @@
                                 <include reference="vy1-84-nCy"/>
                                 <include reference="hZs-98-myw"/>
                                 <include reference="R8o-5T-KKU"/>
+                                <include reference="hcd-Ta-7Ds"/>
                             </mask>
                             <mask key="constraints">
-                                <include reference="5Oa-cn-Efk"/>
-                                <include reference="8bK-j7-hn9"/>
-                                <include reference="gAa-ok-FKY"/>
-                                <include reference="lAt-R9-Oag"/>
                                 <include reference="OEV-by-FyP"/>
                                 <include reference="b3O-cS-FiH"/>
                                 <include reference="dnq-Jt-Aa6"/>
@@ -544,6 +550,12 @@
                                 <include reference="ERp-sL-0Fy"/>
                                 <include reference="Heg-I8-7P8"/>
                                 <include reference="UvR-lT-09F"/>
+                                <include reference="5Oa-cn-Efk"/>
+                                <include reference="8bK-j7-hn9"/>
+                                <include reference="gAa-ok-FKY"/>
+                                <include reference="lAt-R9-Oag"/>
+                                <include reference="Q56-nD-z1h"/>
+                                <include reference="QPE-Qv-czb"/>
                             </mask>
                         </variation>
                     </view>
@@ -560,6 +572,7 @@
                         </barButtonItem>
                     </navigationItem>
                     <connections>
+                        <outlet property="loader" destination="hcd-Ta-7Ds" id="EVs-eC-DGl"/>
                         <outlet property="retryButton" destination="hZs-98-myw" id="pYf-XE-smW"/>
                         <outlet property="searchSegment" destination="QUP-dV-Knf" id="gzV-M9-aSe"/>
                         <outlet property="searchTextField" destination="cDB-LU-4TX" id="9da-wO-XKG"/>

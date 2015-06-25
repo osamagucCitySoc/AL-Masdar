@@ -10,11 +10,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "AL-Masdar/NewsFeedViewController.m"
-            timestampString = "456960131.901088"
+            timestampString = "456960649.500729"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "109"
-            endingLineNumber = "109"
+            startingLineNumber = "107"
+            endingLineNumber = "107"
             landmarkName = "-getData"
             landmarkType = "5">
          </BreakpointContent>

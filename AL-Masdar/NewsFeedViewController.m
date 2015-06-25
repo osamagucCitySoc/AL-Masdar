@@ -8,7 +8,6 @@
 
 #import "NewsFeedViewController.h"
 #import <Haneke/Haneke.h>
-#import <PQFCustomLoaders/PQFCustomLoaders.h>
 #import "Reachability.h"
 #import "AFHTTPRequestOperationManager.h"
 #import "CRToastManager.h"
@@ -22,7 +21,7 @@
 @implementation NewsFeedViewController
 {
     __weak IBOutlet NSLayoutConstraint *verticalLayout;
-    PQFBarsInCircle* loader;
+    __weak IBOutlet UIActivityIndicatorView *loader;
     __weak IBOutlet UITableView *tableView;
     
     NSMutableArray* dataSource;
@@ -52,8 +51,7 @@
     [super viewDidLoad];
     [tableView setDelegate:self];
     [tableView setDataSource:self];
-    loader = [PQFBarsInCircle createLoaderOnView:self.view];
-    loader.loaderColor = [UIColor blackColor];
+    [loader setAlpha:0.0];
     tableView.alpha = 0;
     searchLimit = 0;
     moreSearch = YES;
@@ -116,12 +114,12 @@
         
         if([dataSource count] == 0)
         {
-            [loader showLoader];
+            [loader setAlpha:1.0];
             
             NSDictionary* params = @{@"lowerID":upperCurrentID,@"sources":[sources componentsJoinedByString:@","]};
             
             [manager POST:@"http://moh2013.com/arabDevs/almasdar/getNewerNews.php" parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
-                [loader removeLoader];[tableView setAlpha:1.0];
+                [loader setAlpha:0.0];
                 
                 dataSource = [[NSMutableArray alloc]initWithArray:[NSJSONSerialization JSONObjectWithData:responseObject options:NSJSONReadingAllowFragments error:nil]];
                 
@@ -136,17 +134,17 @@
                 loadingData = NO;
                 
             } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
-                [loader removeLoader];[tableView setAlpha:1.0];
+                [loader setAlpha:0.0];
                 loadingData = NO;
                 NSLog(@"Error: %@", error);}];
         }else
         {
-            [loader showLoader];
+            [loader setAlpha:1.0];
             
             NSDictionary* params = @{@"lowerID":upperCurrentID,@"sources":[sources componentsJoinedByString:@","]};
             
             [manager POST:@"http://moh2013.com/arabDevs/almasdar/getNewerNews.php" parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
-                [loader removeLoader];[tableView setAlpha:1.0];
+                [loader setAlpha:0.0];
                 
                 
                 NSMutableArray* newNews = [[NSMutableArray alloc]initWithArray:[NSJSONSerialization JSONObjectWithData:responseObject options:NSJSONReadingAllowFragments error:nil]];
@@ -189,14 +187,14 @@
                                                 }];
                 }
                 
-                [loader showLoader];
+                [loader setAlpha:1.0];
                 
                 if([[tableView.indexPathsForVisibleRows lastObject] row] > dataSource.count-5)
                 {
                     NSDictionary* params = @{@"lowerID":lowerCurrentID,@"sources":[sources componentsJoinedByString:@","]};
                     
                     [manager POST:@"http://moh2013.com/arabDevs/almasdar/getOlderNews.php" parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
-                        [loader removeLoader];[tableView setAlpha:1.0];
+                        [loader setAlpha:0.0];
                         
                         
                         NSMutableArray* newNews = [[NSMutableArray alloc]initWithArray:[NSJSONSerialization JSONObjectWithData:responseObject options:NSJSONReadingAllowFragments error:nil]];
@@ -215,18 +213,18 @@
                         }
                         loadingData = NO;
                     } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
-                        [loader removeLoader];[tableView setAlpha:1.0];
+                        [loader setAlpha:0.0];
                         loadingData = NO;
                         NSLog(@"Error: %@", error);}];
                 }else
                 {
                     loadingData = NO;
-                    [loader removeLoader];[tableView setAlpha:1.0];
+                    [loader setAlpha:0.0];
                 }
                 
                 
             } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
-                [loader removeLoader];[tableView setAlpha:1.0];
+                [loader setAlpha:0.0];
                 loadingData = NO;
                 NSLog(@"Error: %@", error);}];
             
@@ -305,7 +303,7 @@
             searchLimit = 0;
             moreSearch = YES;
             [tableView setAlpha:1];
-            [loader showLoader];
+            [loader setAlpha:1.0];
             
             [self getSearchData];
         }
@@ -332,7 +330,7 @@
     
     [manager POST:@"http://moh2013.com/arabDevs/almasdar/getSearchNews.php" parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
         [tableView setAlpha:1.0];
-        [loader removeLoader];
+        [loader setAlpha:0.0];
         NSMutableArray* dataSourcee = [[NSMutableArray alloc]initWithArray:[NSJSONSerialization JSONObjectWithData:responseObject options:NSJSONReadingAllowFragments error:nil]];
         
         [dataSource addObjectsFromArray:dataSourcee];
@@ -349,7 +347,7 @@
         
     } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
         [tableView setAlpha:1.0];
-        [loader removeLoader];
+        [loader setAlpha:0.0];
         NSLog(@"Error: %@", error);}];
 }
 
