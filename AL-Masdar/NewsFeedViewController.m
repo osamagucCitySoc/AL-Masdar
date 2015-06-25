@@ -738,6 +738,12 @@
         }else if(buttonIndex == 3)
         {
             NSMutableArray* favs = [[NSMutableArray alloc]initWithArray:[[NSUserDefaults standardUserDefaults] objectForKey:@"favs"] copyItems:YES];
+            NSArray *aSortedArray = [favs sortedArrayUsingComparator:^(NSDictionary *obj1,NSDictionary *obj2) {
+                NSString *num1 =[obj1 objectForKey:@"createdAt"];
+                NSString *num2 =[obj2 objectForKey:@"createdAt"];
+                return (NSComparisonResult) [num2 compare:num1 options:(NSNumericSearch)];
+            }];
+
             if(favs.count == 0)
             {
                 NSDictionary *options = @{
@@ -777,7 +783,7 @@
                                      }
                                      completion:^(BOOL finished){
                                          favTempStoring = [[NSMutableArray alloc]initWithArray:dataSource copyItems:YES];
-                                         dataSource = [[NSMutableArray alloc]initWithArray:favs copyItems:YES];
+                                         dataSource = [[NSMutableArray alloc]initWithArray:aSortedArray copyItems:YES];
                                          [tableView reloadData];
                                          [tableView setNeedsDisplay];
                                      }];
@@ -785,7 +791,7 @@
                 }else
                 {
                     favTempStoring = [[NSMutableArray alloc]initWithArray:dataSource copyItems:YES];
-                    dataSource = [[NSMutableArray alloc]initWithArray:favs copyItems:YES];
+                    dataSource = [[NSMutableArray alloc]initWithArray:aSortedArray copyItems:YES];
                     [tableView reloadData];
                     [tableView setNeedsDisplay];
                 }
