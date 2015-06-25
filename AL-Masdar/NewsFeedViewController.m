@@ -27,7 +27,7 @@
     NSMutableArray* dataSource;
     NSString* lowerCurrentID;
     NSString* upperCurrentID;
-    
+    BOOL loadingData;
     NSMutableArray* sources;
     
     __weak IBOutlet UIButton *retryButton;
@@ -42,6 +42,7 @@
     
     lowerCurrentID = @"-1";
     upperCurrentID = @"-1";
+    loadingData = NO;
     dataSource = [[NSMutableArray alloc]init];
 }
 
@@ -69,6 +70,7 @@
         [self getData];
     }else
     {
+        loadingData = NO;
         [tableView setAlpha:0.0];
         [retryButton setAlpha:1.0];
     }
@@ -76,115 +78,122 @@
 
 -(void)getData
 {
-    
-    AFHTTPRequestOperationManager *manager = [AFHTTPRequestOperationManager manager];
-    manager.responseSerializer = [AFHTTPResponseSerializer serializer];
-    
-    
-    
-    if([dataSource count] == 0)
+    if(!loadingData)
     {
-        [loader showLoader];
+        loadingData = YES;
+        AFHTTPRequestOperationManager *manager = [AFHTTPRequestOperationManager manager];
+        manager.responseSerializer = [AFHTTPResponseSerializer serializer];
         
-        NSDictionary* params = @{@"lowerID":upperCurrentID,@"sources":[sources componentsJoinedByString:@","]};
         
-        [manager POST:@"http://moh2013.com/arabDevs/almasdar/getNewerNews.php" parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
-            [loader removeLoader];
-            
-            dataSource = [NSJSONSerialization JSONObjectWithData:responseObject options:NSJSONReadingAllowFragments error:nil];
-            
-            if([dataSource count]>0)
-            {
-                upperCurrentID = [[dataSource objectAtIndex:0] objectForKey:@"tweetID"];
-                lowerCurrentID = [[dataSource lastObject] objectForKey:@"tweetID"];
-            }
-            
-            [tableView reloadData];
-            [tableView setNeedsDisplay];
-            
-        } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
-            [loader removeLoader];
-            NSLog(@"Error: %@", error);}];
-    }else
-    {
-        [loader showLoader];
         
-        NSDictionary* params = @{@"lowerID":upperCurrentID,@"sources":[sources componentsJoinedByString:@","]};
-        
-        [manager POST:@"http://moh2013.com/arabDevs/almasdar/getNewerNews.php" parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
-            [loader removeLoader];
-            
-            
-            NSMutableArray* newNews = [[NSMutableArray alloc]initWithArray:[NSJSONSerialization JSONObjectWithData:responseObject options:NSJSONReadingAllowFragments error:nil]];
-            if([newNews count]>0)
-            {
-                [newNews addObjectsFromArray:dataSource];
-                dataSource = [[NSMutableArray alloc]initWithArray:newNews copyItems:YES];
-                upperCurrentID = [[dataSource objectAtIndex:0] objectForKey:@"tweetID"];
-                
-                NSMutableArray* indicesArray = [[NSMutableArray alloc]init];
-                for(int i = 0 ; i < newNews.count ; i++)
-                {
-                    [indicesArray addObject:[NSIndexPath indexPathForRow:i inSection:0]];
-                }
-                [tableView beginUpdates];
-                [tableView insertRowsAtIndexPaths:indicesArray withRowAnimation:UITableViewRowAnimationRight];
-                [tableView endUpdates];
-                
-                NSDictionary *options = @{
-                                          kCRToastTextKey : [NSString stringWithFormat:@"%lu %@",(unsigned long)newNews.count,@"خبر جديد"],
-                                          kCRToastTextAlignmentKey : @(NSTextAlignmentCenter),
-                                          kCRToastBackgroundColorKey : [UIColor yellowColor],
-                                          kCRToastAnimationInTypeKey : @(CRToastAnimationTypeLinear),
-                                          kCRToastAnimationOutTypeKey : @(CRToastAnimationTypeLinear),
-                                          kCRToastAnimationInDirectionKey : @(CRToastAnimationDirectionTop),
-                                          kCRToastAnimationOutDirectionKey : @(CRToastAnimationDirectionBottom)
-                                          };
-                [CRToastManager showNotificationWithOptions:options
-                                            completionBlock:^{
-                                                NSLog(@"Completed");
-                                            }];
-            }
-            
-            [loader removeLoader];
+        if([dataSource count] == 0)
+        {
             [loader showLoader];
             
-            if([[tableView.indexPathsForVisibleRows lastObject] row] > dataSource.count-5)
-            {
-                NSDictionary* params = @{@"lowerID":lowerCurrentID,@"sources":[sources componentsJoinedByString:@","]};
+            NSDictionary* params = @{@"lowerID":upperCurrentID,@"sources":[sources componentsJoinedByString:@","]};
+            
+            [manager POST:@"http://moh2013.com/arabDevs/almasdar/getNewerNews.php" parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
+                [loader removeLoader];
                 
-                [manager POST:@"http://moh2013.com/arabDevs/almasdar/getNewerNews.php" parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
-                    [loader removeLoader];
+                dataSource = [[NSMutableArray alloc]initWithArray:[NSJSONSerialization JSONObjectWithData:responseObject options:NSJSONReadingAllowFragments error:nil]];
+                
+                if([dataSource count]>0)
+                {
+                    upperCurrentID = [[dataSource objectAtIndex:0] objectForKey:@"tweetID"];
+                    lowerCurrentID = [[dataSource lastObject] objectForKey:@"tweetID"];
+                }
+                
+                [tableView reloadData];
+                [tableView setNeedsDisplay];
+                loadingData = NO;
+                
+            } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+                [loader removeLoader];
+                loadingData = NO;
+                NSLog(@"Error: %@", error);}];
+        }else
+        {
+            [loader showLoader];
+            
+            NSDictionary* params = @{@"lowerID":upperCurrentID,@"sources":[sources componentsJoinedByString:@","]};
+            
+            [manager POST:@"http://moh2013.com/arabDevs/almasdar/getNewerNews.php" parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
+                [loader removeLoader];
+                
+                
+                NSMutableArray* newNews = [[NSMutableArray alloc]initWithArray:[NSJSONSerialization JSONObjectWithData:responseObject options:NSJSONReadingAllowFragments error:nil]];
+                if([newNews count]>0)
+                {
+                    [newNews addObjectsFromArray:dataSource];
+                    dataSource = [[NSMutableArray alloc]initWithArray:newNews copyItems:YES];
+                    upperCurrentID = [[dataSource objectAtIndex:0] objectForKey:@"tweetID"];
                     
-                    
-                    NSMutableArray* newNews = [[NSMutableArray alloc]initWithArray:[NSJSONSerialization JSONObjectWithData:responseObject options:NSJSONReadingAllowFragments error:nil]];
-                    
-                    if([newNews count]>0)
+                    NSMutableArray* indicesArray = [[NSMutableArray alloc]init];
+                    for(int i = 0 ; i < newNews.count ; i++)
                     {
-                        int lastEndIndexPath = (int)dataSource.count;
-                        [dataSource addObjectsFromArray:newNews];
-                        lowerCurrentID = [[dataSource lastObject] objectForKey:@"tweetID"];
-                        
-                        NSMutableArray* indicesArray = [[NSMutableArray alloc]init];
-                        for(int i = lastEndIndexPath ; i < newNews.count ; i++)
-                        {
-                            [indicesArray addObject:[NSIndexPath indexPathForRow:i inSection:0]];
-                        }
-                        [tableView beginUpdates];
-                        [tableView insertRowsAtIndexPaths:indicesArray withRowAnimation:UITableViewRowAnimationRight];
-                        [tableView endUpdates];
-                        
+                        [indicesArray addObject:[NSIndexPath indexPathForRow:i inSection:0]];
                     }
-                } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+                    [tableView beginUpdates];
+                    [tableView insertRowsAtIndexPaths:indicesArray withRowAnimation:UITableViewRowAnimationRight];
+                    [tableView endUpdates];
+                    
+                    NSDictionary *options = @{
+                                              kCRToastTextKey : [NSString stringWithFormat:@"%lu %@",(unsigned long)newNews.count,@"خبر جديد"],
+                                              kCRToastTextAlignmentKey : @(NSTextAlignmentCenter),
+                                              kCRToastBackgroundColorKey : [UIColor yellowColor],
+                                              kCRToastAnimationInTypeKey : @(CRToastAnimationTypeLinear),
+                                              kCRToastAnimationOutTypeKey : @(CRToastAnimationTypeLinear),
+                                              kCRToastAnimationInDirectionKey : @(CRToastAnimationDirectionTop),
+                                              kCRToastAnimationOutDirectionKey : @(CRToastAnimationDirectionBottom)
+                                              };
+                    [CRToastManager showNotificationWithOptions:options
+                                                completionBlock:^{
+                                                    NSLog(@"Completed");
+                                                }];
+                }
+                
+                [loader showLoader];
+                
+                if([[tableView.indexPathsForVisibleRows lastObject] row] > dataSource.count-5)
+                {
+                    NSDictionary* params = @{@"lowerID":lowerCurrentID,@"sources":[sources componentsJoinedByString:@","]};
+                    
+                    [manager POST:@"http://moh2013.com/arabDevs/almasdar/getOlderNews.php" parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
+                        [loader removeLoader];
+                        
+                        
+                        NSMutableArray* newNews = [[NSMutableArray alloc]initWithArray:[NSJSONSerialization JSONObjectWithData:responseObject options:NSJSONReadingAllowFragments error:nil]];
+                        
+                        if([newNews count]>0)
+                        {
+                            lowerCurrentID = [[newNews lastObject] objectForKey:@"tweetID"];
+                            
+                            for(NSDictionary* dict in newNews)
+                            {
+                                [dataSource addObject:dict];
+                                [tableView beginUpdates];
+                                [tableView insertRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:(dataSource.count-1) inSection:0]]withRowAnimation:UITableViewRowAnimationRight];
+                                [tableView endUpdates];
+                            }
+                        }
+                        loadingData = NO;
+                    } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+                        [loader removeLoader];
+                        loadingData = NO;
+                        NSLog(@"Error: %@", error);}];
+                }else
+                {
+                    loadingData = NO;
                     [loader removeLoader];
-                    NSLog(@"Error: %@", error);}];
-            }
+                }
+                
+                
+            } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+                [loader removeLoader];
+                loadingData = NO;
+                NSLog(@"Error: %@", error);}];
             
-            
-        } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
-            [loader removeLoader];
-            NSLog(@"Error: %@", error);}];
-        
+        }
     }
     
 }
@@ -217,6 +226,7 @@
 }
 
 - (IBAction)sourceChooserClicked:(id)sender {
+    [[self navigationController] popViewControllerAnimated:YES];
 }
 
 
@@ -229,7 +239,7 @@
 
 
 
-#pragma mark table delegate
+#pragma mark - Table delegate
 #pragma mark - Table view data source
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
@@ -300,11 +310,27 @@
         [(UIImageView*)[cell viewWithTag:5] hnk_setImageFromURL:[NSURL URLWithString:[news objectForKey:@"mediaURL"]] placeholder:[UIImage imageNamed:@"Wait-icon-2.png"]];
     }
     
+    if(indexPath.row > dataSource.count-5)
+    {
+        [self getData];
+    }
+    
     return cell;
 }
 
+-(CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    NSDictionary* news = [dataSource objectAtIndex:indexPath.row];
+    if([[news objectForKey:@"mediaType"]isEqualToString:@""])
+    {
+        return 106;
+    }else
+    {
+        return 465;
+    }
+}
 
-#pragma make MISC methods
+#pragma mark MISC methods
 
 - (NSTimeInterval) timeStamp {
     NSDate* referenceDate = [NSDate dateWithTimeIntervalSince1970: 0];

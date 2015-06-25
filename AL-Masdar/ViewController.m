@@ -84,6 +84,13 @@
     [locationManager startUpdatingLocation];
     
     userCountry = @"";
+    
+    
+    if(![[[NSUserDefaults standardUserDefaults] objectForKey:@"subscriptions"]count] == 0)
+    {
+        [self performSegueWithIdentifier:@"newsSeg" sender:self];
+    }
+
 }
 
 - (void)didReceiveMemoryWarning {
@@ -164,6 +171,8 @@
         }];
     }
 }
+
+
 
 
 - (BOOL)connected
