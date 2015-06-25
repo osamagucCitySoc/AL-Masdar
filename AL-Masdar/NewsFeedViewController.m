@@ -169,7 +169,7 @@
                             offset.y += 116;
                         }else
                         {
-                            offset.y += 475;
+                            offset.y += 427;
                         }
                         [tableView endUpdates];
                     }
@@ -530,7 +530,7 @@
         return 116;
     }else
     {
-        return 475;
+        return 427;
     }
 }
 
