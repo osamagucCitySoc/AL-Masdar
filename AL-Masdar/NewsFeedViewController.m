@@ -21,6 +21,7 @@
 
 @implementation NewsFeedViewController
 {
+    __weak IBOutlet NSLayoutConstraint *verticalLayout;
     PQFBarsInCircle* loader;
     __weak IBOutlet UITableView *tableView;
     
@@ -30,6 +31,7 @@
     BOOL loadingData;
     NSMutableArray* sources;
     
+    __weak IBOutlet UIView *searchView;
     __weak IBOutlet UIButton *retryButton;
 }
 
@@ -46,13 +48,16 @@
     [super viewDidLoad];
     [tableView setDelegate:self];
     [tableView setDataSource:self];
-    loader = [PQFBarsInCircle createLoaderOnView:tableView];
+    loader = [PQFBarsInCircle createLoaderOnView:self.view];
     loader.loaderColor = [UIColor blackColor];
-    
+    tableView.alpha = 0;
     lowerCurrentID = @"-1";
     upperCurrentID = @"-1";
     loadingData = NO;
     dataSource = [[NSMutableArray alloc]init];
+    
+   // [tableView setTranslatesAutoresizingMaskIntoConstraints:YES];
+    
 }
 
 
@@ -69,12 +74,22 @@
         [sources addObject:[dict objectForKey:@"twitterID"]];
     }
     
+    
+    [searchView setAlpha:0.0];
 }
 -(void)viewDidAppear:(BOOL)animated
 {
+    [verticalLayout setConstant:-86];
+    
+    [self.view setNeedsDisplay];
+    [self.view setNeedsLayout];
+    [tableView setNeedsLayout];
+    [tableView setNeedsDisplay];
+
+    
     if([self connected])
     {
-        [tableView setAlpha:1.0];
+        [tableView setAlpha:0.0];
         [retryButton setAlpha:0.0];
         [self getData];
     }else
@@ -102,7 +117,7 @@
             NSDictionary* params = @{@"lowerID":upperCurrentID,@"sources":[sources componentsJoinedByString:@","]};
             
             [manager POST:@"http://moh2013.com/arabDevs/almasdar/getNewerNews.php" parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
-                [loader removeLoader];
+                [loader removeLoader];[tableView setAlpha:1.0];
                 
                 dataSource = [[NSMutableArray alloc]initWithArray:[NSJSONSerialization JSONObjectWithData:responseObject options:NSJSONReadingAllowFragments error:nil]];
                 
@@ -117,7 +132,7 @@
                 loadingData = NO;
                 
             } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
-                [loader removeLoader];
+                [loader removeLoader];[tableView setAlpha:1.0];
                 loadingData = NO;
                 NSLog(@"Error: %@", error);}];
         }else
@@ -127,7 +142,7 @@
             NSDictionary* params = @{@"lowerID":upperCurrentID,@"sources":[sources componentsJoinedByString:@","]};
             
             [manager POST:@"http://moh2013.com/arabDevs/almasdar/getNewerNews.php" parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
-                [loader removeLoader];
+                [loader removeLoader];[tableView setAlpha:1.0];
                 
                 
                 NSMutableArray* newNews = [[NSMutableArray alloc]initWithArray:[NSJSONSerialization JSONObjectWithData:responseObject options:NSJSONReadingAllowFragments error:nil]];
@@ -136,14 +151,14 @@
                     //[newNews addObjectsFromArray:dataSource];
                     //dataSource = [[NSMutableArray alloc]initWithArray:newNews copyItems:YES];
                     upperCurrentID = [[newNews objectAtIndex:0] objectForKey:@"tweetID"];
-                    
+                    CGPoint offset = tableView.contentOffset;
                     for(int i = (int)newNews.count-1 ; i >= 0 ; i--)
                     {
-                        CGPoint offset = tableView.contentOffset;
+                        
                         
                         [dataSource insertObject:[newNews objectAtIndex:i] atIndex:0];
                         [tableView beginUpdates];
-                        [tableView insertRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:0 inSection:0]] withRowAnimation:UITableViewRowAnimationRight];
+                        [tableView insertRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:0 inSection:0]] withRowAnimation:UITableViewRowAnimationNone];
                         if([[[newNews objectAtIndex:i] objectForKey:@"mediaURL"] isEqualToString:@""])
                         {
                             offset.y += 116;
@@ -151,10 +166,9 @@
                         {
                             offset.y += 475;
                         }
-                        [tableView setContentOffset:offset animated:NO];
                         [tableView endUpdates];
                     }
-                    
+                    [tableView setContentOffset:offset animated:NO];
                     
                     NSDictionary *options = @{
                                               kCRToastTextKey : [NSString stringWithFormat:@"%lu %@",(unsigned long)newNews.count,@"خبر جديد"],
@@ -178,7 +192,7 @@
                     NSDictionary* params = @{@"lowerID":lowerCurrentID,@"sources":[sources componentsJoinedByString:@","]};
                     
                     [manager POST:@"http://moh2013.com/arabDevs/almasdar/getOlderNews.php" parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
-                        [loader removeLoader];
+                        [loader removeLoader];[tableView setAlpha:1.0];
                         
                         
                         NSMutableArray* newNews = [[NSMutableArray alloc]initWithArray:[NSJSONSerialization JSONObjectWithData:responseObject options:NSJSONReadingAllowFragments error:nil]];
@@ -197,18 +211,18 @@
                         }
                         loadingData = NO;
                     } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
-                        [loader removeLoader];
+                        [loader removeLoader];[tableView setAlpha:1.0];
                         loadingData = NO;
                         NSLog(@"Error: %@", error);}];
                 }else
                 {
                     loadingData = NO;
-                    [loader removeLoader];
+                    [loader removeLoader];[tableView setAlpha:1.0];
                 }
                 
                 
             } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
-                [loader removeLoader];
+                [loader removeLoader];[tableView setAlpha:1.0];
                 loadingData = NO;
                 NSLog(@"Error: %@", error);}];
             
@@ -243,16 +257,25 @@
         [retryButton setAlpha:1.0];
     }
 }
+- (IBAction)cancelSearchClicked:(id)sender {
+    CGRect frame = tableView.frame;
+    frame.origin.y -= 100;
+    [UIView animateWithDuration:1.0 delay:0.0 options:UIViewAnimationOptionCurveEaseInOut
+                     animations:^(void) {
+                         searchView.alpha = 0.0f;
+                         [tableView setFrame:frame];
+                     }
+                     completion:^(BOOL finished){}];
+}
 
 - (IBAction)sourceChooserClicked:(id)sender {
     [[self navigationController] popViewControllerAnimated:YES];
 }
 
 - (IBAction)optionsClicked:(id)sender {
-    UIActionSheet* sheet = [[UIActionSheet alloc]initWithTitle:@"خيارات الخبر" delegate:self cancelButtonTitle:@"إلغاء" destructiveButtonTitle:@"تحديث" otherButtonTitles:@"يحدث في مدينتي",@"المفضلة",nil];
+    UIActionSheet* sheet = [[UIActionSheet alloc]initWithTitle:@"خيارات الخبر" delegate:self cancelButtonTitle:@"إلغاء" destructiveButtonTitle:@"تحديث" otherButtonTitles:@"البحث",@"يحدث في مدينتي",@"المفضلة",nil];
     sheet.tag = 3;
     [sheet showInView:self.view];
-
 }
 
 - (BOOL)connected
@@ -509,6 +532,16 @@
         if(buttonIndex == 0)
         {
             [self getData];
+        }else if(buttonIndex == 1)
+        {
+            CGRect frame = tableView.frame;
+            frame.origin.y += 100;
+            [UIView animateWithDuration:1.0 delay:0.0 options:UIViewAnimationOptionCurveEaseInOut
+                             animations:^(void) {
+                                 searchView.alpha = 1.0f;
+                                 [tableView setFrame:frame];
+                             }
+                             completion:^(BOOL finished){}];
         }
     }
 }
