@@ -15,6 +15,8 @@
 		E81F60141B3AC0CE006C5B9F /* CountryChooserTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = E81F60131B3AC0CE006C5B9F /* CountryChooserTableViewController.m */; };
 		E865218E1B3C128600483201 /* Wait-icon-2.png in Resources */ = {isa = PBXBuildFile; fileRef = E865218D1B3C128600483201 /* Wait-icon-2.png */; };
 		E86521901B3C128C00483201 /* Wait-icon.png in Resources */ = {isa = PBXBuildFile; fileRef = E865218F1B3C128C00483201 /* Wait-icon.png */; };
+		E86521921B3C536100483201 /* Button-Close-icon.png in Resources */ = {isa = PBXBuildFile; fileRef = E86521911B3C536100483201 /* Button-Close-icon.png */; };
+		E86521951B3C539E00483201 /* NewsDetailsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = E86521941B3C539E00483201 /* NewsDetailsViewController.m */; };
 		E89629EC1B3C0285004BFA08 /* NewsFeedViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = E89629EB1B3C0285004BFA08 /* NewsFeedViewController.m */; };
 		E8B604721B3ACD9900EF74E5 /* SourceChooserTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = E8B604711B3ACD9900EF74E5 /* SourceChooserTableViewController.m */; };
 		E8C36F351B39D26800D0453E /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = E8C36F341B39D26800D0453E /* main.m */; };
@@ -57,6 +59,9 @@
 		E81F60131B3AC0CE006C5B9F /* CountryChooserTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CountryChooserTableViewController.m; sourceTree = "<group>"; };
 		E865218D1B3C128600483201 /* Wait-icon-2.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Wait-icon-2.png"; sourceTree = "<group>"; };
 		E865218F1B3C128C00483201 /* Wait-icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Wait-icon.png"; sourceTree = "<group>"; };
+		E86521911B3C536100483201 /* Button-Close-icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Button-Close-icon.png"; sourceTree = "<group>"; };
+		E86521931B3C539E00483201 /* NewsDetailsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NewsDetailsViewController.h; sourceTree = "<group>"; };
+		E86521941B3C539E00483201 /* NewsDetailsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NewsDetailsViewController.m; sourceTree = "<group>"; };
 		E89629EA1B3C0285004BFA08 /* NewsFeedViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NewsFeedViewController.h; sourceTree = "<group>"; };
 		E89629EB1B3C0285004BFA08 /* NewsFeedViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NewsFeedViewController.m; sourceTree = "<group>"; };
 		E8B604701B3ACD9900EF74E5 /* SourceChooserTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SourceChooserTableViewController.h; sourceTree = "<group>"; };
@@ -117,6 +122,7 @@
 		1E7F24C31B3ADE5E00F95742 /* Images */ = {
 			isa = PBXGroup;
 			children = (
+				E86521911B3C536100483201 /* Button-Close-icon.png */,
 				E865218F1B3C128C00483201 /* Wait-icon.png */,
 				E865218D1B3C128600483201 /* Wait-icon-2.png */,
 				1E7F24C41B3ADE7100F95742 /* al-masdar-splash.png */,
@@ -184,6 +190,8 @@
 				E8B604711B3ACD9900EF74E5 /* SourceChooserTableViewController.m */,
 				E89629EA1B3C0285004BFA08 /* NewsFeedViewController.h */,
 				E89629EB1B3C0285004BFA08 /* NewsFeedViewController.m */,
+				E86521931B3C539E00483201 /* NewsDetailsViewController.h */,
+				E86521941B3C539E00483201 /* NewsDetailsViewController.m */,
 				E8C36F321B39D26800D0453E /* Supporting Files */,
 			);
 			path = "AL-Masdar";
@@ -347,6 +355,7 @@
 				1E7F24C81B3ADE7100F95742 /* al-masdar-splash@2x.png in Resources */,
 				E8C36F5D1B39DD4B00D0453E /* ReverseGeocodeCountry.json in Resources */,
 				E8C36F3E1B39D26800D0453E /* Main.storyboard in Resources */,
+				E86521921B3C536100483201 /* Button-Close-icon.png in Resources */,
 				E86521901B3C128C00483201 /* Wait-icon.png in Resources */,
 				E8C36F431B39D26800D0453E /* LaunchScreen.xib in Resources */,
 				E865218E1B3C128600483201 /* Wait-icon-2.png in Resources */,
@@ -407,6 +416,7 @@
 				E89629EC1B3C0285004BFA08 /* NewsFeedViewController.m in Sources */,
 				E8E037EB1B3AD4770088FDCE /* CRToastViewController.m in Sources */,
 				E8C36F5E1B39DD4B00D0453E /* ReverseGeocodeCountry.m in Sources */,
+				E86521951B3C539E00483201 /* NewsDetailsViewController.m in Sources */,
 				E8E037EA1B3AD4770088FDCE /* CRToastView.m in Sources */,
 				E8C36F3B1B39D26800D0453E /* ViewController.m in Sources */,
 				E8C36F651B39E07200D0453E /* NoInternetConnectionViewController.m in Sources */,

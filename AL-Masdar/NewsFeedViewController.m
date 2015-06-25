@@ -13,9 +13,9 @@
 #import "AFHTTPRequestOperationManager.h"
 #import "CRToastManager.h"
 #import "CRToast.h"
+#import "NewsDetailsViewController.h"
 
-
-@interface NewsFeedViewController ()<UITableViewDataSource,UITableViewDelegate>
+@interface NewsFeedViewController ()<UITableViewDataSource,UITableViewDelegate,UIActionSheetDelegate>
 
 @end
 
@@ -31,6 +31,15 @@
     NSMutableArray* sources;
     
     __weak IBOutlet UIButton *retryButton;
+}
+
+-(void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
+{
+    if([[segue identifier]isEqualToString:@"detailsSeg"])
+    {
+        NewsDetailsViewController* dst = (NewsDetailsViewController*)[segue destinationViewController];
+        [dst setUrl:[[dataSource objectAtIndex:tableView.indexPathForSelectedRow.row] objectForKey:@"newsURL"]];
+    }
 }
 
 - (void)viewDidLoad {
@@ -346,6 +355,22 @@
     }
 }
 
+-(void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    NSDictionary* news = [dataSource objectAtIndex:indexPath.row];
+    if([[news objectForKey:@"newsURL"]isEqualToString:@""])
+    {
+        UIActionSheet* sheet = [[UIActionSheet alloc]initWithTitle:@"خيارات الخبر" delegate:self cancelButtonTitle:@"إلغاء" destructiveButtonTitle:nil otherButtonTitles:@"مشاركة",@"تفضيل",nil];
+        sheet.tag = 1;
+        [sheet showInView:self.view];
+    }else
+    {
+        UIActionSheet* sheet = [[UIActionSheet alloc]initWithTitle:@"خيارات الخبر" delegate:self cancelButtonTitle:@"إلغاء" destructiveButtonTitle:@"التفاصيل من المصدر" otherButtonTitles:@"مشاركة",@"تفضيل",nil];
+        sheet.tag = 2;
+        [sheet showInView:self.view];
+    }
+}
+
 #pragma mark MISC methods
 
 - (NSTimeInterval) timeStamp {
@@ -400,6 +425,34 @@
         containsPattern = [mutableString rangeOfString:pattern];
     }
     return mutableString;
+}
+
+#pragma mark action sheet delegate
+-(void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex
+{
+    if(actionSheet.tag == 1)
+    {
+        
+        if(buttonIndex == 0)
+        {
+            
+        }else if(buttonIndex == 1)
+        {
+            
+        }
+    }else if(actionSheet.tag == 2)
+    {
+        if(buttonIndex == 0)
+        {
+            [self performSegueWithIdentifier:@"detailsSeg" sender:self];
+        }else if(buttonIndex == 1)
+        {
+            
+        }else if(buttonIndex == 2)
+        {
+            
+        }
+    }
 }
 
 
