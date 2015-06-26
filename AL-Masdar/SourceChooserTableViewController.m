@@ -7,6 +7,7 @@
 //
 
 #import "SourceChooserTableViewController.h"
+#import <Parse/Parse.h>
 
 @interface SourceChooserTableViewController ()
 
@@ -183,7 +184,7 @@
     NSDictionary* dict = [sectionedSource objectAtIndex:indexPath.section];
     NSDictionary* dict2 = [[dict objectForKey:[[dict allKeys] lastObject]] objectAtIndex:indexPath.row];
 
-    
+
     if([[[NSUserDefaults standardUserDefaults] objectForKey:@"subscriptions"] containsObject:dict2])
     {
         [[self.tableView cellForRowAtIndexPath:indexPath] setAccessoryType:UITableViewCellAccessoryNone];
@@ -192,8 +193,11 @@
         [mutArray removeObject:dict2];
         
         [[NSUserDefaults standardUserDefaults]setObject:mutArray forKey:@"subscriptions"];
-        
         [[NSUserDefaults standardUserDefaults] synchronize];
+        
+        PFInstallation *currentInstallation = [PFInstallation currentInstallation];
+        [currentInstallation removeObject:[dict2 objectForKey:@"twitterID"] forKey:@"channels"];
+        [currentInstallation saveInBackground];
     }else
     {
         [[self.tableView cellForRowAtIndexPath:indexPath] setAccessoryType:UITableViewCellAccessoryCheckmark];
@@ -203,6 +207,10 @@
         
         [[NSUserDefaults standardUserDefaults]setObject:mutArray forKey:@"subscriptions"];
         [[NSUserDefaults standardUserDefaults] synchronize];
+        
+        PFInstallation *currentInstallation = [PFInstallation currentInstallation];
+        [currentInstallation addUniqueObject:[dict2 objectForKey:@"twitterID"] forKey:@"channels"];
+        [currentInstallation saveInBackground];
     }
 }
 
