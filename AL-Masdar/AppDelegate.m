@@ -7,6 +7,7 @@
 //
 
 #import "AppDelegate.h"
+#import <Parse/Parse.h>
 
 @interface AppDelegate ()
 
@@ -35,6 +36,11 @@
         [[NSUserDefaults standardUserDefaults]synchronize];
     }
     
+    // Initialize Parse.
+    [Parse setApplicationId:@"poGzr9XppoOpAAXsPsmlHThMuREuy041CI8pUObx"
+                  clientKey:@"j26t2K3012Cn6jhwV1SJSooE6TcqmKwsztKZdk5b"];
+    
+    
     return YES;
 }
 
@@ -60,6 +66,18 @@
 
 - (void)applicationWillTerminate:(UIApplication *)application {
     // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
+}
+
+
+- (void)application:(UIApplication *)application didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken {
+    // Store the deviceToken in the current installation and save it to Parse.
+    PFInstallation *currentInstallation = [PFInstallation currentInstallation];
+    [currentInstallation setDeviceTokenFromData:deviceToken];
+    [currentInstallation saveInBackground];
+}
+
+- (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo {
+    [PFPush handlePush:userInfo];
 }
 
 @end
