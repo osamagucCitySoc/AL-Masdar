@@ -30,7 +30,20 @@
         [[NSUserDefaults standardUserDefaults]synchronize];
     }
     
+    NSTimer *aTimer = [NSTimer scheduledTimerWithTimeInterval:10.0
+                                                       target:self
+                                                     selector:@selector(timerFired:)
+                                                     userInfo:nil
+                                                      repeats:YES];
+   // [aTimer fire];
+    
     return YES;
+}
+
+
+-(void)timerFired:(NSTimer *) theTimer
+{
+    NSLog(@"%@",@"FIRED");
 }
 
 - (void)applicationWillResignActive:(UIApplication *)application {

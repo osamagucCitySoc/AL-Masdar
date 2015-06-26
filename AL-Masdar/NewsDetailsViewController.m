@@ -25,6 +25,8 @@
 
     [webView setDelegate:self];
     
+    self.url = [@"http://www.readability.com/m?url=" stringByAppendingString:self.url];
+    
     [webView loadRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:self.url] cachePolicy:NSURLRequestReturnCacheDataElseLoad timeoutInterval:100]];
     
 }
