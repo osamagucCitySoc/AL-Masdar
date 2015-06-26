@@ -14,9 +14,20 @@
 
 @implementation AppDelegate
 
-
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
     // Override point for customization after application launch.
+    
+    if ([[[UIDevice currentDevice] systemVersion] floatValue] >= 8.0)
+    {
+        [[UIApplication sharedApplication] registerUserNotificationSettings:[UIUserNotificationSettings
+                                                                             settingsForTypes:(UIUserNotificationTypeSound | UIUserNotificationTypeAlert | UIUserNotificationTypeNone |UIUserNotificationTypeBadge)
+                                                                             categories:nil]];
+    }
+    
+    [[UIApplication sharedApplication] registerForRemoteNotificationTypes:UIRemoteNotificationTypeSound | UIRemoteNotificationTypeAlert | UIRemoteNotificationTypeBadge | UIRemoteNotificationTypeNone | UIRemoteNotificationTypeNewsstandContentAvailability];
+    
+    
+    
     
     if(![[NSUserDefaults standardUserDefaults] objectForKey:@"subscriptions"])
     {
@@ -24,27 +35,10 @@
         [[NSUserDefaults standardUserDefaults]synchronize];
     }
     
-    if(![[NSUserDefaults standardUserDefaults] objectForKey:@"favs"])
-    {
-        [[NSUserDefaults standardUserDefaults]setObject:[[NSArray alloc] init] forKey:@"favs"];
-        [[NSUserDefaults standardUserDefaults]synchronize];
-    }
-    
-    NSTimer *aTimer = [NSTimer scheduledTimerWithTimeInterval:10.0
-                                                       target:self
-                                                     selector:@selector(timerFired:)
-                                                     userInfo:nil
-                                                      repeats:YES];
-   // [aTimer fire];
-    
     return YES;
 }
 
 
--(void)timerFired:(NSTimer *) theTimer
-{
-    NSLog(@"%@",@"FIRED");
-}
 
 - (void)applicationWillResignActive:(UIApplication *)application {
     // Sent when the application is about to move from active to inactive state. This can occur for certain types of temporary interruptions (such as an incoming phone call or SMS message) or when the user quits the application and it begins the transition to the background state.

@@ -11,6 +11,21 @@
 		1E7F24C81B3ADE7100F95742 /* al-masdar-splash@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 1E7F24C51B3ADE7100F95742 /* al-masdar-splash@2x.png */; };
 		1E7F24C91B3ADE7100F95742 /* al-masdar-splash@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 1E7F24C61B3ADE7100F95742 /* al-masdar-splash@3x.png */; };
 		7FF5F399BB71DFA877BE19FA /* libPods-AL-Masdar.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 6670BD0A3CA460F7A52C2282 /* libPods-AL-Masdar.a */; };
+		E81A2C331B3DA91A0021AC9F /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E81A2C321B3DA91A0021AC9F /* CoreGraphics.framework */; };
+		E81A2C351B3DA9220021AC9F /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E81A2C341B3DA9220021AC9F /* AudioToolbox.framework */; };
+		E81A2C371B3DA9280021AC9F /* CFNetwork.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E81A2C361B3DA9280021AC9F /* CFNetwork.framework */; };
+		E81A2C391B3DA9330021AC9F /* MobileCoreServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E81A2C381B3DA9330021AC9F /* MobileCoreServices.framework */; };
+		E81A2C3B1B3DA9390021AC9F /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E81A2C3A1B3DA9390021AC9F /* QuartzCore.framework */; };
+		E81A2C3D1B3DA93E0021AC9F /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E81A2C3C1B3DA93E0021AC9F /* Security.framework */; };
+		E81A2C3F1B3DA9450021AC9F /* StoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E81A2C3E1B3DA9450021AC9F /* StoreKit.framework */; };
+		E81A2C411B3DA94C0021AC9F /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E81A2C401B3DA94C0021AC9F /* SystemConfiguration.framework */; };
+		E81A2C431B3DA9590021AC9F /* libz.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = E81A2C421B3DA9590021AC9F /* libz.dylib */; };
+		E81A2C451B3DA96B0021AC9F /* libsqlite3.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = E81A2C441B3DA96B0021AC9F /* libsqlite3.dylib */; };
+		E81A2C491B3DA97B0021AC9F /* Bolts.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E81A2C461B3DA97B0021AC9F /* Bolts.framework */; };
+		E81A2C4A1B3DA97B0021AC9F /* Parse.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E81A2C471B3DA97B0021AC9F /* Parse.framework */; };
+		E81A2C4B1B3DA97B0021AC9F /* ParseUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E81A2C481B3DA97B0021AC9F /* ParseUI.framework */; };
+		E81A2C4D1B3DA9920021AC9F /* Accounts.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E81A2C4C1B3DA9920021AC9F /* Accounts.framework */; };
+		E81A2C4F1B3DA9990021AC9F /* Social.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E81A2C4E1B3DA9990021AC9F /* Social.framework */; };
 		E81F60111B39F82C006C5B9F /* CoreLocation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E81F60101B39F82C006C5B9F /* CoreLocation.framework */; };
 		E81F60141B3AC0CE006C5B9F /* CountryChooserTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = E81F60131B3AC0CE006C5B9F /* CountryChooserTableViewController.m */; };
 		E865218E1B3C128600483201 /* Wait-icon-2.png in Resources */ = {isa = PBXBuildFile; fileRef = E865218D1B3C128600483201 /* Wait-icon-2.png */; };
@@ -54,6 +69,21 @@
 		5BF2D4E2EEF27E8E945DA18C /* Pods-AL-Masdar.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-AL-Masdar.release.xcconfig"; path = "Pods/Target Support Files/Pods-AL-Masdar/Pods-AL-Masdar.release.xcconfig"; sourceTree = "<group>"; };
 		6670BD0A3CA460F7A52C2282 /* libPods-AL-Masdar.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-AL-Masdar.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		C8F53F59F7EE46E97900FA3B /* Pods-AL-Masdar.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-AL-Masdar.debug.xcconfig"; path = "Pods/Target Support Files/Pods-AL-Masdar/Pods-AL-Masdar.debug.xcconfig"; sourceTree = "<group>"; };
+		E81A2C321B3DA91A0021AC9F /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
+		E81A2C341B3DA9220021AC9F /* AudioToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioToolbox.framework; path = System/Library/Frameworks/AudioToolbox.framework; sourceTree = SDKROOT; };
+		E81A2C361B3DA9280021AC9F /* CFNetwork.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CFNetwork.framework; path = System/Library/Frameworks/CFNetwork.framework; sourceTree = SDKROOT; };
+		E81A2C381B3DA9330021AC9F /* MobileCoreServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MobileCoreServices.framework; path = System/Library/Frameworks/MobileCoreServices.framework; sourceTree = SDKROOT; };
+		E81A2C3A1B3DA9390021AC9F /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
+		E81A2C3C1B3DA93E0021AC9F /* Security.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Security.framework; path = System/Library/Frameworks/Security.framework; sourceTree = SDKROOT; };
+		E81A2C3E1B3DA9450021AC9F /* StoreKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = StoreKit.framework; path = System/Library/Frameworks/StoreKit.framework; sourceTree = SDKROOT; };
+		E81A2C401B3DA94C0021AC9F /* SystemConfiguration.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SystemConfiguration.framework; path = System/Library/Frameworks/SystemConfiguration.framework; sourceTree = SDKROOT; };
+		E81A2C421B3DA9590021AC9F /* libz.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libz.dylib; path = usr/lib/libz.dylib; sourceTree = SDKROOT; };
+		E81A2C441B3DA96B0021AC9F /* libsqlite3.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libsqlite3.dylib; path = usr/lib/libsqlite3.dylib; sourceTree = SDKROOT; };
+		E81A2C461B3DA97B0021AC9F /* Bolts.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = Bolts.framework; sourceTree = "<group>"; };
+		E81A2C471B3DA97B0021AC9F /* Parse.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = Parse.framework; sourceTree = "<group>"; };
+		E81A2C481B3DA97B0021AC9F /* ParseUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = ParseUI.framework; sourceTree = "<group>"; };
+		E81A2C4C1B3DA9920021AC9F /* Accounts.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Accounts.framework; path = System/Library/Frameworks/Accounts.framework; sourceTree = SDKROOT; };
+		E81A2C4E1B3DA9990021AC9F /* Social.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Social.framework; path = System/Library/Frameworks/Social.framework; sourceTree = SDKROOT; };
 		E81F60101B39F82C006C5B9F /* CoreLocation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreLocation.framework; path = System/Library/Frameworks/CoreLocation.framework; sourceTree = SDKROOT; };
 		E81F60121B3AC0CE006C5B9F /* CountryChooserTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CountryChooserTableViewController.h; sourceTree = "<group>"; };
 		E81F60131B3AC0CE006C5B9F /* CountryChooserTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CountryChooserTableViewController.m; sourceTree = "<group>"; };
@@ -104,6 +134,21 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				E81A2C4F1B3DA9990021AC9F /* Social.framework in Frameworks */,
+				E81A2C4D1B3DA9920021AC9F /* Accounts.framework in Frameworks */,
+				E81A2C451B3DA96B0021AC9F /* libsqlite3.dylib in Frameworks */,
+				E81A2C431B3DA9590021AC9F /* libz.dylib in Frameworks */,
+				E81A2C411B3DA94C0021AC9F /* SystemConfiguration.framework in Frameworks */,
+				E81A2C3F1B3DA9450021AC9F /* StoreKit.framework in Frameworks */,
+				E81A2C3D1B3DA93E0021AC9F /* Security.framework in Frameworks */,
+				E81A2C3B1B3DA9390021AC9F /* QuartzCore.framework in Frameworks */,
+				E81A2C391B3DA9330021AC9F /* MobileCoreServices.framework in Frameworks */,
+				E81A2C491B3DA97B0021AC9F /* Bolts.framework in Frameworks */,
+				E81A2C371B3DA9280021AC9F /* CFNetwork.framework in Frameworks */,
+				E81A2C351B3DA9220021AC9F /* AudioToolbox.framework in Frameworks */,
+				E81A2C4A1B3DA97B0021AC9F /* Parse.framework in Frameworks */,
+				E81A2C331B3DA91A0021AC9F /* CoreGraphics.framework in Frameworks */,
+				E81A2C4B1B3DA97B0021AC9F /* ParseUI.framework in Frameworks */,
 				E81F60111B39F82C006C5B9F /* CoreLocation.framework in Frameworks */,
 				7FF5F399BB71DFA877BE19FA /* libPods-AL-Masdar.a in Frameworks */,
 			);
@@ -135,6 +180,21 @@
 		8E1263F41BE0B1B4A1BC2BDA /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				E81A2C4E1B3DA9990021AC9F /* Social.framework */,
+				E81A2C4C1B3DA9920021AC9F /* Accounts.framework */,
+				E81A2C461B3DA97B0021AC9F /* Bolts.framework */,
+				E81A2C471B3DA97B0021AC9F /* Parse.framework */,
+				E81A2C481B3DA97B0021AC9F /* ParseUI.framework */,
+				E81A2C441B3DA96B0021AC9F /* libsqlite3.dylib */,
+				E81A2C421B3DA9590021AC9F /* libz.dylib */,
+				E81A2C401B3DA94C0021AC9F /* SystemConfiguration.framework */,
+				E81A2C3E1B3DA9450021AC9F /* StoreKit.framework */,
+				E81A2C3C1B3DA93E0021AC9F /* Security.framework */,
+				E81A2C3A1B3DA9390021AC9F /* QuartzCore.framework */,
+				E81A2C381B3DA9330021AC9F /* MobileCoreServices.framework */,
+				E81A2C361B3DA9280021AC9F /* CFNetwork.framework */,
+				E81A2C341B3DA9220021AC9F /* AudioToolbox.framework */,
+				E81A2C321B3DA91A0021AC9F /* CoreGraphics.framework */,
 				E81F60101B39F82C006C5B9F /* CoreLocation.framework */,
 				6670BD0A3CA460F7A52C2282 /* libPods-AL-Masdar.a */,
 			);
@@ -485,7 +545,8 @@
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				CODE_SIGN_IDENTITY = "iPhone Developer: Musaed Alazmi (V4668H5U74)";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer: Musaed Alazmi (V4668H5U74)";
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
@@ -507,6 +568,7 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
+				PROVISIONING_PROFILE = "14e538ea-596c-49a1-9ae4-3bd88a9a252f";
 				SDKROOT = iphoneos;
 			};
 			name = Debug;
@@ -528,7 +590,8 @@
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				CODE_SIGN_IDENTITY = "iPhone Developer: Musaed Alazmi (V4668H5U74)";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer: Musaed Alazmi (V4668H5U74)";
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				ENABLE_NS_ASSERTIONS = NO;
@@ -543,6 +606,7 @@
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
+				PROVISIONING_PROFILE = "14e538ea-596c-49a1-9ae4-3bd88a9a252f";
 				SDKROOT = iphoneos;
 				VALIDATE_PRODUCT = YES;
 			};
@@ -553,10 +617,16 @@
 			baseConfigurationReference = C8F53F59F7EE46E97900FA3B /* Pods-AL-Masdar.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "iPhone Developer: Musaed Alazmi (V4668H5U74)";
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)",
+				);
 				INFOPLIST_FILE = "AL-Masdar/Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE = "14e538ea-596c-49a1-9ae4-3bd88a9a252f";
 			};
 			name = Debug;
 		};
@@ -565,10 +635,16 @@
 			baseConfigurationReference = 5BF2D4E2EEF27E8E945DA18C /* Pods-AL-Masdar.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "iPhone Developer: Musaed Alazmi (V4668H5U74)";
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)",
+				);
 				INFOPLIST_FILE = "AL-Masdar/Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE = "14e538ea-596c-49a1-9ae4-3bd88a9a252f";
 			};
 			name = Release;
 		};
