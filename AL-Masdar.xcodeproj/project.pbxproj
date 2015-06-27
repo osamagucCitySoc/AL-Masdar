@@ -28,6 +28,7 @@
 		E81A2C4F1B3DA9990021AC9F /* Social.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E81A2C4E1B3DA9990021AC9F /* Social.framework */; };
 		E81F60111B39F82C006C5B9F /* CoreLocation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E81F60101B39F82C006C5B9F /* CoreLocation.framework */; };
 		E81F60141B3AC0CE006C5B9F /* CountryChooserTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = E81F60131B3AC0CE006C5B9F /* CountryChooserTableViewController.m */; };
+		E82CCAB01B3EDC7E00B032D1 /* NotificationWordsTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = E82CCAAF1B3EDC7E00B032D1 /* NotificationWordsTableViewController.m */; };
 		E865218E1B3C128600483201 /* Wait-icon-2.png in Resources */ = {isa = PBXBuildFile; fileRef = E865218D1B3C128600483201 /* Wait-icon-2.png */; };
 		E86521901B3C128C00483201 /* Wait-icon.png in Resources */ = {isa = PBXBuildFile; fileRef = E865218F1B3C128C00483201 /* Wait-icon.png */; };
 		E86521921B3C536100483201 /* Button-Close-icon.png in Resources */ = {isa = PBXBuildFile; fileRef = E86521911B3C536100483201 /* Button-Close-icon.png */; };
@@ -87,6 +88,8 @@
 		E81F60101B39F82C006C5B9F /* CoreLocation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreLocation.framework; path = System/Library/Frameworks/CoreLocation.framework; sourceTree = SDKROOT; };
 		E81F60121B3AC0CE006C5B9F /* CountryChooserTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CountryChooserTableViewController.h; sourceTree = "<group>"; };
 		E81F60131B3AC0CE006C5B9F /* CountryChooserTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CountryChooserTableViewController.m; sourceTree = "<group>"; };
+		E82CCAAE1B3EDC7E00B032D1 /* NotificationWordsTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NotificationWordsTableViewController.h; sourceTree = "<group>"; };
+		E82CCAAF1B3EDC7E00B032D1 /* NotificationWordsTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NotificationWordsTableViewController.m; sourceTree = "<group>"; };
 		E865218D1B3C128600483201 /* Wait-icon-2.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Wait-icon-2.png"; sourceTree = "<group>"; };
 		E865218F1B3C128C00483201 /* Wait-icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Wait-icon.png"; sourceTree = "<group>"; };
 		E86521911B3C536100483201 /* Button-Close-icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Button-Close-icon.png"; sourceTree = "<group>"; };
@@ -253,6 +256,8 @@
 				E86521931B3C539E00483201 /* NewsDetailsViewController.h */,
 				E86521941B3C539E00483201 /* NewsDetailsViewController.m */,
 				E8C36F321B39D26800D0453E /* Supporting Files */,
+				E82CCAAE1B3EDC7E00B032D1 /* NotificationWordsTableViewController.h */,
+				E82CCAAF1B3EDC7E00B032D1 /* NotificationWordsTableViewController.m */,
 			);
 			path = "AL-Masdar";
 			sourceTree = "<group>";
@@ -384,6 +389,7 @@
 					};
 					E8C36F471B39D26800D0453E = {
 						CreatedOnToolsVersion = 6.3.1;
+						DevelopmentTeam = 9672ZX333W;
 						TestTargetID = E8C36F2E1B39D26800D0453E;
 					};
 				};
@@ -486,6 +492,7 @@
 				E8C36F351B39D26800D0453E /* main.m in Sources */,
 				E8E037EC1B3AD4770088FDCE /* CRToastWindow.m in Sources */,
 				E81F60141B3AC0CE006C5B9F /* CountryChooserTableViewController.m in Sources */,
+				E82CCAB01B3EDC7E00B032D1 /* NotificationWordsTableViewController.m in Sources */,
 				E8C36F611B39DF8E00D0453E /* Reachability.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -652,6 +659,8 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(SDKROOT)/Developer/Library/Frameworks",
 					"$(inherited)",
@@ -663,6 +672,7 @@
 				INFOPLIST_FILE = "AL-MasdarTests/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE = "";
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/AL-Masdar.app/AL-Masdar";
 			};
 			name = Debug;
@@ -671,6 +681,8 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(SDKROOT)/Developer/Library/Frameworks",
 					"$(inherited)",
@@ -678,6 +690,7 @@
 				INFOPLIST_FILE = "AL-MasdarTests/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE = "";
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/AL-Masdar.app/AL-Masdar";
 			};
 			name = Release;

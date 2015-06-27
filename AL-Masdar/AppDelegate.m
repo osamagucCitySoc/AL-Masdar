@@ -18,14 +18,6 @@
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
     // Override point for customization after application launch.
     
-    if ([[[UIDevice currentDevice] systemVersion] floatValue] >= 8.0)
-    {
-        [[UIApplication sharedApplication] registerUserNotificationSettings:[UIUserNotificationSettings
-                                                                             settingsForTypes:(UIUserNotificationTypeSound | UIUserNotificationTypeAlert | UIUserNotificationTypeNone |UIUserNotificationTypeBadge)
-                                                                             categories:nil]];
-    }
-    
-    [[UIApplication sharedApplication] registerForRemoteNotificationTypes:UIRemoteNotificationTypeSound | UIRemoteNotificationTypeAlert | UIRemoteNotificationTypeBadge | UIRemoteNotificationTypeNone | UIRemoteNotificationTypeNewsstandContentAvailability];
     
     
     
@@ -36,10 +28,39 @@
         [[NSUserDefaults standardUserDefaults]synchronize];
     }
     
+    
+    if(![[NSUserDefaults standardUserDefaults] objectForKey:@"notifWords"])
+    {
+        [[NSUserDefaults standardUserDefaults]setObject:[[NSArray alloc] init] forKey:@"notifWords"];
+        [[NSUserDefaults standardUserDefaults]synchronize];
+    }
+    
     // Initialize Parse.
     [Parse setApplicationId:@"poGzr9XppoOpAAXsPsmlHThMuREuy041CI8pUObx"
                   clientKey:@"j26t2K3012Cn6jhwV1SJSooE6TcqmKwsztKZdk5b"];
     
+    
+    
+    
+    NSString *currSysVer = [[UIDevice currentDevice] systemVersion];
+    if([currSysVer hasPrefix:@"8"])
+    {
+        
+        UIUserNotificationType userNotificationTypes = (UIUserNotificationTypeAlert |
+                                                        UIUserNotificationTypeBadge |
+                                                        UIUserNotificationTypeSound);
+        UIUserNotificationSettings *settings = [UIUserNotificationSettings settingsForTypes:userNotificationTypes
+                                                                                 categories:nil];
+        [application registerUserNotificationSettings:settings];
+        [application registerForRemoteNotifications];
+    }else
+    {
+        [[UIApplication sharedApplication] registerForRemoteNotificationTypes:
+         (UIRemoteNotificationTypeBadge | UIRemoteNotificationTypeSound | UIRemoteNotificationTypeAlert)];
+        
+    }
+    
+
     
     return YES;
 }
@@ -74,6 +95,7 @@
     PFInstallation *currentInstallation = [PFInstallation currentInstallation];
     [currentInstallation setDeviceTokenFromData:deviceToken];
     [currentInstallation saveInBackground];
+
 }
 
 - (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo {

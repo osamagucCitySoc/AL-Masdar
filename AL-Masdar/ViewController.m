@@ -284,7 +284,7 @@
 - (void)locationManager:(CLLocationManager *)manager
      didUpdateLocations:(NSArray *)locations
 {
-    NSLog(@"%@",[locations lastObject]);
+   // NSLog(@"%@",[locations lastObject]);
     locationDone = YES;
     myLocation = [locations lastObject];
     ReverseGeocodeCountry *reverseGeocode = [[ReverseGeocodeCountry alloc] init];

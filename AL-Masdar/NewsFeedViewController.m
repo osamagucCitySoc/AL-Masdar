@@ -13,6 +13,7 @@
 #import "CRToastManager.h"
 #import "CRToast.h"
 #import "NewsDetailsViewController.h"
+#import <Parse/Parse.h>
 
 @interface NewsFeedViewController ()<UITableViewDataSource,UITableViewDelegate,UIActionSheetDelegate,UITextFieldDelegate>
 
@@ -62,11 +63,10 @@
     upperCurrentID = @"-1";
     loadingData = NO;
     dataSource = [[NSMutableArray alloc]init];
-    
+        
     // [tableView setTranslatesAutoresizingMaskIntoConstraints:YES];
     
 }
-
 
 -(void)viewWillAppear:(BOOL)animated
 {
@@ -406,7 +406,7 @@
         sheet = [[UIActionSheet alloc]initWithTitle:@"خيارات الخبر" delegate:self cancelButtonTitle:@"إلغاء" destructiveButtonTitle:@"الأخبار" otherButtonTitles:nil];
     }else
     {
-        sheet = [[UIActionSheet alloc]initWithTitle:@"خيارات الخبر" delegate:self cancelButtonTitle:@"إلغاء" destructiveButtonTitle:@"تحديث" otherButtonTitles:@"البحث",@"يحدث في مدينتي",@"المفضلة",nil];
+        sheet = [[UIActionSheet alloc]initWithTitle:@"خيارات الخبر" delegate:self cancelButtonTitle:@"إلغاء" destructiveButtonTitle:@"تحديث" otherButtonTitles:@"البحث",@"كلمات التنبيه",@"المفضلة",nil];
     }
     sheet.tag = 3;
     [sheet showInView:self.view];
@@ -477,7 +477,10 @@
         [(UILabel*)[cell viewWithTag:3] setText:[NSString stringWithFormat:@"منذ %i إسبوع",(int)(diff/604800)]];
     }
     
-    NSCharacterSet *characterSet = [NSCharacterSet characterSetWithCharactersInString:@" !?,()]"];
+    
+    
+    
+    NSCharacterSet *characterSet = [NSCharacterSet characterSetWithCharactersInString:@" !?,()]#"];
     
     NSString *returnedSecondString = [self replacePattern:@"http://" withReplacement:@"" forString:[news objectForKey:@"body"] usingCharacterSet:characterSet];
     
@@ -735,6 +738,9 @@
                                  [tableView setFrame:frame];
                              }
                              completion:^(BOOL finished){}];
+        }else if(buttonIndex == 2)
+        {
+            [self performSegueWithIdentifier:@"notifSeg" sender:self];
         }else if(buttonIndex == 3)
         {
             NSMutableArray* favs = [[NSMutableArray alloc]initWithArray:[[NSUserDefaults standardUserDefaults] objectForKey:@"favs"] copyItems:YES];

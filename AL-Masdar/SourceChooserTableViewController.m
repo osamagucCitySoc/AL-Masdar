@@ -8,6 +8,9 @@
 
 #import "SourceChooserTableViewController.h"
 #import <Parse/Parse.h>
+#import "Reachability.h"
+#import "CRToastManager.h"
+#import "CRToast.h"
 
 @interface SourceChooserTableViewController ()
 
@@ -180,7 +183,25 @@
 
 -(void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    
+    if(![self connected])
+    {
+        NSDictionary *options = @{
+                                  kCRToastTextKey : @"يجب أن تكون متصلاً بالإنترنت",
+                                  kCRToastTextAlignmentKey : @(NSTextAlignmentCenter),
+                                  kCRToastBackgroundColorKey : [UIColor redColor],
+                                  kCRToastAnimationInTypeKey : @(CRToastAnimationTypeLinear),
+                                  kCRToastAnimationOutTypeKey : @(CRToastAnimationTypeLinear),
+                                  kCRToastAnimationInDirectionKey : @(CRToastAnimationDirectionTop),
+                                  kCRToastAnimationOutDirectionKey : @(CRToastAnimationDirectionBottom),
+                                  kCRToastAnimationInTimeIntervalKey: @(3)
+                                  };
+        [CRToastManager showNotificationWithOptions:options
+                                    completionBlock:^{
+                                        NSLog(@"Completed");
+                                    }];
+        
+    }else
+    {
     NSDictionary* dict = [sectionedSource objectAtIndex:indexPath.section];
     NSDictionary* dict2 = [[dict objectForKey:[[dict allKeys] lastObject]] objectAtIndex:indexPath.row];
 
@@ -196,8 +217,22 @@
         [[NSUserDefaults standardUserDefaults] synchronize];
         
         PFInstallation *currentInstallation = [PFInstallation currentInstallation];
-        [currentInstallation removeObject:[dict2 objectForKey:@"twitterID"] forKey:@"channels"];
-        [currentInstallation saveInBackground];
+        NSArray *subscribedChannels = currentInstallation.channels;
+        NSMutableArray* toBeRemoved = [[NSMutableArray alloc]init];
+        for(NSString* channel in subscribedChannels)
+        {
+            if([channel hasPrefix:[dict2 objectForKey:@"twitterID"]])
+            {
+                [toBeRemoved addObject:channel];
+            }
+        }
+
+        if(toBeRemoved.count>0)
+        {
+            [currentInstallation removeObjectsInArray:toBeRemoved forKey:@"customChannels"];
+            [currentInstallation saveInBackground];
+        }
+        
     }else
     {
         [[self.tableView cellForRowAtIndexPath:indexPath] setAccessoryType:UITableViewCellAccessoryCheckmark];
@@ -208,9 +243,22 @@
         [[NSUserDefaults standardUserDefaults]setObject:mutArray forKey:@"subscriptions"];
         [[NSUserDefaults standardUserDefaults] synchronize];
         
-        PFInstallation *currentInstallation = [PFInstallation currentInstallation];
-        [currentInstallation addUniqueObject:[dict2 objectForKey:@"twitterID"] forKey:@"channels"];
-        [currentInstallation saveInBackground];
+        NSArray* words = [[NSUserDefaults standardUserDefaults] objectForKey:@"notifWords"];
+        NSMutableArray* toBeAdded = [[NSMutableArray alloc]init];
+        for(NSString* word in words)
+        {
+            [toBeAdded addObject:[NSString stringWithFormat:@"%@-%@",[dict2 objectForKey:@"twitterID"],word]];
+        }
+        
+        if(toBeAdded.count>0)
+        {
+            PFInstallation *currentInstallation = [PFInstallation currentInstallation];
+            [currentInstallation addUniqueObjectsFromArray:toBeAdded forKey:@"customChannels"];
+            [currentInstallation saveInBackground];
+            
+        }
+        
+    }
     }
 }
 
@@ -260,5 +308,12 @@
     // Pass the selected object to the new view controller.
 }
 */
+
+- (BOOL)connected
+{
+    Reachability *reachability = [Reachability reachabilityForInternetConnection];
+    NetworkStatus networkStatus = [reachability currentReachabilityStatus];
+    return networkStatus != NotReachable;
+}
 
 @end
