@@ -217,7 +217,7 @@
         [[NSUserDefaults standardUserDefaults] synchronize];
         
         PFInstallation *currentInstallation = [PFInstallation currentInstallation];
-        NSArray *subscribedChannels = currentInstallation.channels;
+        NSArray *subscribedChannels = [currentInstallation objectForKey:@"customChannels"];
         NSMutableArray* toBeRemoved = [[NSMutableArray alloc]init];
         for(NSString* channel in subscribedChannels)
         {

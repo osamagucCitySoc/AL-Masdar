@@ -25,13 +25,13 @@
             shouldBeEnabled = "Yes"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
-            filePath = "AL-Masdar/NewsFeedViewController.m"
-            timestampString = "457117048.138016"
+            filePath = "AL-Masdar/NotificationWordsTableViewController.m"
+            timestampString = "457127665.203217"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "447"
-            endingLineNumber = "447"
-            landmarkName = "-tableView:cellForRowAtIndexPath:"
+            startingLineNumber = "198"
+            endingLineNumber = "198"
+            landmarkName = "-tableView:commitEditingStyle:forRowAtIndexPath:"
             landmarkType = "5">
          </BreakpointContent>
       </BreakpointProxy>
