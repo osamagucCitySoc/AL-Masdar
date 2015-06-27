@@ -480,13 +480,13 @@
     
     
     
-    NSCharacterSet *characterSet = [NSCharacterSet characterSetWithCharactersInString:@" !?,()]#"];
+    /*NSCharacterSet *characterSet = [NSCharacterSet characterSetWithCharactersInString:@" !?,()]#"];
     
     NSString *returnedSecondString = [self replacePattern:@"http://" withReplacement:@"" forString:[news objectForKey:@"body"] usingCharacterSet:characterSet];
     
-    returnedSecondString = [self replacePattern:@"https://" withReplacement:@"" forString:returnedSecondString usingCharacterSet:characterSet];
+    returnedSecondString = [self replacePattern:@"https://" withReplacement:@"" forString:returnedSecondString usingCharacterSet:characterSet];*/
     
-    
+    NSString *returnedSecondString = [news objectForKey:@"body"];
     NSMutableArray* splitting = [[NSMutableArray alloc]initWithArray:[returnedSecondString componentsSeparatedByString:@" "]];
     int currentLength = 0;
     for(int i = 0 ; i < splitting.count ; i++)

@@ -29,6 +29,8 @@
 		E81F60111B39F82C006C5B9F /* CoreLocation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E81F60101B39F82C006C5B9F /* CoreLocation.framework */; };
 		E81F60141B3AC0CE006C5B9F /* CountryChooserTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = E81F60131B3AC0CE006C5B9F /* CountryChooserTableViewController.m */; };
 		E82CCAB01B3EDC7E00B032D1 /* NotificationWordsTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = E82CCAAF1B3EDC7E00B032D1 /* NotificationWordsTableViewController.m */; };
+		E853E7AD1B3F1F390067AC90 /* notif.aif in Resources */ = {isa = PBXBuildFile; fileRef = E853E7AC1B3F1F390067AC90 /* notif.aif */; };
+		E853E7AE1B3F1F390067AC90 /* notif.aif in Resources */ = {isa = PBXBuildFile; fileRef = E853E7AC1B3F1F390067AC90 /* notif.aif */; };
 		E865218E1B3C128600483201 /* Wait-icon-2.png in Resources */ = {isa = PBXBuildFile; fileRef = E865218D1B3C128600483201 /* Wait-icon-2.png */; };
 		E86521901B3C128C00483201 /* Wait-icon.png in Resources */ = {isa = PBXBuildFile; fileRef = E865218F1B3C128C00483201 /* Wait-icon.png */; };
 		E86521921B3C536100483201 /* Button-Close-icon.png in Resources */ = {isa = PBXBuildFile; fileRef = E86521911B3C536100483201 /* Button-Close-icon.png */; };
@@ -90,6 +92,7 @@
 		E81F60131B3AC0CE006C5B9F /* CountryChooserTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CountryChooserTableViewController.m; sourceTree = "<group>"; };
 		E82CCAAE1B3EDC7E00B032D1 /* NotificationWordsTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NotificationWordsTableViewController.h; sourceTree = "<group>"; };
 		E82CCAAF1B3EDC7E00B032D1 /* NotificationWordsTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NotificationWordsTableViewController.m; sourceTree = "<group>"; };
+		E853E7AC1B3F1F390067AC90 /* notif.aif */ = {isa = PBXFileReference; lastKnownFileType = file; path = notif.aif; sourceTree = "<group>"; };
 		E865218D1B3C128600483201 /* Wait-icon-2.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Wait-icon-2.png"; sourceTree = "<group>"; };
 		E865218F1B3C128C00483201 /* Wait-icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Wait-icon.png"; sourceTree = "<group>"; };
 		E86521911B3C536100483201 /* Button-Close-icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Button-Close-icon.png"; sourceTree = "<group>"; };
@@ -170,6 +173,7 @@
 		1E7F24C31B3ADE5E00F95742 /* Images */ = {
 			isa = PBXGroup;
 			children = (
+				E853E7AC1B3F1F390067AC90 /* notif.aif */,
 				E86521911B3C536100483201 /* Button-Close-icon.png */,
 				E865218F1B3C128C00483201 /* Wait-icon.png */,
 				E865218D1B3C128600483201 /* Wait-icon-2.png */,
@@ -426,6 +430,7 @@
 				E8C36F431B39D26800D0453E /* LaunchScreen.xib in Resources */,
 				E865218E1B3C128600483201 /* Wait-icon-2.png in Resources */,
 				1E7F24C71B3ADE7100F95742 /* al-masdar-splash.png in Resources */,
+				E853E7AD1B3F1F390067AC90 /* notif.aif in Resources */,
 				E8C36F401B39D26800D0453E /* Images.xcassets in Resources */,
 				1E7F24C91B3ADE7100F95742 /* al-masdar-splash@3x.png in Resources */,
 			);
@@ -435,6 +440,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				E853E7AE1B3F1F390067AC90 /* notif.aif in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
