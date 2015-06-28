@@ -40,6 +40,7 @@
     
     BOOL showingFav;
     NSMutableArray* favTempStoring;
+    NSString* localURLToOpen;
 }
 
 -(void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
@@ -48,6 +49,10 @@
     {
         NewsDetailsViewController* dst = (NewsDetailsViewController*)[segue destinationViewController];
         [dst setUrl:[[dataSource objectAtIndex:tableView.indexPathForSelectedRow.row] objectForKey:@"newsURL"]];
+    }else if([[segue identifier]isEqualToString:@"urlLocalNotifSeg"])
+    {
+        NewsDetailsViewController* dst = (NewsDetailsViewController*)[segue destinationViewController];
+        [dst setUrl:localURLToOpen];
     }
 }
 
@@ -81,7 +86,31 @@
         [sources addObject:[dict objectForKey:@"twitterID"]];
     }
     [searchView setAlpha:0.0];
+    
+    
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(receiveLocalNotification:)
+                                                 name:@"OpenUrl"
+                                               object:nil];
 }
+
+- (void) receiveLocalNotification:(NSNotification *) notification
+{
+    if([notification.name isEqualToString:@"OpenUrl"])
+    {
+        NSDictionary *userInfo = notification.userInfo;
+        NSString* url = [userInfo objectForKey:@"url"];
+        localURLToOpen = url;
+        [self performSegueWithIdentifier:@"urlLocalNotifSeg" sender:self];
+    }
+}
+
+-(void)viewWillDisappear:(BOOL)animated
+{
+    [super viewWillDisappear:animated];
+    [[NSNotificationCenter defaultCenter]removeObserver:self name:@"" object:nil];
+}
+
 -(void)viewDidAppear:(BOOL)animated
 {
     [verticalLayout setConstant:-86];
@@ -102,6 +131,16 @@
         loadingData = NO;
         [tableView setAlpha:1];
         [retryButton setAlpha:1.0];
+    }
+    
+    if([[NSUserDefaults standardUserDefaults] objectForKey:@"url"])
+    {
+        localURLToOpen = [[NSUserDefaults standardUserDefaults] objectForKey:@"url"];
+
+        [[NSUserDefaults standardUserDefaults]setObject:nil forKey:@"url"];
+        [[NSUserDefaults standardUserDefaults]synchronize];
+        
+        [self performSegueWithIdentifier:@"urlLocalNotifSeg" sender:self];
     }
 }
 
@@ -480,13 +519,13 @@
     
     
     
-    /*NSCharacterSet *characterSet = [NSCharacterSet characterSetWithCharactersInString:@" !?,()]#"];
+    NSCharacterSet *characterSet = [NSCharacterSet characterSetWithCharactersInString:@" !?,()]#"];
     
     NSString *returnedSecondString = [self replacePattern:@"http://" withReplacement:@"" forString:[news objectForKey:@"body"] usingCharacterSet:characterSet];
     
-    returnedSecondString = [self replacePattern:@"https://" withReplacement:@"" forString:returnedSecondString usingCharacterSet:characterSet];*/
+    returnedSecondString = [self replacePattern:@"https://" withReplacement:@"" forString:returnedSecondString usingCharacterSet:characterSet];
     
-    NSString *returnedSecondString = [news objectForKey:@"body"];
+   // NSString *returnedSecondString = [news objectForKey:@"body"];
     NSMutableArray* splitting = [[NSMutableArray alloc]initWithArray:[returnedSecondString componentsSeparatedByString:@" "]];
     int currentLength = 0;
     for(int i = 0 ; i < splitting.count ; i++)

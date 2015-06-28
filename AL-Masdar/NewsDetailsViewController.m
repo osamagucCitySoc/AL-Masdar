@@ -21,20 +21,61 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
 
-    [loadingView setAlpha:0.0];
+    [self openURL];
+    
+}
 
+-(void)openURL
+{
+    [loadingView setAlpha:0.0];
+    
     [webView setDelegate:self];
     
-    self.url = [@"http://www.readability.com/m?url=" stringByAppendingString:self.url];
+    self.url = [self.url stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
+    
+    /*    if(![self.url hasPrefix:@"https"])
+     {
+     self.url = [@"http://mobilizer.instapaper.com/m?url=" stringByAppendingString:self.url];
+     }*/
+    
+    self.url = [@"http://mobilizer.instapaper.com/m?u=" stringByAppendingString:self.url];
     
     [webView loadRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:self.url] cachePolicy:NSURLRequestReturnCacheDataElseLoad timeoutInterval:100]];
-    
 }
 
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];
     // Dispose of any resources that can be recreated.
 }
+
+-(void)viewWillAppear:(BOOL)animated
+{
+    [super viewWillAppear:animated];
+    
+    
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(receiveLocalNotification:)
+                                                 name:@"OpenUrl"
+                                               object:nil];
+}
+
+- (void) receiveLocalNotification:(NSNotification *) notification
+{
+    if([notification.name isEqualToString:@"OpenUrl"])
+    {
+        NSDictionary *userInfo = notification.userInfo;
+        NSString* urll = [userInfo objectForKey:@"url"];
+        self.url = urll;
+        [self openURL];
+    }
+}
+
+-(void)viewWillDisappear:(BOOL)animated
+{
+    [super viewWillDisappear:animated];
+    [[NSNotificationCenter defaultCenter]removeObserver:self name:@"" object:nil];
+}
+
 
 /*
 #pragma mark - Navigation

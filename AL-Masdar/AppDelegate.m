@@ -57,7 +57,24 @@
     {
         [[UIApplication sharedApplication] registerForRemoteNotificationTypes:
          (UIRemoteNotificationTypeBadge | UIRemoteNotificationTypeSound | UIRemoteNotificationTypeAlert)];
-        
+    }
+    
+    
+    NSDictionary *userInfo = [launchOptions objectForKey:UIApplicationLaunchOptionsRemoteNotificationKey];
+    if (userInfo == NULL)
+    {
+        NSLog(@"didFinishLaunchingWithOptions user startup userinfo: %@", userInfo);
+    }
+    else
+    {
+        NSLog(@"didFinishLaunchingWithOptions notification startup userinfo: %@", userInfo);
+        //NSDictionary *userrInfo = [NSDictionary dictionaryWithObject:[userInfo objectForKey:@"u"] forKey:@"url"];
+        //[[NSNotificationCenter defaultCenter] postNotificationName: @"OpenUrl" object:nil userInfo:userrInfo];
+        if([userInfo objectForKey:@"u"])
+        {
+            [[NSUserDefaults standardUserDefaults]setObject:[userInfo objectForKey:@"u"]  forKey:@"url"];
+            [[NSUserDefaults standardUserDefaults]synchronize];
+        }
     }
     
 
@@ -100,6 +117,18 @@
 
 - (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo {
     [PFPush handlePush:userInfo];
+    if ([UIApplication sharedApplication].applicationState==UIApplicationStateActive) {
+        NSLog(@"Notification recieved by running app");
+    }
+    else{
+        NSDictionary* aps = [userInfo objectForKey:@"aps"];
+        if([userInfo objectForKey:@"u"])
+        {
+            NSLog(@"%@",[aps objectForKey:@"u"]);
+            NSDictionary *userrInfo = [NSDictionary dictionaryWithObject:[userInfo objectForKey:@"u"] forKey:@"url"];
+            [[NSNotificationCenter defaultCenter] postNotificationName: @"OpenUrl" object:nil userInfo:userrInfo];
+        }
+    }
 }
 
 @end

@@ -581,6 +581,7 @@
                         <outlet property="verticalLayout" destination="3k2-m2-TLK" id="1zd-Pd-865"/>
                         <segue destination="ifp-yy-Vyy" kind="modal" identifier="detailsSeg" modalTransitionStyle="crossDissolve" id="MPk-vf-ln0"/>
                         <segue destination="i9m-cu-nVh" kind="push" identifier="notifSeg" id="DxH-CZ-eeq"/>
+                        <segue destination="ifp-yy-Vyy" kind="modal" identifier="urlLocalNotifSeg" id="p6X-F7-NhR"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dew-mD-GG9" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -727,10 +728,11 @@
             <objects>
                 <tableViewController id="i9m-cu-nVh" customClass="NotificationWordsTableViewController" sceneMemberID="viewController">
                     <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="44" sectionHeaderHeight="22" sectionFooterHeight="22" id="BGo-rV-OV0">
+                        <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <view key="tableFooterView" contentMode="scaleToFill" id="cYh-LD-xAB">
-                            <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
+                            <rect key="frame" x="0.0" y="130" width="600" height="568"/>
                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                             <subviews>
                                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="contactAdd" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Yyr-Ff-Gss">
@@ -931,5 +933,6 @@
     </resources>
     <inferredMetricsTieBreakers>
         <segue reference="vko-P7-B1t"/>
+        <segue reference="p6X-F7-NhR"/>
     </inferredMetricsTieBreakers>
 </document>
