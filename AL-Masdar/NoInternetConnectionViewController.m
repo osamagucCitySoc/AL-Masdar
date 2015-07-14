@@ -17,7 +17,25 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    // Do any additional setup after loading the view.
+    [NSTimer scheduledTimerWithTimeInterval: 2.0
+                                     target: self
+                                   selector:@selector(ckeckTheNet:)
+                                   userInfo: nil repeats:YES];
+    
+    [self netStartAnimation];
+}
+
+-(void)netStartAnimation
+{
+    [UIView animateWithDuration:1.0
+                          delay:0
+                        options:UIViewAnimationOptionRepeat | UIViewAnimationOptionAutoreverse
+                     animations:^{
+                         [_netImg setAlpha:0.2];
+                     }completion:^(BOOL finished){
+                         [_netImg setAlpha:1.0];
+                         [self netStartAnimation];
+                     }];
 }
 
 - (void)didReceiveMemoryWarning {
@@ -25,23 +43,46 @@
     // Dispose of any resources that can be recreated.
 }
 
-/*
-#pragma mark - Navigation
-
-// In a storyboard-based application, you will often want to do a little preparation before navigation
-- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
-    // Get the new view controller using [segue destinationViewController].
-    // Pass the selected object to the new view controller.
+-(UIStatusBarStyle)preferredStatusBarStyle{
+    return UIStatusBarStyleLightContent;
 }
-*/
-- (IBAction)RetryButtonClicked:(id)sender {
+
+-(void)ckeckTheNet:(NSTimer *)timer {
     if([self connected])
     {
-        [self dismissViewControllerAnimated:YES completion:nil];
+        [_netImg setHidden:YES];
+        [_netReadyImg setHidden:NO];
+        [_netReadyImg setAlpha:0.0];
+        [_netLabel setText:@"تم الإتصال بنجاح"];
+        [UIView animateWithDuration:0.1 delay:0.0 options:0
+                         animations:^{
+                             [_netReadyImg setAlpha:1.0];
+                         }
+                         completion:^(BOOL finished) {
+                             [UIView animateWithDuration:0.1 delay:0.0 options:0
+                                              animations:^{
+                                                  [_netReadyImg setAlpha:0.0];
+                                              }
+                                              completion:^(BOOL finished) {
+                                                  [UIView animateWithDuration:0.1 delay:0.0 options:0
+                                                                   animations:^{
+                                                                       [_netReadyImg setAlpha:1.0];
+                                                                   }
+                                                                   completion:^(BOOL finished) {
+                                                                       [self performSelector:@selector(closeMe) withObject:nil afterDelay:1.0];
+                                                                   }];
+                                                  [UIView commitAnimations];
+                                              }];
+                             [UIView commitAnimations];
+                         }];
+        [UIView commitAnimations];
     }
 }
 
-
+-(void)closeMe
+{
+    [self dismissViewControllerAnimated:YES completion:nil];
+}
 
 - (BOOL)connected
 {

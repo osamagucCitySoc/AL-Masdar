@@ -27,6 +27,8 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     
+    [self setTheColor];
+    
     NSMutableArray* myDataSource = [[NSMutableArray alloc]init];
     sectionedSource = [[NSMutableArray alloc]init];
     
@@ -132,6 +134,52 @@
     [self.tableView setNeedsDisplay];
 }
 
+-(void)setTheColor
+{
+    if ([[NSUserDefaults standardUserDefaults] integerForKey:@"currentColor"] == 1)
+    {
+        [self.navigationController.navigationBar setBarStyle:UIBarStyleBlack];
+        [self.navigationController.navigationBar setTintColor:[UIColor whiteColor]];
+        [self.navigationController.navigationBar setBarTintColor:[UIColor colorWithRed:50.0/255.0 green:50.0/255.0 blue:50.0/255.0 alpha:1.0]];
+    }
+    else if ([[NSUserDefaults standardUserDefaults] integerForKey:@"currentColor"] == 2)
+    {
+        [self.navigationController.navigationBar setBarStyle:UIBarStyleDefault];
+        [self.navigationController.navigationBar setTintColor:[UIColor colorWithRed:37.0/255.0 green:37.0/255.0 blue:37.0/255.0 alpha:1.0]];
+        [self.navigationController.navigationBar setBarTintColor:[UIColor colorWithRed:241.0/255.0 green:241.0/255.0 blue:241.0/255.0 alpha:1.0]];
+    }
+    else if ([[NSUserDefaults standardUserDefaults] integerForKey:@"currentColor"] == 3)
+    {
+        [self.navigationController.navigationBar setBarStyle:UIBarStyleBlack];
+        [self.navigationController.navigationBar setTintColor:[UIColor whiteColor]];
+        [self.navigationController.navigationBar setBarTintColor:[UIColor colorWithRed:33.0/255.0 green:125.0/255.0 blue:140.0/255.0 alpha:1.0]];
+    }
+    else if ([[NSUserDefaults standardUserDefaults] integerForKey:@"currentColor"] == 4)
+    {
+        [self.navigationController.navigationBar setBarStyle:UIBarStyleBlack];
+        [self.navigationController.navigationBar setTintColor:[UIColor whiteColor]];
+        [self.navigationController.navigationBar setBarTintColor:[UIColor colorWithRed:118.0/255.0 green:0.0/255.0 blue:161.0/255.0 alpha:1.0]];
+    }
+    else if ([[NSUserDefaults standardUserDefaults] integerForKey:@"currentColor"] == 5)
+    {
+        [self.navigationController.navigationBar setBarStyle:UIBarStyleBlack];
+        [self.navigationController.navigationBar setTintColor:[UIColor whiteColor]];
+        [self.navigationController.navigationBar setBarTintColor:[UIColor colorWithRed:26.0/255.0 green:140.0/255.0 blue:55.0/255.0 alpha:1.0]];
+    }
+    else if ([[NSUserDefaults standardUserDefaults] integerForKey:@"currentColor"] == 6)
+    {
+        [self.navigationController.navigationBar setBarStyle:UIBarStyleBlack];
+        [self.navigationController.navigationBar setTintColor:[UIColor whiteColor]];
+        [self.navigationController.navigationBar setBarTintColor:[UIColor colorWithRed:185.0/255.0 green:21.0/255.0 blue:57.0/255.0 alpha:1.0]];
+    }
+    else
+    {
+        [self.navigationController.navigationBar setBarStyle:UIBarStyleBlack];
+        [self.navigationController.navigationBar setTintColor:[UIColor whiteColor]];
+        [self.navigationController.navigationBar setBarTintColor:[UIColor colorWithRed:50.0/255.0 green:50.0/255.0 blue:50.0/255.0 alpha:1.0]];
+    }
+}
+
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];
     // Dispose of any resources that can be recreated.
@@ -149,10 +197,21 @@
     return [[dict objectForKey:[[dict allKeys] lastObject]] count];
 }
 
--(NSString*)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)sectionn
+-(UIView *)tableView:(UITableView *)tableView2 viewForHeaderInSection:(NSInteger)section2
 {
-    NSDictionary* dict = [sectionedSource objectAtIndex:sectionn];
-    return [[[dict objectForKey:[[dict allKeys] lastObject]] lastObject] objectForKey:@"subSection"];
+    UIView *view = [[UIView alloc] initWithFrame:CGRectMake(0, 0, tableView2.frame.size.width, 30)];
+    UILabel *label = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, tableView2.frame.size.width, 30)];
+    [label setFont:[UIFont systemFontOfSize:16]];
+    [label setTextAlignment:NSTextAlignmentRight];
+    [label setTextColor:[UIColor colorWithRed:50.0/255.0 green:50.0/255.0 blue:50.0/255.0 alpha:1.0]];
+    
+    NSDictionary* dict = [sectionedSource objectAtIndex:section2];
+    
+    [label setText:[@"  " stringByAppendingFormat:@"%@",[[[dict objectForKey:[[dict allKeys] lastObject]] lastObject] objectForKey:@"subSection"]]];
+    
+    [view addSubview:label];
+    [view setBackgroundColor:[UIColor colorWithRed:230.0/255.0 green:230.0/255.0 blue:230.0/255.0 alpha:0.9]];
+    return view;
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
@@ -164,106 +223,166 @@
     {
         cell = [[UITableViewCell alloc]initWithStyle:UITableViewCellStyleDefault reuseIdentifier:cellID];
     }
-    [cell setAccessoryType:UITableViewCellAccessoryNone];
+    
+    cell.selectedBackgroundView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"settings-selected-back.png"]];
     
     NSDictionary* dict = [sectionedSource objectAtIndex:indexPath.section];
     NSDictionary* dict2 = [[dict objectForKey:[[dict allKeys] lastObject]] objectAtIndex:indexPath.row];
-
     
-    [[cell textLabel]setText:[dict2 objectForKey:@"name"]];
+    [(UILabel*)[cell viewWithTag:1] setText:[dict2 objectForKey:@"name"]];
     
+    [(UILabel*)[cell viewWithTag:4] setText:[dict2 objectForKey:@"descc"]];
+    
+    [[[cell viewWithTag:2] layer] setCornerRadius:22];
+    [cell viewWithTag:2].layer.shouldRasterize = YES;
+    
+    [(UIImageView*)[cell viewWithTag:2] hnk_setImageFromURL:[NSURL URLWithString:[dict2 objectForKey:@"icon"]] placeholder:nil];
     
     if([[[NSUserDefaults standardUserDefaults] objectForKey:@"subscriptions"] containsObject:dict2])
     {
-        [cell setAccessoryType:UITableViewCellAccessoryCheckmark];
+        [(UIImageView*)[cell viewWithTag:3] setImage:[UIImage imageNamed:@"check-on.png"]];
+    }
+    else
+    {
+        [(UIImageView*)[cell viewWithTag:3] setImage:[UIImage imageNamed:@"check-off.png"]];
     }
     
     return cell;
+}
+
+-(void)showStatusBarMsg:(NSString*)theMsg isRed:(BOOL)isRed
+{
+    UIColor *selectedColor;
+    
+    if (isRed)
+    {
+        if ([[NSUserDefaults standardUserDefaults] integerForKey:@"currentColor"] == 6)
+        {
+            selectedColor = [UIColor colorWithRed:20.0/255.0 green:20.0/255.0 blue:20.0/255.0 alpha:1.0];
+        }
+        else
+        {
+            selectedColor = [UIColor colorWithRed:209.0/255.0 green:65.0/255.0 blue:65.0/255.0 alpha:1.0];
+        }
+    }
+    else
+    {
+        selectedColor = [UIColor colorWithRed:140.0/255.0 green:117.0/255.0 blue:26.0/255.0 alpha:1.0];
+    }
+    
+    NSDictionary *options = @{
+                              kCRToastTextKey : theMsg,
+                              kCRToastTextAlignmentKey : @(NSTextAlignmentCenter),
+                              kCRToastBackgroundColorKey : selectedColor,
+                              kCRToastAnimationInTypeKey : @(CRToastAnimationTypeLinear),
+                              kCRToastAnimationOutTypeKey : @(CRToastAnimationTypeLinear),
+                              kCRToastAnimationInDirectionKey : @(CRToastAnimationDirectionTop),
+                              kCRToastAnimationOutDirectionKey : @(CRToastAnimationDirectionBottom)
+                              };
+    [CRToastManager showNotificationWithOptions:options
+                                completionBlock:^{
+                                    NSLog(@"Completed");
+                                }];
 }
 
 -(void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
     if(![self connected])
     {
-        NSDictionary *options = @{
-                                  kCRToastTextKey : @"يجب أن تكون متصلاً بالإنترنت",
-                                  kCRToastTextAlignmentKey : @(NSTextAlignmentCenter),
-                                  kCRToastBackgroundColorKey : [UIColor redColor],
-                                  kCRToastAnimationInTypeKey : @(CRToastAnimationTypeLinear),
-                                  kCRToastAnimationOutTypeKey : @(CRToastAnimationTypeLinear),
-                                  kCRToastAnimationInDirectionKey : @(CRToastAnimationDirectionTop),
-                                  kCRToastAnimationOutDirectionKey : @(CRToastAnimationDirectionBottom),
-                                  kCRToastAnimationInTimeIntervalKey: @(3)
-                                  };
-        [CRToastManager showNotificationWithOptions:options
-                                    completionBlock:^{
-                                        NSLog(@"Completed");
-                                    }];
+        [self showStatusBarMsg:@"يجب أن تكون متصلاً بالإنترنت" isRed:YES];
         
     }else
     {
-    NSDictionary* dict = [sectionedSource objectAtIndex:indexPath.section];
-    NSDictionary* dict2 = [[dict objectForKey:[[dict allKeys] lastObject]] objectAtIndex:indexPath.row];
-
-
-    if([[[NSUserDefaults standardUserDefaults] objectForKey:@"subscriptions"] containsObject:dict2])
-    {
-        [[self.tableView cellForRowAtIndexPath:indexPath] setAccessoryType:UITableViewCellAccessoryNone];
-      
-        NSMutableArray* mutArray = [[NSMutableArray alloc]initWithArray:[[NSUserDefaults standardUserDefaults] objectForKey:@"subscriptions"] copyItems:YES];
-        [mutArray removeObject:dict2];
+        NSDictionary* dict = [sectionedSource objectAtIndex:indexPath.section];
+        NSDictionary* dict2 = [[dict objectForKey:[[dict allKeys] lastObject]] objectAtIndex:indexPath.row];
         
-        [[NSUserDefaults standardUserDefaults]setObject:mutArray forKey:@"subscriptions"];
-        [[NSUserDefaults standardUserDefaults] synchronize];
+        UITableViewCell *cell = [tableView cellForRowAtIndexPath:indexPath];
         
-        PFInstallation *currentInstallation = [PFInstallation currentInstallation];
-        NSArray *subscribedChannels = [currentInstallation objectForKey:@"customChannels"];
-        NSMutableArray* toBeRemoved = [[NSMutableArray alloc]init];
-        for(NSString* channel in subscribedChannels)
+        if([[[NSUserDefaults standardUserDefaults] objectForKey:@"subscriptions"] containsObject:dict2])
         {
-            if([channel hasPrefix:[dict2 objectForKey:@"twitterID"]])
-            {
-                [toBeRemoved addObject:channel];
-            }
-        }
-
-        if(toBeRemoved.count>0)
-        {
-            [currentInstallation removeObjectsInArray:toBeRemoved forKey:@"customChannels"];
-            [currentInstallation saveInBackground];
-        }
-        
-    }else
-    {
-        [[self.tableView cellForRowAtIndexPath:indexPath] setAccessoryType:UITableViewCellAccessoryCheckmark];
-        
-        NSMutableArray* mutArray = [[NSMutableArray alloc]initWithArray:[[NSUserDefaults standardUserDefaults] objectForKey:@"subscriptions"] copyItems:YES];
-        [mutArray addObject:dict2];
-        
-        [[NSUserDefaults standardUserDefaults]setObject:mutArray forKey:@"subscriptions"];
-        [[NSUserDefaults standardUserDefaults] synchronize];
-        
-        NSArray* words = [[NSUserDefaults standardUserDefaults] objectForKey:@"notifWords"];
-        NSMutableArray* toBeAdded = [[NSMutableArray alloc]init];
-        for(NSString* word in words)
-        {
-            [toBeAdded addObject:[NSString stringWithFormat:@"%@-%@",[dict2 objectForKey:@"twitterID"],word]];
-        }
-        
-        if(toBeAdded.count>0)
-        {
+            [(UIImageView*)[cell viewWithTag:3] setAlpha:0.0];
+            [UIView animateWithDuration:0.4 delay:0.0 options:0
+                             animations:^{
+                                 [(UIImageView*)[cell viewWithTag:3] setAlpha:1.0];
+                                 [(UIImageView*)[cell viewWithTag:3] setImage:[UIImage imageNamed:@"check-off.png"]];
+                             }
+                             completion:^(BOOL finished) {
+                             }];
+            [UIView commitAnimations];
+            
+            NSMutableArray* mutArray = [[NSMutableArray alloc]initWithArray:[[NSUserDefaults standardUserDefaults] objectForKey:@"subscriptions"] copyItems:YES];
+            [mutArray removeObject:dict2];
+            
+            [[NSUserDefaults standardUserDefaults]setObject:mutArray forKey:@"subscriptions"];
+            [[NSUserDefaults standardUserDefaults] synchronize];
+            
             PFInstallation *currentInstallation = [PFInstallation currentInstallation];
-            [currentInstallation addUniqueObjectsFromArray:toBeAdded forKey:@"customChannels"];
-            [currentInstallation saveInBackground];
+            NSArray *subscribedChannels = [currentInstallation objectForKey:@"customChannels"];
+            NSMutableArray* toBeRemoved = [[NSMutableArray alloc]init];
+            for(NSString* channel in subscribedChannels)
+            {
+                if([channel hasPrefix:[dict2 objectForKey:@"twitterID"]])
+                {
+                    [toBeRemoved addObject:channel];
+                }
+            }
+            
+            if([[NSUserDefaults standardUserDefaults] boolForKey:@"isUrgentPush"])
+            {
+                [currentInstallation removeObject:[NSString stringWithFormat:@"c%@",[dict2 objectForKey:@"twitterID"]] forKey:@"urgentPush"];
+                [currentInstallation saveInBackground];
+            }
+            
+            if(toBeRemoved.count>0)
+            {
+                [currentInstallation removeObjectsInArray:toBeRemoved forKey:@"customChannels"];
+                [currentInstallation saveInBackground];
+            }
+            
+        }else
+        {
+            [(UIImageView*)[cell viewWithTag:3] setAlpha:0.0];
+            [UIView animateWithDuration:0.4 delay:0.0 options:0
+                             animations:^{
+                                 [(UIImageView*)[cell viewWithTag:3] setAlpha:1.0];
+                                 [(UIImageView*)[cell viewWithTag:3] setImage:[UIImage imageNamed:@"check-on.png"]];
+                             }
+                             completion:^(BOOL finished) {
+                             }];
+            [UIView commitAnimations];
+            
+            NSMutableArray* mutArray = [[NSMutableArray alloc]initWithArray:[[NSUserDefaults standardUserDefaults] objectForKey:@"subscriptions"] copyItems:YES];
+            [mutArray addObject:dict2];
+            
+            [[NSUserDefaults standardUserDefaults]setObject:mutArray forKey:@"subscriptions"];
+            [[NSUserDefaults standardUserDefaults] synchronize];
+            
+            NSArray* words = [[NSUserDefaults standardUserDefaults] objectForKey:@"notifWords"];
+            NSMutableArray* toBeAdded = [[NSMutableArray alloc]init];
+            
+            for(NSString* word in words)
+            {
+                [toBeAdded addObject:[NSString stringWithFormat:@"%@-%@",[dict2 objectForKey:@"twitterID"],word]];
+            }
+            
+            if([[NSUserDefaults standardUserDefaults] boolForKey:@"isUrgentPush"])
+            {
+                PFInstallation *currentInstallation = [PFInstallation currentInstallation];
+                [currentInstallation addUniqueObject:[NSString stringWithFormat:@"c%@",[dict2 objectForKey:@"twitterID"]] forKey:@"urgentPush"];
+                [currentInstallation saveInBackground];
+            }
+            
+            if(toBeAdded.count>0)
+            {
+                PFInstallation *currentInstallation = [PFInstallation currentInstallation];
+                [currentInstallation addUniqueObjectsFromArray:toBeAdded forKey:@"customChannels"];
+                [currentInstallation saveInBackground];
+                
+            }
             
         }
-        
-    }
     }
 }
-
-
-
 
 /*
 // Override to support conditional editing of the table view.

@@ -7,6 +7,7 @@
 //
 
 #import <UIKit/UIKit.h>
+#import <Haneke/Haneke.h>
 
 @interface SourceChooserTableViewController : UITableViewController
 

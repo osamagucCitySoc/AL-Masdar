@@ -27,7 +27,14 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     
+    [[self tableView] setEditing:YES];
+    
+    self.tableView.contentInset = UIEdgeInsetsMake(0, 0, 44, 0);
+    
     sources = [[NSMutableArray alloc]init];
+    
+    [[self.navigationController view] addSubview:upperView];
+    [upperView setFrame:[[self.navigationController view] frame]];
     
     NSArray* subs = [[NSUserDefaults standardUserDefaults] objectForKey:@"subscriptions"];
     for(NSDictionary* dict in subs)
@@ -35,11 +42,127 @@
         [sources addObject:[dict objectForKey:@"twitterID"]];
     }
     
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(keyboardWillShow:)
+                                                 name:UIKeyboardWillShowNotification
+                                               object:nil];
+    
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(keyboardWillHide:)
+                                                 name:UIKeyboardWillHideNotification
+                                               object:nil];
+    
+    //[newWordTextField becomeFirstResponder];
+    
+    
+    [self.tableView setFrame:CGRectMake(self.tableView.frame.origin.x, self.tableView.frame.origin.y, self.tableView.frame.size.width, self.tableView.frame.size.height)];
 }
 
--(void)viewDidAppear:(BOOL)animated
+- (void)keyboardWillShow:(NSNotification *)notif
 {
-    [super viewDidAppear:animated];
+    CGRect keyboardSize = [[[notif userInfo] objectForKey:UIKeyboardFrameEndUserInfoKey] CGRectValue];
+    
+    [upperView setFrame:CGRectMake(keyboardSize.origin.x, keyboardSize.origin.y-44, keyboardSize.size.width, keyboardSize.size.height)];
+    
+    [NSTimer scheduledTimerWithTimeInterval: 0.5
+                                     target: self
+                                   selector:@selector(showUpperView:)
+                                   userInfo: nil repeats:NO];
+}
+
+- (void)keyboardWillHide:(NSNotification *)notif
+{
+    CGRect keyboardSize = [[[notif userInfo] objectForKey:UIKeyboardFrameEndUserInfoKey] CGRectValue];
+    
+    [upperView setFrame:CGRectMake(keyboardSize.origin.x, keyboardSize.origin.y-44, keyboardSize.size.width, keyboardSize.size.height)];
+}
+
+-(void)showUpperView:(NSTimer *)timer {
+    [upperView setHidden:NO];
+}
+
+-(void)setTheColor
+{
+    if ([[NSUserDefaults standardUserDefaults] integerForKey:@"currentColor"] == 1)
+    {
+        [self.navigationController.navigationBar setBarStyle:UIBarStyleBlack];
+        [self.navigationController.navigationBar setTintColor:[UIColor whiteColor]];
+        [self.navigationController.navigationBar setBarTintColor:[UIColor colorWithRed:50.0/255.0 green:50.0/255.0 blue:50.0/255.0 alpha:1.0]];
+    }
+    else if ([[NSUserDefaults standardUserDefaults] integerForKey:@"currentColor"] == 2)
+    {
+        [self.navigationController.navigationBar setBarStyle:UIBarStyleDefault];
+        [self.navigationController.navigationBar setTintColor:[UIColor colorWithRed:37.0/255.0 green:37.0/255.0 blue:37.0/255.0 alpha:1.0]];
+        [self.navigationController.navigationBar setBarTintColor:[UIColor colorWithRed:241.0/255.0 green:241.0/255.0 blue:241.0/255.0 alpha:1.0]];
+    }
+    else if ([[NSUserDefaults standardUserDefaults] integerForKey:@"currentColor"] == 3)
+    {
+        [self.navigationController.navigationBar setBarStyle:UIBarStyleBlack];
+        [self.navigationController.navigationBar setTintColor:[UIColor whiteColor]];
+        [self.navigationController.navigationBar setBarTintColor:[UIColor colorWithRed:33.0/255.0 green:125.0/255.0 blue:140.0/255.0 alpha:1.0]];
+    }
+    else if ([[NSUserDefaults standardUserDefaults] integerForKey:@"currentColor"] == 4)
+    {
+        [self.navigationController.navigationBar setBarStyle:UIBarStyleBlack];
+        [self.navigationController.navigationBar setTintColor:[UIColor whiteColor]];
+        [self.navigationController.navigationBar setBarTintColor:[UIColor colorWithRed:118.0/255.0 green:0.0/255.0 blue:161.0/255.0 alpha:1.0]];
+    }
+    else if ([[NSUserDefaults standardUserDefaults] integerForKey:@"currentColor"] == 5)
+    {
+        [self.navigationController.navigationBar setBarStyle:UIBarStyleBlack];
+        [self.navigationController.navigationBar setTintColor:[UIColor whiteColor]];
+        [self.navigationController.navigationBar setBarTintColor:[UIColor colorWithRed:26.0/255.0 green:140.0/255.0 blue:55.0/255.0 alpha:1.0]];
+    }
+    else if ([[NSUserDefaults standardUserDefaults] integerForKey:@"currentColor"] == 6)
+    {
+        [self.navigationController.navigationBar setBarStyle:UIBarStyleBlack];
+        [self.navigationController.navigationBar setTintColor:[UIColor whiteColor]];
+        [self.navigationController.navigationBar setBarTintColor:[UIColor colorWithRed:185.0/255.0 green:21.0/255.0 blue:57.0/255.0 alpha:1.0]];
+    }
+    else
+    {
+        [self.navigationController.navigationBar setBarStyle:UIBarStyleBlack];
+        [self.navigationController.navigationBar setTintColor:[UIColor whiteColor]];
+        [self.navigationController.navigationBar setBarTintColor:[UIColor colorWithRed:50.0/255.0 green:50.0/255.0 blue:50.0/255.0 alpha:1.0]];
+    }
+}
+
+-(void)viewWillAppear:(BOOL)animated
+{
+    [super viewWillAppear:animated];
+    
+    [self setTheColor];
+    
+    if (![[NSUserDefaults standardUserDefaults] boolForKey:@"help2Done"])
+    {
+        [[NSUserDefaults standardUserDefaults] setBool:YES forKey:@"help2Done"];
+        [[NSUserDefaults standardUserDefaults] synchronize];
+        
+        [SADAHMsg showMsgWithTitle:@"التنبيه بكلمة أو جملة" andMsg:@"سيتم إرسال إشعار لك بكل الأخبار التي تحتوي الكلمة أو الجملة التي تحفظها هنا." inView:[self.navigationController view] withCase:1 withBlock:^(BOOL finished) {
+            if(finished){
+                [newWordTextField becomeFirstResponder];
+            }
+        }];
+    }
+    else
+    {
+        [newWordTextField becomeFirstResponder];
+    }
+}
+
+-(void)viewWillDisappear:(BOOL)animated
+{
+    [super viewWillDisappear:animated];
+    
+    [newWordTextField resignFirstResponder];
+}
+
+-(void)viewDidDisappear:(BOOL)animated
+{
+    [super viewDidDisappear:animated];
+    
+    [upperView removeFromSuperview];
+    
  /*   CGRect frame = upperView.frame;
     frame.size.height = 44;
     [upperView setFrame:frame];
@@ -57,46 +180,50 @@
     // Dispose of any resources that can be recreated.
 }
 
--(void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event
+-(void)showStatusBarMsg:(NSString*)theMsg isRed:(BOOL)isRed
 {
-    [newWordTextField resignFirstResponder];
-}
-- (IBAction)addButtonClicked:(id)sender {
-    [newWordTextField resignFirstResponder];
-    if(newWordTextField.text.length < 3)
+    UIColor *selectedColor;
+    
+    if (isRed)
     {
-        NSDictionary *options = @{
-                                  kCRToastTextKey : @"يجب إدخال كلمة واحدة من ٣ أحرف على الأقل",
-                                  kCRToastTextAlignmentKey : @(NSTextAlignmentCenter),
-                                  kCRToastBackgroundColorKey : [UIColor redColor],
-                                  kCRToastAnimationInTypeKey : @(CRToastAnimationTypeLinear),
-                                  kCRToastAnimationOutTypeKey : @(CRToastAnimationTypeLinear),
-                                  kCRToastAnimationInDirectionKey : @(CRToastAnimationDirectionTop),
-                                  kCRToastAnimationOutDirectionKey : @(CRToastAnimationDirectionBottom),
-                                  kCRToastAnimationInTimeIntervalKey: @(3)
-                                  };
-        [CRToastManager showNotificationWithOptions:options
-                                    completionBlock:^{
-                                        NSLog(@"Completed");
-                                    }];
+        if ([[NSUserDefaults standardUserDefaults] integerForKey:@"currentColor"] == 6)
+        {
+            selectedColor = [UIColor colorWithRed:20.0/255.0 green:20.0/255.0 blue:20.0/255.0 alpha:1.0];
+        }
+        else
+        {
+            selectedColor = [UIColor colorWithRed:209.0/255.0 green:65.0/255.0 blue:65.0/255.0 alpha:1.0];
+        }
+    }
+    else
+    {
+        selectedColor = [UIColor colorWithRed:140.0/255.0 green:117.0/255.0 blue:26.0/255.0 alpha:1.0];
+    }
+    
+    NSDictionary *options = @{
+                              kCRToastTextKey : theMsg,
+                              kCRToastTextAlignmentKey : @(NSTextAlignmentCenter),
+                              kCRToastBackgroundColorKey : selectedColor,
+                              kCRToastAnimationInTypeKey : @(CRToastAnimationTypeLinear),
+                              kCRToastAnimationOutTypeKey : @(CRToastAnimationTypeLinear),
+                              kCRToastAnimationInDirectionKey : @(CRToastAnimationDirectionTop),
+                              kCRToastAnimationOutDirectionKey : @(CRToastAnimationDirectionBottom)
+                              };
+    [CRToastManager showNotificationWithOptions:options
+                                completionBlock:^{
+                                    NSLog(@"Completed");
+                                }];
+}
+
+- (IBAction)addButtonClicked:(id)sender {
+    if([newWordTextField.text stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]].length < 3)
+    {
+        [self showStatusBarMsg:@"يجب إدخال كلمة واحدة من ٣ أحرف على الأقل" isRed:YES];
     }else
     {
         if(![self connected])
         {
-            NSDictionary *options = @{
-                                      kCRToastTextKey : @"يجب أن تكون متصلاً بالإنترنت",
-                                      kCRToastTextAlignmentKey : @(NSTextAlignmentCenter),
-                                      kCRToastBackgroundColorKey : [UIColor redColor],
-                                      kCRToastAnimationInTypeKey : @(CRToastAnimationTypeLinear),
-                                      kCRToastAnimationOutTypeKey : @(CRToastAnimationTypeLinear),
-                                      kCRToastAnimationInDirectionKey : @(CRToastAnimationDirectionTop),
-                                      kCRToastAnimationOutDirectionKey : @(CRToastAnimationDirectionBottom),
-                                      kCRToastAnimationInTimeIntervalKey: @(3)
-                                      };
-            [CRToastManager showNotificationWithOptions:options
-                                        completionBlock:^{
-                                            NSLog(@"Completed");
-                                        }];
+            [self showStatusBarMsg:@"يجب أن تكون متصلاً بالإنترنت" isRed:YES];
             
         }else
         {
@@ -120,10 +247,12 @@
             [[NSUserDefaults standardUserDefaults]setObject:mutArray forKey:@"notifWords"];
             [[NSUserDefaults standardUserDefaults] synchronize];
             
-            [self.tableView reloadData];
+            [self.tableView insertRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:mutArray.count-1 inSection:0]] withRowAnimation:UITableViewRowAnimationMiddle];
             [self.tableView setNeedsDisplay];
             
+            [self.tableView scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:[[[NSUserDefaults standardUserDefaults] objectForKey:@"notifWords"] count]-1 inSection:0] atScrollPosition:UITableViewScrollPositionBottom animated:YES];
             
+            [newWordTextField setText:@""];
         }
     }
 }
@@ -138,6 +267,20 @@
     return [[[NSUserDefaults standardUserDefaults] objectForKey:@"notifWords"] count];
 }
 
+-(UIView *)tableView:(UITableView *)tableView2 viewForHeaderInSection:(NSInteger)section
+{
+    UIView *view = [[UIView alloc] initWithFrame:CGRectMake(0, 0, tableView2.frame.size.width, 30)];
+    UILabel *label = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, tableView2.frame.size.width, 30)];
+    [label setFont:[UIFont systemFontOfSize:16]];
+    [label setTextAlignment:NSTextAlignmentRight];
+    [label setTextColor:[UIColor colorWithRed:85.0/255.0 green:85.0/255.0 blue:85.0/255.0 alpha:0.9]];
+    
+    [label setText:@"  سيتم تنبيهك بهذه الكلمات | الجمل"];
+    
+    [view addSubview:label];
+    [view setBackgroundColor:[UIColor colorWithRed:230.0/255 green:230.0/255 blue:230.0/255 alpha:0.9]];
+    return view;
+}
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
     static NSString* cellID = @"notifCell";
@@ -158,26 +301,12 @@
     return YES;
 }
 
-
 - (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath {
     if (editingStyle == UITableViewCellEditingStyleDelete) {
         // Delete the row from the data source
         if(![self connected])
         {
-            NSDictionary *options = @{
-                                      kCRToastTextKey : @"يجب أن تكون متصلاً بالإنترنت",
-                                      kCRToastTextAlignmentKey : @(NSTextAlignmentCenter),
-                                      kCRToastBackgroundColorKey : [UIColor redColor],
-                                      kCRToastAnimationInTypeKey : @(CRToastAnimationTypeLinear),
-                                      kCRToastAnimationOutTypeKey : @(CRToastAnimationTypeLinear),
-                                      kCRToastAnimationInDirectionKey : @(CRToastAnimationDirectionTop),
-                                      kCRToastAnimationOutDirectionKey : @(CRToastAnimationDirectionBottom),
-                                      kCRToastAnimationInTimeIntervalKey: @(3)
-                                      };
-            [CRToastManager showNotificationWithOptions:options
-                                        completionBlock:^{
-                                            NSLog(@"Completed");
-                                        }];
+            [self showStatusBarMsg:@"يجب أن تكون متصلاً بالإنترنت" isRed:YES];
             
         }else
         {
@@ -189,7 +318,7 @@
             [[NSUserDefaults standardUserDefaults]setObject:mutArray forKey:@"notifWords"];
             [[NSUserDefaults standardUserDefaults] synchronize];
             
-            [tableView deleteRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationFade];
+            [tableView deleteRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationMiddle];
             
             
             PFInstallation *currentInstallation = [PFInstallation currentInstallation];
@@ -213,7 +342,6 @@
         }
     }
 }
-
 
 - (BOOL)connected
 {

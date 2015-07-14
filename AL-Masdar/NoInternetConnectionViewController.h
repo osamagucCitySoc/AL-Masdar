@@ -10,4 +10,8 @@
 
 @interface NoInternetConnectionViewController : UIViewController
 
+@property (strong, nonatomic) IBOutlet UIImageView *netImg;
+@property (strong, nonatomic) IBOutlet UIImageView *netReadyImg;
+@property (strong, nonatomic) IBOutlet UILabel *netLabel;
+
 @end

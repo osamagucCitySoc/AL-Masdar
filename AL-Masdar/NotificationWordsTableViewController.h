@@ -7,7 +7,9 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "SADAHMsg.h"
 
 @interface NotificationWordsTableViewController : UITableViewController
 
+@property (strong, nonatomic) IBOutlet UIToolbar *acToolBar;
 @end

@@ -18,6 +18,51 @@
     NSMutableArray* countries;
 }
 
+-(void)setTheColor
+{
+    if ([[NSUserDefaults standardUserDefaults] integerForKey:@"currentColor"] == 1)
+    {
+        [self.navigationController.navigationBar setBarStyle:UIBarStyleBlack];
+        [self.navigationController.navigationBar setTintColor:[UIColor whiteColor]];
+        [self.navigationController.navigationBar setBarTintColor:[UIColor colorWithRed:50.0/255.0 green:50.0/255.0 blue:50.0/255.0 alpha:1.0]];
+    }
+    else if ([[NSUserDefaults standardUserDefaults] integerForKey:@"currentColor"] == 2)
+    {
+        [self.navigationController.navigationBar setBarStyle:UIBarStyleDefault];
+        [self.navigationController.navigationBar setTintColor:[UIColor colorWithRed:37.0/255.0 green:37.0/255.0 blue:37.0/255.0 alpha:1.0]];
+        [self.navigationController.navigationBar setBarTintColor:[UIColor colorWithRed:241.0/255.0 green:241.0/255.0 blue:241.0/255.0 alpha:1.0]];
+    }
+    else if ([[NSUserDefaults standardUserDefaults] integerForKey:@"currentColor"] == 3)
+    {
+        [self.navigationController.navigationBar setBarStyle:UIBarStyleBlack];
+        [self.navigationController.navigationBar setTintColor:[UIColor whiteColor]];
+        [self.navigationController.navigationBar setBarTintColor:[UIColor colorWithRed:33.0/255.0 green:125.0/255.0 blue:140.0/255.0 alpha:1.0]];
+    }
+    else if ([[NSUserDefaults standardUserDefaults] integerForKey:@"currentColor"] == 4)
+    {
+        [self.navigationController.navigationBar setBarStyle:UIBarStyleBlack];
+        [self.navigationController.navigationBar setTintColor:[UIColor whiteColor]];
+        [self.navigationController.navigationBar setBarTintColor:[UIColor colorWithRed:118.0/255.0 green:0.0/255.0 blue:161.0/255.0 alpha:1.0]];
+    }
+    else if ([[NSUserDefaults standardUserDefaults] integerForKey:@"currentColor"] == 5)
+    {
+        [self.navigationController.navigationBar setBarStyle:UIBarStyleBlack];
+        [self.navigationController.navigationBar setTintColor:[UIColor whiteColor]];
+        [self.navigationController.navigationBar setBarTintColor:[UIColor colorWithRed:26.0/255.0 green:140.0/255.0 blue:55.0/255.0 alpha:1.0]];
+    }
+    else if ([[NSUserDefaults standardUserDefaults] integerForKey:@"currentColor"] == 6)
+    {
+        [self.navigationController.navigationBar setBarStyle:UIBarStyleBlack];
+        [self.navigationController.navigationBar setTintColor:[UIColor whiteColor]];
+        [self.navigationController.navigationBar setBarTintColor:[UIColor colorWithRed:185.0/255.0 green:21.0/255.0 blue:57.0/255.0 alpha:1.0]];
+    }
+    else
+    {
+        [self.navigationController.navigationBar setBarStyle:UIBarStyleBlack];
+        [self.navigationController.navigationBar setTintColor:[UIColor whiteColor]];
+        [self.navigationController.navigationBar setBarTintColor:[UIColor colorWithRed:50.0/255.0 green:50.0/255.0 blue:50.0/255.0 alpha:1.0]];
+    }
+}
 
 -(void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
 {
@@ -32,6 +77,8 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
+    
+    [self setTheColor];
     
     countries = [[NSMutableArray alloc]init];
     
@@ -66,6 +113,20 @@
     return countries.count;
 }
 
+-(UIView *)tableView:(UITableView *)tableView2 viewForHeaderInSection:(NSInteger)section2
+{
+    UIView *view = [[UIView alloc] initWithFrame:CGRectMake(0, 0, tableView2.frame.size.width, 30)];
+    UILabel *label = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, tableView2.frame.size.width, 30)];
+    [label setFont:[UIFont systemFontOfSize:16]];
+    [label setTextAlignment:NSTextAlignmentRight];
+    [label setTextColor:[UIColor colorWithRed:50.0/255.0 green:50.0/255.0 blue:50.0/255.0 alpha:1.0]];
+    
+    [label setText:@"  اختر الدولة"];
+    
+    [view addSubview:label];
+    [view setBackgroundColor:[UIColor colorWithRed:230.0/255.0 green:230.0/255.0 blue:230.0/255.0 alpha:0.9]];
+    return view;
+}
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
     
@@ -77,7 +138,9 @@
         cell = [[UITableViewCell alloc]initWithStyle:UITableViewCellStyleDefault reuseIdentifier:cellID];
     }
     
-    [[cell textLabel]setText:[countries objectAtIndex:indexPath.row]];
+    cell.selectedBackgroundView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"settings-selected-back.png"]];
+    
+    [(UILabel*)[cell viewWithTag:1] setText:[countries objectAtIndex:indexPath.row]];
     
     return cell;
 }

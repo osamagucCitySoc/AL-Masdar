@@ -56,7 +56,6 @@ typedef void (^CRToastAnimationStepBlock)(void);
                                                                completionBlock:completion]];
 }
 
-
 + (void)dismissNotification:(BOOL)animated {
     [[self manager] dismissNotification:animated];
 }

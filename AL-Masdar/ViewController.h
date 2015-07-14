@@ -7,9 +7,13 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "SADAHBlurView.h"
+#import "SADAHMsg.h"
 
 @interface ViewController : UIViewController
-
+{
+    BOOL isAllLoaded,isShowStatus;
+}
 
 @end
 

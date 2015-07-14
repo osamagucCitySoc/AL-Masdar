@@ -9,6 +9,8 @@
 #import "AppDelegate.h"
 #import <Parse/Parse.h>
 
+#define SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(v)  ([[[UIDevice currentDevice] systemVersion] compare:v options:NSNumericSearch] != NSOrderedAscending)
+
 @interface AppDelegate ()
 
 @end
@@ -17,10 +19,6 @@
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
     // Override point for customization after application launch.
-    
-    
-    
-    
     
     if(![[NSUserDefaults standardUserDefaults] objectForKey:@"subscriptions"])
     {
@@ -40,10 +38,7 @@
                   clientKey:@"j26t2K3012Cn6jhwV1SJSooE6TcqmKwsztKZdk5b"];
     
     
-    
-    
-    NSString *currSysVer = [[UIDevice currentDevice] systemVersion];
-    if([currSysVer hasPrefix:@"8"])
+    if (SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(@"8.0"))
     {
         
         UIUserNotificationType userNotificationTypes = (UIUserNotificationTypeAlert |
@@ -59,30 +54,20 @@
          (UIRemoteNotificationTypeBadge | UIRemoteNotificationTypeSound | UIRemoteNotificationTypeAlert)];
     }
     
-    
-    NSDictionary *userInfo = [launchOptions objectForKey:UIApplicationLaunchOptionsRemoteNotificationKey];
-    if (userInfo == NULL)
-    {
-        NSLog(@"didFinishLaunchingWithOptions user startup userinfo: %@", userInfo);
-    }
-    else
-    {
-        NSLog(@"didFinishLaunchingWithOptions notification startup userinfo: %@", userInfo);
-        //NSDictionary *userrInfo = [NSDictionary dictionaryWithObject:[userInfo objectForKey:@"u"] forKey:@"url"];
-        //[[NSNotificationCenter defaultCenter] postNotificationName: @"OpenUrl" object:nil userInfo:userrInfo];
-        if([userInfo objectForKey:@"u"])
-        {
-            [[NSUserDefaults standardUserDefaults]setObject:[userInfo objectForKey:@"u"]  forKey:@"url"];
-            [[NSUserDefaults standardUserDefaults]synchronize];
-        }
-    }
-    
-
-    
     return YES;
 }
 
+-(NSUInteger)application:(UIApplication *)application supportedInterfaceOrientationsForWindow:(UIWindow *)window{
+    if ([[NSUserDefaults standardUserDefaults] boolForKey:@"isLandscapeOn"])return UIInterfaceOrientationMaskAllButUpsideDown;
+    return UIInterfaceOrientationMaskPortrait;
+}
 
+- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
+{
+    return NO;
+    // Return YES for supported orientations
+    //    return (interfaceOrientation == UIInterfaceOrientationPortrait);
+}
 
 - (void)applicationWillResignActive:(UIApplication *)application {
     // Sent when the application is about to move from active to inactive state. This can occur for certain types of temporary interruptions (such as an incoming phone call or SMS message) or when the user quits the application and it begins the transition to the background state.
@@ -117,18 +102,6 @@
 
 - (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo {
     [PFPush handlePush:userInfo];
-    if ([UIApplication sharedApplication].applicationState==UIApplicationStateActive) {
-        NSLog(@"Notification recieved by running app");
-    }
-    else{
-        NSDictionary* aps = [userInfo objectForKey:@"aps"];
-        if([userInfo objectForKey:@"u"])
-        {
-            NSLog(@"%@",[aps objectForKey:@"u"]);
-            NSDictionary *userrInfo = [NSDictionary dictionaryWithObject:[userInfo objectForKey:@"u"] forKey:@"url"];
-            [[NSNotificationCenter defaultCenter] postNotificationName: @"OpenUrl" object:nil userInfo:userrInfo];
-        }
-    }
 }
 
 @end
