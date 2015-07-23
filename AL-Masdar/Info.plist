@@ -26,6 +26,10 @@
 	<string>نحتاج تحديد مكانك لتحسين  تصفح الأخبار الخاصة بك</string>
 	<key>UILaunchStoryboardName</key>
 	<string>LaunchScreen</string>
+	<key>UIAppFonts</key>
+	<array>
+		<string>JF.ttf</string>
+	</array>
 	<key>UIMainStoryboardFile</key>
 	<string>Main</string>
 	<key>UIRequiredDeviceCapabilities</key>

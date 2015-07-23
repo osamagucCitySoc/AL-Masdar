@@ -65,7 +65,9 @@
         [[NSUserDefaults standardUserDefaults] setBool:YES forKey:@"isFirstLoad"];
         [[NSUserDefaults standardUserDefaults] setBool:YES forKey:@"isSoundEffects"];
         [[NSUserDefaults standardUserDefaults] setBool:YES forKey:@"isReadability"];
+        [[NSUserDefaults standardUserDefaults] setBool:YES forKey:@"isAutoNight"];
         [[NSUserDefaults standardUserDefaults] setInteger:2 forKey:@"currentColor"];
+        [[NSUserDefaults standardUserDefaults] setInteger:0 forKey:@"selectedSound"];
         [[NSUserDefaults standardUserDefaults] synchronize];
     }
     
@@ -255,7 +257,7 @@
         manager.responseSerializer = [AFHTTPResponseSerializer serializer];
         
         
-        [manager POST:@"http://moh2013.com/arabDevs/almasdar/getSources.php" parameters:nil success:^(AFHTTPRequestOperation *operation, id responseObject) {
+        [manager POST:@"http://almasdarapp.com/almasdar/getSources.php" parameters:nil success:^(AFHTTPRequestOperation *operation, id responseObject) {
             dataSource = [NSJSONSerialization JSONObjectWithData:responseObject options:NSJSONReadingAllowFragments error:nil];
             
             for(NSDictionary* dict in dataSource)

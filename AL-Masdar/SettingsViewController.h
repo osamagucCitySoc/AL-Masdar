@@ -26,5 +26,6 @@
 @property (strong, nonatomic) IBOutlet UIPickerView *pickerView;
 @property (strong, nonatomic) IBOutlet UISwitch *BreakingNewsSwitch;
 @property (strong, nonatomic) IBOutlet UISwitch *soundSwitch;
+@property (strong, nonatomic) IBOutlet UISwitch *nightSwitch;
 
 @end

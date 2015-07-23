@@ -142,7 +142,7 @@
 
 -(void)getBreakingNewsWords
 {
-    NSURL *theURL = [NSURL URLWithString:@"http://moh2013.com/arabDevs/almasdar/getBreakingNewsWords.php"];
+    NSURL *theURL = [NSURL URLWithString:@"http://almasdarapp.com/almasdar/getBreakingNewsWords.php"];
     
     NSMutableURLRequest *storeRequest = [NSMutableURLRequest requestWithURL:theURL cachePolicy:NSURLRequestReloadIgnoringCacheData timeoutInterval:10];
     
@@ -1448,7 +1448,7 @@
             
             NSDictionary* params = @{@"lowerID":upperCurrentID,@"sources":[sources componentsJoinedByString:@","]};
             
-            [manager POST:@"http://moh2013.com/arabDevs/almasdar/getNewerNews.php" parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
+            [manager POST:@"http://almasdarapp.com/almasdar/getNewerNews.php" parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
                 [loader setAlpha:0.0];
                 [self removeActivityView];
                 [refreshControl endRefreshing];
@@ -1457,8 +1457,8 @@
                 
                 if([dataSource count]>0)
                 {
-                    upperCurrentID = [[dataSource objectAtIndex:0] objectForKey:@"tweetID"];
-                    lowerCurrentID = [[dataSource lastObject] objectForKey:@"tweetID"];
+                    upperCurrentID = [[dataSource objectAtIndex:0] objectForKey:@"id"];
+                    lowerCurrentID = [[dataSource lastObject] objectForKey:@"id"];
                 }
                 
                 [(UILabel*)[tableView viewWithTag:837] setText:[@"عدد الأخبار المتبقية " stringByAppendingFormat:@"(%ld)",(long)[self getTheCount]]];
@@ -1477,6 +1477,9 @@
                         [breakingArray addObject:@"0"];
                     }
                 }
+                
+                NSOrderedSet *orderedSet = [NSOrderedSet orderedSetWithArray:dataSource];
+                dataSource = [[NSMutableArray alloc] initWithArray:[orderedSet array]];
                 
                 [tableView reloadData];
                 [tableView setNeedsDisplay];
@@ -1503,7 +1506,7 @@
             
             NSDictionary* params = @{@"lowerID":upperCurrentID,@"sources":[sources componentsJoinedByString:@","]};
             
-            [manager POST:@"http://moh2013.com/arabDevs/almasdar/getNewerNews.php" parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
+            [manager POST:@"http://almasdarapp.com/almasdar/getNewerNews.php" parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
                 [loader setAlpha:0.0];
                 [self removeActivityView];
                 [refreshControl endRefreshing];
@@ -1513,15 +1516,15 @@
                 {
                     //[newNews addObjectsFromArray:dataSource];
                     //dataSource = [[NSMutableArray alloc]initWithArray:newNews copyItems:YES];
-                    upperCurrentID = [[newNews objectAtIndex:0] objectForKey:@"tweetID"];
+                    upperCurrentID = [[newNews objectAtIndex:0] objectForKey:@"id"];
                     CGPoint offset = tableView.contentOffset;
                     for(int i = (int)newNews.count-1 ; i >= 0 ; i--)
                     {
                         
                         
                         [dataSource insertObject:[newNews objectAtIndex:i] atIndex:0];
-//                        [tableView beginUpdates];
-//                        [tableView insertRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:0 inSection:0]] withRowAnimation:UITableViewRowAnimationNone];
+                        //                        [tableView beginUpdates];
+                        //                        [tableView insertRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:0 inSection:0]] withRowAnimation:UITableViewRowAnimationNone];
                         if([[[newNews objectAtIndex:i] objectForKey:@"mediaURL"] isEqualToString:@""])
                         {
                             offset.y += 150.0;
@@ -1529,7 +1532,7 @@
                         {
                             offset.y += 358.0;
                         }
-//                        [tableView endUpdates];
+                        //                        [tableView endUpdates];
                     }
                     
                     breakingArray = [[NSMutableArray alloc] init];
@@ -1546,6 +1549,9 @@
                             [breakingArray addObject:@"0"];
                         }
                     }
+                    
+                    NSOrderedSet *orderedSet = [NSOrderedSet orderedSetWithArray:dataSource];
+                    dataSource = [[NSMutableArray alloc] initWithArray:[orderedSet array]];
                     
                     [tableView reloadData];
                     
@@ -1566,7 +1572,7 @@
                 {
                     NSDictionary* params = @{@"lowerID":lowerCurrentID,@"sources":[sources componentsJoinedByString:@","]};
                     
-                    [manager POST:@"http://moh2013.com/arabDevs/almasdar/getOlderNews.php" parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
+                    [manager POST:@"http://almasdarapp.com/almasdar/getOlderNews.php" parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
                         [loader setAlpha:0.0];
                         [self removeActivityView];
                         [refreshControl endRefreshing];
@@ -1575,7 +1581,7 @@
                         
                         if([newNews count]>0)
                         {
-                            lowerCurrentID = [[newNews lastObject] objectForKey:@"tweetID"];
+                            lowerCurrentID = [[newNews lastObject] objectForKey:@"id"];
                             for(NSDictionary* dict in newNews)
                             {
                                 [dataSource addObject:dict];
@@ -1587,9 +1593,9 @@
                                 {
                                     [breakingArray addObject:@"0"];
                                 }
-//                                [tableView beginUpdates];
-//                                [tableView insertRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:(dataSource.count-1) inSection:0]]withRowAnimation:UITableViewRowAnimationRight];
-//                                [tableView endUpdates];
+                                //                                [tableView beginUpdates];
+                                //                                [tableView insertRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:(dataSource.count-1) inSection:0]]withRowAnimation:UITableViewRowAnimationRight];
+                                //                                [tableView endUpdates];
                             }
                         }
                         
@@ -1625,7 +1631,7 @@
                 loadingData = NO;
                 [SADAHMsg showMsgWithTitle:@"خطأ في الإتصال" andMsg:@"هناك خطأ في الإتصال بسيرفر التطبيق، برجاء حاول مجدداً بعد قليل وشكراً لك." inView:[self.navigationController view] withCase:2];
                 NSLog(@"Error: %@", error);}];
-
+            
         }
     }
 }
@@ -1715,7 +1721,7 @@
     AFHTTPRequestOperationManager *manager = [AFHTTPRequestOperationManager manager];
     manager.responseSerializer = [AFHTTPResponseSerializer serializer];
     
-    [manager POST:@"http://moh2013.com/arabDevs/almasdar/getSearchNews.php" parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
+    [manager POST:@"http://almasdarapp.com/almasdar/getSearchNews.php" parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
         [tableView setAlpha:1.0];
         [loader setAlpha:0.0];
         [refreshControl endRefreshing];
@@ -1807,14 +1813,14 @@
 {
     if (theCase == 1)
     {
-        createdAt = [[dataSource firstObject] objectForKey:@"createdAt"];
+        createdAt = [[dataSource firstObject] objectForKey:@"id"];
         
         AFHTTPRequestOperationManager *manager = [AFHTTPRequestOperationManager manager];
         manager.responseSerializer = [AFHTTPResponseSerializer serializer];
         
         NSDictionary* params = @{@"createdAt":createdAt,@"sources":[sources componentsJoinedByString:@","]};
         
-        [manager POST:@"http://moh2013.com/arabDevs/almasdar/getBreakingNewsNewer.php" parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
+        [manager POST:@"http://almasdarapp.com/almasdar/getBreakingNewsNewer.php" parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
             
             NSMutableArray* newNews = [[NSMutableArray alloc]initWithArray:[NSJSONSerialization JSONObjectWithData:responseObject options:NSJSONReadingAllowFragments error:nil]];
             
@@ -1822,7 +1828,7 @@
             {
                 //[newNews addObjectsFromArray:dataSource];
                 //dataSource = [[NSMutableArray alloc]initWithArray:newNews copyItems:YES];
-                createdAt = [[newNews objectAtIndex:0] objectForKey:@"createdAt"];
+                createdAt = [[newNews objectAtIndex:0] objectForKey:@"id"];
                 CGPoint offset = tableView.contentOffset;
                 for(int i = (int)newNews.count-1 ; i >= 0 ; i--)
                 {
@@ -1861,20 +1867,20 @@
     }
     else if (theCase == 2)
     {
-        createdAt = [[dataSource lastObject] objectForKey:@"createdAt"];
+        createdAt = [[dataSource lastObject] objectForKey:@"id"];
         
         AFHTTPRequestOperationManager *manager = [AFHTTPRequestOperationManager manager];
         manager.responseSerializer = [AFHTTPResponseSerializer serializer];
         
         NSDictionary* params = @{@"createdAt":createdAt,@"sources":[sources componentsJoinedByString:@","]};
         
-        [manager POST:@"http://moh2013.com/arabDevs/almasdar/getBreakingNews.php" parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
+        [manager POST:@"http://almasdarapp.com/almasdar/getBreakingNews.php" parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
             
             NSMutableArray* newNews = [[NSMutableArray alloc]initWithArray:[NSJSONSerialization JSONObjectWithData:responseObject options:NSJSONReadingAllowFragments error:nil]];
             
             if([newNews count]>0)
             {
-                createdAt = [[newNews lastObject] objectForKey:@"tweetID"];
+                createdAt = [[newNews lastObject] objectForKey:@"id"];
                 for(NSDictionary* dict in newNews)
                 {
                     [dataSource addObject:dict];
@@ -1902,13 +1908,13 @@
         
         NSDictionary* params = @{@"createdAt":createdAt,@"sources":[sources componentsJoinedByString:@","]};
         
-        [manager POST:@"http://moh2013.com/arabDevs/almasdar/getBreakingNews.php" parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
+        [manager POST:@"http://almasdarapp.com/almasdar/getBreakingNews.php" parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
             //dataSource = [[NSMutableArray alloc] init];
             //dataSource = [NSJSONSerialization JSONObjectWithData:responseObject options:NSJSONReadingAllowFragments error:nil];
             dataSource = [[NSMutableArray alloc]initWithArray:[NSJSONSerialization JSONObjectWithData:responseObject options:NSJSONReadingAllowFragments error:nil]];
             NSOrderedSet *orderedSet = [NSOrderedSet orderedSetWithArray:dataSource];
             dataSource = [[NSMutableArray alloc] initWithArray:[orderedSet array]];
-            createdAt = [[dataSource lastObject] objectForKey:@"createdAt"];
+            createdAt = [[dataSource lastObject] objectForKey:@"id"];
             
             [self performSelector:@selector(reloadTheTable) withObject:nil afterDelay:0.2];
             [self removeActivityView];
@@ -3310,13 +3316,119 @@
     
     [(UILabel*)[cell viewWithTag:4] setText:[self getFilteredStringFrom:[news objectForKey:@"body"]]];
     
+    [(UIImageView*)[cell viewWithTag:5] setImage:nil];
+    
+    if ([cell viewWithTag:999])
+    {
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [[cell viewWithTag:999] removeFromSuperview];
+        });
+    }
+    
     if([[news objectForKey:@"mediaType"]isEqualToString:@""])
     {
-        [(UIImageView*)[cell viewWithTag:5] setAlpha:0.0];
+        NSString *imgUrl = [self imageUrlForRow:indexPath.row];
+        if ([imgUrl length] > 0)
+        {
+            [(UIImageView*)[cell viewWithTag:5] setAlpha:1.0];
+            
+            UIImageView *anmImage = [[UIImageView alloc] initWithFrame:CGRectMake(0, 0, 83, 83)];
+            
+            [anmImage setTag:999];
+            
+            anmImage.clipsToBounds = YES;
+            
+            if ([[NSUserDefaults standardUserDefaults] boolForKey:@"isNightOn"])
+            {
+                [anmImage setTintColor:[UIColor lightGrayColor]];
+                
+                anmImage.image = [[UIImage imageNamed:@"image-loading-img.png"] imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+            }
+            else
+            {
+                [anmImage setTintColor:[UIColor colorWithRed:130.0/255.0 green:130.0/255.0 blue:130.0/255.0 alpha:1.0]];
+                
+                anmImage.image = [[UIImage imageNamed:@"image-loading-img.png"] imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+            }
+            
+            CABasicAnimation *animation = [CABasicAnimation animationWithKeyPath:@"transform.rotation.z"];
+            animation.fromValue = [NSNumber numberWithFloat:1.0f];
+            animation.toValue = [NSNumber numberWithFloat: 999];
+            animation.duration = 170.5f;
+            [anmImage.layer addAnimation:animation forKey:@"MyAnimation"];
+            
+            anmImage.center = [cell viewWithTag:5].center;
+            
+            [cell addSubview:anmImage];
+            
+            [(UIImageView*)[cell viewWithTag:5] hnk_setImageFromURL:[NSURL URLWithString:[imgUrl stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]] placeholder:[UIImage imageNamed:@"loading-img.png"] success:^(UIImage *image) {
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    [(UIImageView*)[cell viewWithTag:5] setImage:image];
+                    [anmImage stopAnimating];
+                    [anmImage removeFromSuperview];
+                    [[cell viewWithTag:999] removeFromSuperview];
+                });
+            } failure:^(NSError *error) {
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    [anmImage stopAnimating];
+                    [anmImage removeFromSuperview];
+                    [[cell viewWithTag:999] removeFromSuperview];
+                    [(UIImageView*)[cell viewWithTag:5] setImage:[UIImage imageNamed:@"no-image-img.png"]];
+                });
+            }];
+        }
+        else
+        {
+            [(UIImageView*)[cell viewWithTag:5] setAlpha:0.0];
+        }
     }else
     {
         [(UIImageView*)[cell viewWithTag:5] setAlpha:1.0];
-        [(UIImageView*)[cell viewWithTag:5] hnk_setImageFromURL:[NSURL URLWithString:[[news objectForKey:@"mediaURL"] stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]] placeholder:[UIImage imageNamed:@"loading-img.png"]];
+        
+        UIImageView *anmImage = [[UIImageView alloc] initWithFrame:CGRectMake(0, 0, 83, 83)];
+        
+        [anmImage setTag:999];
+        
+        anmImage.clipsToBounds = YES;
+        
+        if ([[NSUserDefaults standardUserDefaults] boolForKey:@"isNightOn"])
+        {
+            [anmImage setTintColor:[UIColor lightGrayColor]];
+            
+            anmImage.image = [[UIImage imageNamed:@"image-loading-img.png"] imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+        }
+        else
+        {
+            [anmImage setTintColor:[UIColor colorWithRed:130.0/255.0 green:130.0/255.0 blue:130.0/255.0 alpha:1.0]];
+            
+            anmImage.image = [[UIImage imageNamed:@"image-loading-img.png"] imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+        }
+        
+        CABasicAnimation *animation = [CABasicAnimation animationWithKeyPath:@"transform.rotation.z"];
+        animation.fromValue = [NSNumber numberWithFloat:1.0f];
+        animation.toValue = [NSNumber numberWithFloat: 999];
+        animation.duration = 170.5f;
+        [anmImage.layer addAnimation:animation forKey:@"MyAnimation"];
+        
+        anmImage.center = [cell viewWithTag:5].center;
+        
+        [cell addSubview:anmImage];
+        
+        [(UIImageView*)[cell viewWithTag:5] hnk_setImageFromURL:[NSURL URLWithString:[[news objectForKey:@"mediaURL"] stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]] placeholder:[UIImage imageNamed:@"loading-img.png"] success:^(UIImage *image) {
+            dispatch_async(dispatch_get_main_queue(), ^{
+                [(UIImageView*)[cell viewWithTag:5] setImage:image];
+                [anmImage stopAnimating];
+                [anmImage removeFromSuperview];
+                [[cell viewWithTag:999] removeFromSuperview];
+            });
+        } failure:^(NSError *error) {
+            dispatch_async(dispatch_get_main_queue(), ^{
+                [anmImage stopAnimating];
+                [anmImage removeFromSuperview];
+                [[cell viewWithTag:999] removeFromSuperview];
+                [(UIImageView*)[cell viewWithTag:5] setImage:[UIImage imageNamed:@"no-image-img.png"]];
+            });
+        }];
     }
     
     if(!showingFav && indexPath.row > dataSource.count-5 && dataSource.count > theSavedCount)
@@ -3417,11 +3529,38 @@
                                 }];
 }
 
+-(NSString*)imageUrlForRow:(NSInteger)theRow
+{
+    NSDictionary* news = [dataSource objectAtIndex:theRow];
+    
+    NSArray *urls = [[news objectForKey:@"photos"] componentsSeparatedByString:@","];
+    
+    if (urls.count > 0)
+    {
+        if ([[urls objectAtIndex:0] length] > 5)
+        {
+            return [[urls objectAtIndex:0] stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
+        }
+        else
+        {
+            if (urls.count > 1)
+            {
+                if ([[urls objectAtIndex:1] length] > 5)
+                {
+                    return [[urls objectAtIndex:1] stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
+                }
+            }
+        }
+    }
+    
+    return @"";
+}
+
 -(CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     NSDictionary* news = [dataSource objectAtIndex:indexPath.row];
     
-    if([[news objectForKey:@"mediaType"]isEqualToString:@""])
+    if([[news objectForKey:@"mediaType"]isEqualToString:@""] && [[self imageUrlForRow:indexPath.row] length] == 0)
     {
         return 150.0;
     }
@@ -3432,17 +3571,20 @@
 -(void)tableView:(UITableView *)tableView2 didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
     NSDictionary* news = [dataSource objectAtIndex:indexPath.row];
+    
     if([[news objectForKey:@"newsURL"]isEqualToString:@""])
     {
         [self showStatusBarMsg:@"لايوجد تفاصيل لهذا الخبر" isRed:YES];
         
         [tableView2 deselectRowAtIndexPath:indexPath animated:NO];
-    }else
+    }
+    else
     {
         if (isSearching && !isSearchYet)
         {
             [self cancelSearching];
         }
+        
         NSDictionary* news = [dataSource objectAtIndex:indexPath.row];
         
         NSString *sharedMsg=[news objectForKey:@"body"];
@@ -3454,13 +3596,30 @@
             [[NSUserDefaults standardUserDefaults] setObject:sharedMsg forKey:@"textToShare"];
             [[NSUserDefaults standardUserDefaults] setObject:@"" forKey:@"imgToShare"];
             
-        }else
+        }
+        else
         {
             [[NSUserDefaults standardUserDefaults] setObject:sharedMsg forKey:@"textToShare"];
             [[NSUserDefaults standardUserDefaults] setObject:[news objectForKey:@"mediaURL"] forKey:@"imgToShare"];
         }
         
+        UITableViewCell* cell = [tableView cellForRowAtIndexPath:indexPath];
+        
+        if ([[cell viewWithTag:5] alpha] > 0 && ![[cell viewWithTag:5] isHidden])
+        {
+            [[NSUserDefaults standardUserDefaults] setObject:UIImagePNGRepresentation([(UIImageView*)[cell viewWithTag:5] image]) forKey:@"currentImgData"];
+        }
+        else
+        {
+            [[NSUserDefaults standardUserDefaults] setObject:nil forKey:@"currentImgData"];
+        }
+        
         [[NSUserDefaults standardUserDefaults] setObject:sharedObjects forKey:@"objectsToShare"];
+        [[NSUserDefaults standardUserDefaults] setObject:[news objectForKey:@"newsURL"] forKey:@"newsLinkToOpen"];
+        [[NSUserDefaults standardUserDefaults] setObject:[news objectForKey:@"photos"] forKey:@"newsAllPhotos"];
+        [[NSUserDefaults standardUserDefaults] setObject:[news objectForKey:@"videos"] forKey:@"newsAllVideos"];
+        [[NSUserDefaults standardUserDefaults] setObject:[news objectForKey:@"body"] forKey:@"savedNewsTitle"];
+        [[NSUserDefaults standardUserDefaults] setObject:[news objectForKey:@"fullBody"] forKey:@"savedNewsBody"];
         [[NSUserDefaults standardUserDefaults] synchronize];
         
         [self performSegueWithIdentifier:@"detailsSeg" sender:self];

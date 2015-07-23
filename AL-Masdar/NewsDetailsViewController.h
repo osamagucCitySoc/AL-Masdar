@@ -22,12 +22,13 @@
 
 @interface NewsDetailsViewController : UIViewController <UIWebViewDelegate,AVSpeechSynthesizerDelegate,UIGestureRecognizerDelegate,UIScrollViewDelegate,UIActionSheetDelegate,MFMailComposeViewControllerDelegate,AVAudioPlayerDelegate>
 {
-    BOOL isFristLoad,isVideo,isAnimation,isFirstOneDone,isWebOnly,isFromZoom,isVideoDone,isImageDone,isImage,isFirstDrag,isTap,isFullScreen,isShowStatus;
+    BOOL isFristLoad,isVideo,isAnimation,isFirstOneDone,isWebOnly,isFromZoom,isVideoDone,isImageDone,isImage,isFirstDrag,isTap,isFullScreen,isShowStatus,isTextDone,isFrameChanged,isUrlDone,isEmptyImg;
     UIImage *firstImg,*imgToSave;
-    CGRect oldVideoRect,prevFrame;
+    CGRect oldVideoRect,prevFrame,workingFrame;
     UITapGestureRecognizer *tap,*dbTap;
     CGPoint scrollSavedPoint;
     NSInteger numberOfImages;
+    UIImageView *anmImage;
 }
 
 @property (strong, nonatomic) IBOutlet AVAudioPlayer *player;

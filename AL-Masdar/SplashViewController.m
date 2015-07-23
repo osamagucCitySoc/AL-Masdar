@@ -26,32 +26,72 @@
 {
     [super viewDidLoad];
     
-    [self performSelector:@selector(startTheAnimation) withObject:nil afterDelay:0.1];
+    [self setRights];
+    
+    [self performSelector:@selector(startTheAnimation) withObject:nil afterDelay:0.3];
 }
 
 -(void)startTheAnimation
 {
-    [UIView animateWithDuration:0.2 delay:0.0 options:0
+    [_label1 setFrame:CGRectMake(_label1.frame.origin.x, self.view.frame.size.height+50, _label1.frame.size.width, _label1.frame.size.height)];
+    [_label2 setFrame:CGRectMake(_label2.frame.origin.x, self.view.frame.size.height+50, _label2.frame.size.width, _label2.frame.size.height)];
+    [_rightsLabel setFrame:CGRectMake(_rightsLabel.frame.origin.x, self.view.frame.size.height+50, _rightsLabel.frame.size.width, _rightsLabel.frame.size.height)];
+    [_label1 setHidden:NO];
+    [_label2 setHidden:NO];
+    [_rightsLabel setHidden:NO];
+    [_rightsLabel setAlpha:0.0];
+    [_label1 setFrame:CGRectMake(_label1.frame.origin.x, _label1.frame.origin.y-4, _label1.frame.size.width, _label1.frame.size.height)];
+    [_label2 setFrame:CGRectMake(_label2.frame.origin.x, _label2.frame.origin.y-4, _label2.frame.size.width, _label2.frame.size.height)];
+    _label1.transform=CGAffineTransformMakeRotation(M_PI / -4);
+    _label2.transform=CGAffineTransformMakeRotation(M_PI / -4);
+    [UIView animateWithDuration:0.3 delay:0.0 options:0
                      animations:^{
+                         _label1.transform=CGAffineTransformMakeRotation(0);
                          [_splashImageView setFrame:CGRectMake(_splashImageView.frame.origin.x, _splashImageView.frame.origin.y-50, _splashImageView.frame.size.width, _splashImageView.frame.size.height)];
+                         [_label1 setFrame:CGRectMake(_label1.frame.origin.x, _splashImageView.frame.origin.y+110, _label1.frame.size.width, _label1.frame.size.height)];
                      }
                      completion:^(BOOL finished) {
-                         [UIView animateWithDuration:0.2 delay:0.1 options:0
+                         [UIView animateWithDuration:0.3 delay:0.1 options:0
                                           animations:^{
-                                              [_splashImageView setFrame:CGRectMake(_splashImageView.frame.origin.x, _splashImageView.frame.origin.y+self.view.frame.size.height, _splashImageView.frame.size.width, _splashImageView.frame.size.height)];
+                                              _label2.transform=CGAffineTransformMakeRotation(0);
+                                              [_label2 setFrame:CGRectMake(_label2.frame.origin.x, _label1.frame.origin.y+_label2.frame.size.height, _label2.frame.size.width, _label2.frame.size.height)];
                                           }
                                           completion:^(BOOL finished) {
-                                              //[self performSelector:@selector(openFirstView) withObject:nil afterDelay:0.3];
-                                              [self performSegueWithIdentifier:@"firstSeg" sender:self];
+                                              [UIView animateWithDuration:0.3 delay:0.0 options:0
+                                                               animations:^{
+                                                                   [_rightsLabel setAlpha:0.5];
+                                                                   [_rightsLabel setFrame:CGRectMake(_rightsLabel.frame.origin.x, self.view.frame.size.height-_rightsLabel.frame.size.height, _rightsLabel.frame.size.width, _rightsLabel.frame.size.height)];
+                                                               }
+                                                               completion:^(BOOL finished) {
+                                                                   [UIView animateWithDuration:0.3 delay:1.0 options:0
+                                                                                    animations:^{
+                                                                                        [_splashImageView setFrame:CGRectMake(_splashImageView.frame.origin.x, _splashImageView.frame.origin.y+self.view.frame.size.height, _splashImageView.frame.size.width, _splashImageView.frame.size.height)];
+                                                                                        
+                                                                                        [_label1 setFrame:CGRectMake(_label1.frame.origin.x, _label1.frame.origin.y+self.view.frame.size.height, _label1.frame.size.width, _label1.frame.size.height)];
+                                                                                        
+                                                                                        [_label2 setFrame:CGRectMake(_label2.frame.origin.x, _label2.frame.origin.y+self.view.frame.size.height, _label2.frame.size.width, _label2.frame.size.height)];
+                                                                                        
+                                                                                        [_rightsLabel setFrame:CGRectMake(_rightsLabel.frame.origin.x, _rightsLabel.frame.origin.y+self.view.frame.size.height, _rightsLabel.frame.size.width, _rightsLabel.frame.size.height)];
+                                                                                    }
+                                                                                    completion:^(BOOL finished) {
+                                                                                        [self performSegueWithIdentifier:@"firstSeg" sender:self];
+                                                                                    }];
+                                                                   [UIView commitAnimations];
+                                                               }];
+                                              [UIView commitAnimations];
                                           }];
                          [UIView commitAnimations];
                      }];
     [UIView commitAnimations];
 }
 
--(void)openFirstView
+-(void)setRights
 {
-    [self performSegueWithIdentifier:@"firstSeg" sender:self];
+    NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
+    
+    [dateFormatter setDateFormat:@"YYYY"];
+    
+    _rightsLabel.text = [@"" stringByAppendingFormat:@"Copyright (c) %@ SADAH Software Solutions, LLC. All rights reserved.",[dateFormatter stringFromDate:[NSDate date]]];
 }
 
 -(UIStatusBarStyle)preferredStatusBarStyle{

@@ -21,11 +21,11 @@
 @interface NewsFeedViewController : UIViewController <UIGestureRecognizerDelegate,MFMailComposeViewControllerDelegate,AVAudioPlayerDelegate>
 {
     UIRefreshControl *refreshControl;
-    BOOL tableIsReady,isRemoveAct,isOptions,isFullScreen,isScrollButton,isOnNews,isRectResume,isFromNight,isNoResume,isShowStatus,isSearching,isSearchMsg,isTap,isFirstDrag,isAfterSearch,isSearchYet,isFromRefresh,isOnBreakingNews,isReloaded,isFromSwipe,isFromBreaking;
+    BOOL tableIsReady,isRemoveAct,isOptions,isFullScreen,isScrollButton,isOnNews,isRectResume,isFromNight,isNoResume,isShowStatus,isSearching,isSearchMsg,isTap,isFirstDrag,isAfterSearch,isSearchYet,isFromRefresh,isOnBreakingNews,isReloaded,isFromSwipe,isFromBreaking,isCheckBrDone,isLoadComplated,isSettingsBack;
     UITapGestureRecognizer *tap,*dbTap;
     CGRect prevFrame;
     UIImage *imgToSave;
-    NSInteger indVal,countToEnd,theSavedCount;
+    NSInteger indVal,countToEnd,theSavedCount,anmInt;
     UIBackgroundTaskIdentifier bgTask;
     CGRect resumeRect,favRect,newsRect,breakingRect;
     float imageZoomScale;

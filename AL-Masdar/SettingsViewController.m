@@ -25,6 +25,7 @@
     
     [_BreakingNewsSwitch setOn:[[NSUserDefaults standardUserDefaults] boolForKey:@"isUrgentPush"]];
     [_soundSwitch setOn:[[NSUserDefaults standardUserDefaults] boolForKey:@"isSoundEffects"]];
+    [_nightSwitch setOn:[[NSUserDefaults standardUserDefaults] boolForKey:@"isAutoNight"]];
 }
 
 - (IBAction)breakingNewsOnOff:(id)sender {
@@ -36,6 +37,11 @@
     {
         [self unSubscribeForUrgentPush];
     }
+}
+
+- (IBAction)autoNightChanged:(id)sender {
+    [[NSUserDefaults standardUserDefaults] setBool:_nightSwitch.isOn forKey:@"isAutoNight"];
+    [[NSUserDefaults standardUserDefaults] synchronize];
 }
 
 -(void)showStatusBarMsg:(NSString*)theMsg isRed:(BOOL)isRed
@@ -205,10 +211,7 @@
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-    if (section == 0 || section == 1)
-    {
-        return 2;
-    }
+    if (section == 1)return 2;
     
     return 3;
 }

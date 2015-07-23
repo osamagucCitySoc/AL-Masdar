@@ -10,5 +10,8 @@
 
 @interface SplashViewController : UIViewController
 @property (strong, nonatomic) IBOutlet UIImageView *splashImageView;
+@property (strong, nonatomic) IBOutlet UILabel *label1;
+@property (strong, nonatomic) IBOutlet UILabel *label2;
+@property (strong, nonatomic) IBOutlet UILabel *rightsLabel;
 
 @end

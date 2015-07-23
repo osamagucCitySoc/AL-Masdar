@@ -482,11 +482,63 @@ static NSString * BCP47LanguageCodeForString(NSString *string) {
 {
     if (!isFullScreen) {
         
+        if (isEmptyImg)return;
         for (UIImageView *imgView in _imagesScroll.subviews)
         {
-            if (imgView.tag == 80 + _pageControl.currentPage)
+//            NSLog(@"Tag: %ld",(long)imgView.tag);
+//            NSLog(@"Page: %ld",(long)_pageControl.currentPage);
+//            NSLog(@"All: %ld",(80 + _pageControl.currentPage));
+            if (imgView.tag == (80 + _pageControl.currentPage))
             {
-                [imgView setContentMode:UIViewContentModeScaleAspectFit];
+                //[imgView setContentMode:UIViewContentModeScaleAspectFit];
+                prevFrame = imgView.frame;
+                isFirstDrag = YES;
+                isTap = NO;
+                [imgView setTag:893];
+                imgView.clipsToBounds = YES;
+                UIScrollView *backgroundView = [[UIScrollView alloc] initWithFrame:imgView.frame];
+                [backgroundView addGestureRecognizer:tap];
+                [backgroundView addGestureRecognizer:dbTap];
+                [backgroundView setBackgroundColor:[UIColor blackColor]];
+                [backgroundView addSubview:imgView];
+                [backgroundView setTag:191];
+                [[self view]addSubview:backgroundView];
+                backgroundView.center = _imagesScroll.center;
+                imgView.center = backgroundView.center;
+                
+                [UIView animateWithDuration:0.2 delay:0 options:0 animations:^{
+                    
+                    [backgroundView setFrame:[self view].frame];
+                    [imgView setFrame:backgroundView.frame];
+                }completion:^(BOOL finished){
+                    isFullScreen = YES;
+                    [self hideTheStatusBar];
+                }];
+                
+                UIPanGestureRecognizer *pngst = [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(handlePan:)];
+                pngst.delegate = self;
+                [backgroundView addGestureRecognizer:pngst];
+                
+                UILongPressGestureRecognizer *lpgr = [[UILongPressGestureRecognizer alloc]
+                                                      initWithTarget:self action:@selector(imageLongPress:)];
+                lpgr.minimumPressDuration = 0.5;
+                lpgr.delegate = self;
+                [backgroundView addGestureRecognizer:lpgr];
+                
+                backgroundView.minimumZoomScale = 1.0;
+                backgroundView.maximumZoomScale = 3.0;
+                backgroundView.delegate = self;
+                
+                backgroundView.showsHorizontalScrollIndicator = NO;
+                backgroundView.showsVerticalScrollIndicator = NO;
+                
+                imgToSave = imgView.image;
+                
+                break;
+            }
+            else if ([_pageControl isHidden])
+            {
+                //[imgView setContentMode:UIViewContentModeScaleAspectFit];
                 prevFrame = imgView.frame;
                 isFirstDrag = YES;
                 isTap = NO;
@@ -558,7 +610,7 @@ static NSString * BCP47LanguageCodeForString(NSString *string) {
     
     [self showTheStatusBar];
     [[[self view] viewWithTag:893] setFrame:CGRectMake([[self view] viewWithTag:893].frame.origin.x, [[self view] viewWithTag:893].frame.origin.y, prevFrame.size.width, prevFrame.size.height)];
-    [(UIImageView*)[[self view] viewWithTag:893] setContentMode:UIViewContentModeScaleAspectFill];
+    //[(UIImageView*)[[self view] viewWithTag:893] setContentMode:UIViewContentModeScaleAspectFill];
     [[[self view] viewWithTag:191] setBackgroundColor:[UIColor clearColor]];
     [[self view] addSubview:[[self view] viewWithTag:893]];
     [[[self view] viewWithTag:191] removeFromSuperview];
@@ -756,23 +808,6 @@ static NSString * BCP47LanguageCodeForString(NSString *string) {
     }
 }
 
--(void)viewDidAppear:(BOOL)animated
-{
-    [super viewDidAppear:animated];
-    
-    if(![[[NSUserDefaults standardUserDefaults] objectForKey:@"imgToShare"]isEqualToString:@""])
-    {
-        NSData *imgData = [NSData dataWithContentsOfURL:[NSURL URLWithString:[[[NSUserDefaults standardUserDefaults] objectForKey:@"imgToShare"] stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]]];
-        firstImg = [UIImage imageWithData:imgData];
-        self.image = firstImg;
-        UIImageView *theImage = [[UIImageView alloc] initWithImage:firstImg];
-        [_imagesScroll addSubview:theImage];
-        [theImage setContentMode:UIViewContentModeScaleAspectFill];
-        [theImage setFrame:CGRectMake(0, 0, _imagesScroll.frame.size.width, _imagesScroll.frame.size.height)];
-        [self getImages];
-    }
-}
-
 - (IBAction)goToNext:(id)sender {
     if ([[NSUserDefaults standardUserDefaults] boolForKey:@"isReadability"] && !isWebOnly)
     {
@@ -854,12 +889,22 @@ static NSString * BCP47LanguageCodeForString(NSString *string) {
     [[NSUserDefaults standardUserDefaults] setBool:YES forKey:@"isLandscapeOn"];
     [[NSUserDefaults standardUserDefaults] synchronize];
     
+    if ([[NSUserDefaults standardUserDefaults] boolForKey:@"isSoundEffects"])
+    {
+        [[AVAudioSession sharedInstance] setCategory:AVAudioSessionCategoryPlayback error:nil];
+    }
+    
     oldVideoRect = _videosScroll.frame;
 }
 
 -(void)videoFinished:(NSNotification *)notification{
     [[NSUserDefaults standardUserDefaults] setBool:NO forKey:@"isLandscapeOn"];
     [[NSUserDefaults standardUserDefaults] synchronize];
+    
+    if ([[NSUserDefaults standardUserDefaults] boolForKey:@"isSoundEffects"])
+    {
+        [[AVAudioSession sharedInstance] setCategory:AVAudioSessionCategoryAmbient error:nil];
+    }
     
     [self setToPortrait];
 }
@@ -905,25 +950,35 @@ static NSString * BCP47LanguageCodeForString(NSString *string) {
         }
         else
         {
-            images = [[NSMutableArray alloc] init];
-            if(self.image)
+            if (isUrlDone)
             {
-                [images addObject:self.image];
+                [_actView stopAnimating];
+                [_actBackLabel setHidden:YES];
+                [webView setHidden:YES];
+                [_scrollView setHidden:NO];
             }
-            videos = [[NSMutableArray alloc] init];
-            
-            [webView setHidden:YES];
-            
-            [_zoomNextButton setImage:[UIImage imageNamed:@"zoom-in-icon.png"]];
-            [_previousButton setImage:[UIImage imageNamed:@"zoom-out-icon.png"]];
-            
-            [_zoomNextButton setEnabled:YES];
-            [_previousButton setEnabled:YES];
-            
-            [_listenButton setEnabled:YES];
-            [_listenButton setImage:[UIImage imageNamed:@"listen-icon.png"]];
-            
-            [self openURL];
+            else
+            {
+                images = [[NSMutableArray alloc] init];
+                if(self.image)
+                {
+                    [images addObject:self.image];
+                }
+                videos = [[NSMutableArray alloc] init];
+                
+                [webView setHidden:YES];
+                
+                [_zoomNextButton setImage:[UIImage imageNamed:@"zoom-in-icon.png"]];
+                [_previousButton setImage:[UIImage imageNamed:@"zoom-out-icon.png"]];
+                
+                [_zoomNextButton setEnabled:YES];
+                [_previousButton setEnabled:YES];
+                
+                [_listenButton setEnabled:YES];
+                [_listenButton setImage:[UIImage imageNamed:@"listen-icon.png"]];
+                
+                [self openURL];
+            }
         }
     }
     else
@@ -933,6 +988,10 @@ static NSString * BCP47LanguageCodeForString(NSString *string) {
         [_scrollView setHidden:YES];
         
         [webView setHidden:NO];
+        
+        [_listenButton setImage:nil];
+        [_listenButton setTitle:@""];
+        [_listenButton setEnabled:NO];
         
         [_zoomNextButton setImage:[UIImage imageNamed:@"right-arrow.png"]];
         [_previousButton setImage:[UIImage imageNamed:@"left-arrow.png"]];
@@ -1000,9 +1059,48 @@ static NSString * BCP47LanguageCodeForString(NSString *string) {
                                 }];
 }
 
+-(void)addLoadingImg
+{
+//    anmImage = [[UIImageView alloc] initWithFrame:CGRectMake(0, 0, 83, 83)];
+//    
+//    anmImage.clipsToBounds = YES;
+//    
+//    if ([[NSUserDefaults standardUserDefaults] boolForKey:@"isNightOn"])
+//    {
+//        [anmImage setTintColor:[UIColor lightGrayColor]];
+//        
+//        anmImage.image = [[UIImage imageNamed:@"image-loading-img.png"] imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+//    }
+//    else
+//    {
+//        [anmImage setTintColor:[UIColor colorWithRed:130.0/255.0 green:130.0/255.0 blue:130.0/255.0 alpha:1.0]];
+//        
+//        anmImage.image = [[UIImage imageNamed:@"image-loading-img.png"] imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+//    }
+//    
+//    CABasicAnimation *animation = [CABasicAnimation animationWithKeyPath:@"transform.rotation.z"];
+//    animation.fromValue = [NSNumber numberWithFloat:1.0f];
+//    animation.toValue = [NSNumber numberWithFloat: 999];
+//    animation.duration = 170.5f;
+//    [anmImage.layer addAnimation:animation forKey:@"MyAnimation"];
+//    
+//    anmImage.center = _imagesScroll.center;
+//    [anmImage setFrame:CGRectMake(anmImage.frame.origin.x, anmImage.frame.origin.y+70, 83, 83)];
+//    [self.view addSubview:anmImage];
+}
+
+-(void)stopLoadingImage
+{
+//    [anmImage stopAnimating];
+//    [anmImage removeFromSuperview];
+}
+
 -(void)openURL
 {
+    isUrlDone = YES;
     youtube = NO;
+    
+    [self addCurrentImg];
     
     NSString *newsBody = [[NSUserDefaults standardUserDefaults] objectForKey:@"savedNewsBody"];
     
@@ -1032,8 +1130,9 @@ static NSString * BCP47LanguageCodeForString(NSString *string) {
     
     [_titleTextView setText:[[NSUserDefaults standardUserDefaults] objectForKey:@"savedNewsTitle"]];
     [textView setText:newsBody];
+    isTextDone = YES;
+    [self addLoadingImg];
     [self stopTheLoading];
-    [self performSelector:@selector(getVideos) withObject:nil afterDelay:0.1];
     
 //    [webView setDelegate:self];
 //    
@@ -1068,7 +1167,7 @@ static NSString * BCP47LanguageCodeForString(NSString *string) {
 //                AFHTTPRequestOperationManager *manager = [AFHTTPRequestOperationManager manager];
 //                manager.responseSerializer = [AFHTTPResponseSerializer serializer];
 //                
-//                NSString* ourParserUrl = [@"http://moh2013.com/arabDevs/almasdar/getOsamaReadabilityParser.php?url=" stringByAppendingString:self.url];
+//                NSString* ourParserUrl = [@"http://almasdarapp.com/almasdar/getOsamaReadabilityParser.php?url=" stringByAppendingString:self.url];
 //                
 //                [manager GET:ourParserUrl parameters:nil success:^(AFHTTPRequestOperation *operation, id responseObject) {
 //                    
@@ -1180,7 +1279,7 @@ static NSString * BCP47LanguageCodeForString(NSString *string) {
 //            AFHTTPRequestOperationManager *manager = [AFHTTPRequestOperationManager manager];
 //            manager.responseSerializer = [AFHTTPResponseSerializer serializer];
 //            
-//            NSString* ourParserUrl = [@"http://moh2013.com/arabDevs/almasdar/getOsamaReadabilityParser.php?url=" stringByAppendingString:self.url];
+//            NSString* ourParserUrl = [@"http://almasdarapp.com/almasdar/getOsamaReadabilityParser.php?url=" stringByAppendingString:self.url];
 //            
 //            [manager GET:ourParserUrl parameters:nil success:^(AFHTTPRequestOperation *operation, id responseObject) {
 //                
@@ -1235,13 +1334,6 @@ static NSString * BCP47LanguageCodeForString(NSString *string) {
 //     ];
 }
 
-- (BOOL)validateUrl:(NSString *)candidate {
-    NSString *urlRegEx =
-    @"(http|https)://((\\w)*|([0-9]*)|([-|_])*)+([\\.|/]((\\w)*|([0-9]*)|([-|_])*))+";
-    NSPredicate *urlTest = [NSPredicate predicateWithFormat:@"SELF MATCHES %@", urlRegEx];
-    return [urlTest evaluateWithObject:candidate];
-}
-
 -(void)getImages
 {
     NSArray *urls = [[[NSUserDefaults standardUserDefaults] objectForKey:@"newsAllPhotos"] componentsSeparatedByString:@","];
@@ -1256,7 +1348,68 @@ static NSString * BCP47LanguageCodeForString(NSString *string) {
         }
     }
     
-    [self addImages];
+    if (images.count > 0)
+    {
+        [self addImages];
+    }
+    else if (self.image == nil)
+    {
+        dispatch_async(dispatch_get_main_queue(), ^{
+            isEmptyImg = YES;
+            
+            numberOfImages = 0;
+            
+            workingFrame = _imagesScroll.frame;
+            workingFrame.origin.x = 0;
+            workingFrame.origin.y = 0;
+            
+            UIImageView *theImage = [[UIImageView alloc] initWithFrame:workingFrame];
+            
+            [theImage setContentMode:UIViewContentModeScaleAspectFit];
+            
+            theImage.clipsToBounds = YES;
+            
+            theImage.tag = 80 + numberOfImages;
+            
+            theImage.image = [UIImage imageNamed:@"no-image-img.png"];
+            
+            [_imagesScroll addSubview:theImage];
+            
+            workingFrame.origin.x = workingFrame.origin.x + workingFrame.size.width;
+            
+            isFrameChanged = YES;
+            
+            numberOfImages++;
+        });
+    }
+}
+
+-(void)getVideos
+{
+    NSArray *urls = [[[NSUserDefaults standardUserDefaults] objectForKey:@"newsAllVideos"] componentsSeparatedByString:@"SPLITONTHIS"];
+    
+    videos = [[NSMutableArray alloc]init];
+    
+    for (NSString *str in urls)
+    {
+        if (str.length > 5)
+        {
+            
+            if([str rangeOfString:@"class=\"embedly-embed\""].location != NSNotFound)
+            {
+                NSString* vidID = [[[[str componentsSeparatedByString:@"v%3D"] objectAtIndex:1] componentsSeparatedByString:@"%"] objectAtIndex:0];
+                NSString* iFrame = [NSString stringWithFormat:@"<iframe width=\"320\" height=\"250\" src=\"http://www.youtube.com/embed/%@\" allowfullscreen></iframe>",vidID];
+                [videos addObject:iFrame];
+            }else
+            {
+                [videos addObject:str];
+            }
+        }
+    }
+    
+    if (videos.count == 0)return;
+    
+    [self addVideos];
 }
 
 -(void)getImages2
@@ -1426,7 +1579,7 @@ static NSString * BCP47LanguageCodeForString(NSString *string) {
     
 }
 
--(void)getVideos
+-(void)getVideos2
 {
     videos = [[NSMutableArray alloc]init];
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
@@ -1571,16 +1724,23 @@ static NSString * BCP47LanguageCodeForString(NSString *string) {
         
         if (scrollViewHeight < _scrollView.frame.size.height)scrollViewHeight = _scrollView.frame.size.height;
         
-        scrollViewHeight += 40;
+        scrollViewHeight += 80;
         
         [_scrollView setContentSize:(CGSizeMake(_scrollView.frame.size.width, scrollViewHeight))];
         [_scrollView setHidden:NO];
         
         _closeLabel.center = _scrollView.center;
-        [_closeLabel setFrame:CGRectMake(_closeLabel.frame.origin.x, _closeLabel.frame.origin.y+_scrollView.contentSize.height-370, _closeLabel.frame.size.width, _closeLabel.frame.size.height)];
+        [_closeLabel setFrame:CGRectMake(_closeLabel.frame.origin.x, _scrollView.contentSize.height, _closeLabel.frame.size.width, _closeLabel.frame.size.height)];
         
         _closeProgressView.center = _closeLabel.center;
         [_closeProgressView setFrame:CGRectMake(_closeProgressView.frame.origin.x, _closeProgressView.frame.origin.y+24, _closeProgressView.frame.size.width, _closeProgressView.frame.size.height)];
+        
+        if (isTextDone)
+        {
+            isTextDone = NO;
+            [self performSelector:@selector(getImages) withObject:nil afterDelay:0.1];
+            [self performSelector:@selector(getVideos) withObject:nil afterDelay:0.2];
+        }
     }
 }
 
@@ -1648,6 +1808,8 @@ static NSString * BCP47LanguageCodeForString(NSString *string) {
 
 -(void)setProgressTo:(float)theVal
 {
+    theVal = theVal*1.5;
+    
     [_closeProgressView setProgress:theVal/100];
     [_closeProgressView setAlpha:theVal/100];
     [_closeLabel setAlpha:theVal/100];
@@ -1894,6 +2056,7 @@ static NSString * BCP47LanguageCodeForString(NSString *string) {
     CGFloat red1, red2, green1, green2, blue1, blue2, alpha1, alpha2;
     [color1 getRed:&red1 green:&green1 blue:&blue1 alpha:&alpha1];
     [color2 getRed:&red2 green:&green2 blue:&blue2 alpha:&alpha2];
+    
     NSInteger theIntNum = 0;
     
     if (red1 == red1)
@@ -1970,90 +2133,133 @@ static NSString * BCP47LanguageCodeForString(NSString *string) {
     return newImage;
 }
 
--(void)addImages
+-(void)addCurrentImg
 {
-    for (UIView *view in [_imagesScroll subviews]) {
-        [view removeFromSuperview];
+    UIImage *currentImg = [UIImage imageWithData:[[NSUserDefaults standardUserDefaults] objectForKey:@"currentImgData"]];
+    
+    if(currentImg != nil)
+    {
+        self.image = currentImg;
     }
     
-    __block CGRect workingFrame = _imagesScroll.frame;
-    workingFrame.origin.x = 0;
-    workingFrame.origin.y = 0;
+    if (self.image != nil)
+    {
+        dispatch_async(dispatch_get_main_queue(), ^{
+            numberOfImages = 0;
+            
+            workingFrame = _imagesScroll.frame;
+            workingFrame.origin.x = 0;
+            workingFrame.origin.y = 0;
+            
+            UIImageView *theImage = [[UIImageView alloc] initWithFrame:workingFrame];
+            
+            [theImage setContentMode:UIViewContentModeScaleAspectFit];
+            
+            theImage.clipsToBounds = YES;
+            
+            theImage.tag = 80 + numberOfImages;
+            
+            theImage.image = self.image;
+            
+            [_imagesScroll addSubview:theImage];
+            
+            workingFrame.origin.x = workingFrame.origin.x + workingFrame.size.width;
+            
+            isFrameChanged = YES;
+            
+            numberOfImages++;
+        });
+    }
+}
+
+-(void)addImages
+{
+    if (!isFrameChanged)
+    {
+        for (UIView *view in [_imagesScroll subviews]) {
+            [view removeFromSuperview];
+        }
+        
+        numberOfImages = 0;
+        
+        workingFrame = _imagesScroll.frame;
+        workingFrame.origin.x = 0;
+        workingFrame.origin.y = 0;
+    }
     
     CGRect frame = _imagesScroll.frame;
     frame.origin.x = frame.size.width * 0;
     frame.origin.y = 0;
     [_imagesScroll scrollRectToVisible:frame animated:NO];
     
-    __block UIImageView *theImage;
+    NSLog(@"Images: %lu",(unsigned long)images.count);
     
-    BOOL isFirstPhoto = NO;
-    
-    if (self.image != nil)
-    {
-        theImage = [[UIImageView alloc] initWithFrame:workingFrame];
-        
-        theImage.image = self.image;
-        
-        theImage.clipsToBounds = YES;
-        
-        theImage.tag = 80;
-        
-        [theImage setContentMode:UIViewContentModeScaleAspectFill];
-        
-        [_imagesScroll addSubview:theImage];
-        
-        workingFrame.origin.x = workingFrame.origin.x + workingFrame.size.width;
-        
-        numberOfImages++;
-        
-        isFirstPhoto = YES;
-    }
-    
-    for (int i = 0; i < images.count; i++)
-    {
-        theImage = [[UIImageView alloc] initWithFrame:workingFrame];
-        
-        [theImage setContentMode:UIViewContentModeScaleAspectFill];
-        
-        theImage.clipsToBounds = YES;
-        
-        [theImage hnk_setImageFromURL:[NSURL URLWithString:[[images objectAtIndex:i] stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]] placeholder:[UIImage imageNamed:@"loading-img.png"] success:^(UIImage *theImg) {
+    dispatch_async(dispatch_get_main_queue(), ^{
+        for (int i = 0; i < images.count; i++)
+        {
+            UIImageView *theImage = [[UIImageView alloc] initWithFrame:workingFrame];
             
-            if (theImg != nil)
+            [theImage setContentMode:UIViewContentModeScaleAspectFit];
+            
+            theImage.clipsToBounds = YES;
+            
+            theImage.tag = 80 + numberOfImages;
+            
+            NSData *imgData = [NSData dataWithContentsOfURL:[NSURL URLWithString:[images objectAtIndex:i]]];
+            
+            if (imgData)
             {
-                if (theImg.size.width > 250 && theImg.size.height > 200)
+                UIImage *theImg = [UIImage imageWithData:imgData];
+                
+                if (theImg != nil)
                 {
-                    UIImage *img1 = [self imageWithImage:self.image scaledToSize:CGSizeMake(100, 100)];
-                    UIImage *img2 = [self imageWithImage:theImg scaledToSize:CGSizeMake(100, 100)];
-                    
-                    NSLog(@"%ld",(long)[self color:[self colorAtPixel:CGPointMake(50, 50) inImage:img1] matchesColor:[self colorAtPixel:CGPointMake(50, 50) inImage:img2]]);
-
-                    if ([self color:[self colorAtPixel:CGPointMake(50, 50) inImage:img1] matchesColor:[self colorAtPixel:CGPointMake(50, 50) inImage:img2]] <= 50)
+                    if (theImg.size.width > 250)
                     {
-                        theImage = [[UIImageView alloc] initWithFrame:workingFrame];
-                        
-                        theImage.image = theImg;
-                        
-                        theImage.clipsToBounds = YES;
-                        
-                        if (isFirstPhoto)
+                        if (self.image != nil)
                         {
-                            theImage.tag = 80 + (i+1);
+                            UIImage *img1 = [self imageWithImage:self.image scaledToSize:CGSizeMake(100, 100)];
+                            UIImage *img2 = [self imageWithImage:theImg scaledToSize:CGSizeMake(100, 100)];
+                            
+                            if ([self color:[self colorAtPixel:CGPointMake(50, 50) inImage:img1] matchesColor:[self colorAtPixel:CGPointMake(50, 50) inImage:img2]] <= 50 && [self color:[self colorAtPixel:CGPointMake(25, 25) inImage:img1] matchesColor:[self colorAtPixel:CGPointMake(25, 25) inImage:img2]] <= 50 && [self color:[self colorAtPixel:CGPointMake(75, 75) inImage:img1] matchesColor:[self colorAtPixel:CGPointMake(75, 75) inImage:img2]] <= 50)
+                            {
+                                theImage.image = theImg;
+                                
+                                [_imagesScroll addSubview:theImage];
+                                
+                                workingFrame.origin.x = workingFrame.origin.x + workingFrame.size.width;
+                                
+                                numberOfImages++;
+                                
+                                NSLog(@"Images Added!");
+                            }
+                            else
+                            {
+                                NSLog(@"Duplicated Image");
+                            }
                         }
                         else
                         {
-                            theImage.tag = 80 + i;
+                            self.image = theImg;
+                            
+                            theImage.image = theImg;
+                            
+                            [_imagesScroll addSubview:theImage];
+                            
+                            workingFrame.origin.x = workingFrame.origin.x + workingFrame.size.width;
+                            
+                            numberOfImages++;
+                            
+                            NSLog(@"Images Added!");
                         }
-                        
-                        [theImage setContentMode:UIViewContentModeScaleAspectFill];
-                        
-                        [_imagesScroll addSubview:theImage];
-                        
-                        workingFrame.origin.x = workingFrame.origin.x + workingFrame.size.width;
-                        
-                        numberOfImages++;
                     }
+                    else
+                    {
+                        NSLog(@"Small Image:\nWidth: %f",theImg.size.width);
+                    }
+                }
+                else
+                {
+                    NSLog(@"Image == nil");
                 }
             }
             
@@ -2062,27 +2268,257 @@ static NSString * BCP47LanguageCodeForString(NSString *string) {
                 [_imagesScroll setPagingEnabled:YES];
                 [_imagesScroll setContentSize:CGSizeMake(workingFrame.origin.x, workingFrame.size.height)];
                 isImage = YES;
-                [_pageControl setHidden:NO];
-                [_pageControl setNumberOfPages:numberOfImages];
-                [_pageControl setCurrentPage:0];
-                [self scrollToImages];
+                if (numberOfImages == 0)
+                {
+                    UIImageView *theImage = [[UIImageView alloc] initWithFrame:workingFrame];
+                    
+                    [theImage setContentMode:UIViewContentModeCenter];
+                    
+                    theImage.clipsToBounds = YES;
+                    
+                    if ([[NSUserDefaults standardUserDefaults] integerForKey:@"currentColor"] == 2 && ![[NSUserDefaults standardUserDefaults] boolForKey:@"isNightOn"])
+                    {
+                        [theImage setTintColor:[UIColor lightGrayColor]];
+                        
+                        theImage.image = [[UIImage imageNamed:@"no-image-img.png"] imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+                    }
+                    else
+                    {
+                        [theImage setTintColor:[UIColor colorWithRed:50.0/255.0 green:50.0/255.0 blue:50.0/255.0 alpha:1.0]];
+                        
+                        [theImage setImage:[UIImage imageNamed:@"no-image-img.png"]];
+                    }
+                    
+                    [self stopLoadingImage];
+                    
+                    [_imagesScroll addSubview:theImage];
+                }
+                else
+                {
+                    [self stopLoadingImage];
+                    [_pageControl setHidden:NO];
+                    [_pageControl setNumberOfPages:numberOfImages];
+                    [_pageControl setCurrentPage:0];
+                    [self scrollToImages];
+                }
+                
+                NSLog(@"Done!");
             }
-        } failure:^(NSError *error) {
-            [_pageControl setHidden:NO];
-            [_pageControl setNumberOfPages:numberOfImages];
-            [_pageControl setCurrentPage:0];
-        }];
-    }
+        }
+        
+    });
     
     if (images.count == 0)
     {
         [_imagesScroll setPagingEnabled:YES];
         [_imagesScroll setContentSize:CGSizeMake(workingFrame.origin.x, workingFrame.size.height)];
         isImage = YES;
+        UIImageView *theImage = [[UIImageView alloc] initWithFrame:workingFrame];
+        
+        [theImage setContentMode:UIViewContentModeCenter];
+        
+        theImage.clipsToBounds = YES;
+        
+        if ([[NSUserDefaults standardUserDefaults] integerForKey:@"currentColor"] == 2 && ![[NSUserDefaults standardUserDefaults] boolForKey:@"isNightOn"])
+        {
+            [theImage setTintColor:[UIColor lightGrayColor]];
+            
+            theImage.image = [[UIImage imageNamed:@"no-image-img.png"] imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+        }
+        else
+        {
+            [theImage setTintColor:[UIColor colorWithRed:50.0/255.0 green:50.0/255.0 blue:50.0/255.0 alpha:1.0]];
+            
+            [theImage setImage:[UIImage imageNamed:@"no-image-img.png"]];
+        }
+        
+        [self stopLoadingImage];
+        
+        [_imagesScroll addSubview:theImage];
+    }
+}
+
+-(void)addNewPhotoAtIndex:(NSInteger)i
+{
+    dispatch_async(dispatch_get_main_queue(), ^{
+        UIImageView *theImage = [[UIImageView alloc] initWithFrame:workingFrame];
+        
+        [theImage setContentMode:UIViewContentModeScaleAspectFit];
+        
+        theImage.clipsToBounds = YES;
+        
+        theImage.tag = 80 + numberOfImages;
+        
+        NSData *imgData = [NSData dataWithContentsOfURL:[NSURL URLWithString:[images objectAtIndex:i]]];
+        
+        if (imgData)
+        {
+            UIImage *theImg = [UIImage imageWithData:imgData];
+            
+            if (theImg != nil)
+            {
+                if (theImg.size.width > 250 && theImg.size.height > 200)
+                {
+                    if (self.image != nil)
+                    {
+                        UIImage *img1 = [self imageWithImage:self.image scaledToSize:CGSizeMake(100, 100)];
+                        UIImage *img2 = [self imageWithImage:theImg scaledToSize:CGSizeMake(100, 100)];
+                        
+                        if ([self color:[self colorAtPixel:CGPointMake(50, 50) inImage:img1] matchesColor:[self colorAtPixel:CGPointMake(50, 50) inImage:img2]] <= 50 && [self color:[self colorAtPixel:CGPointMake(25, 25) inImage:img1] matchesColor:[self colorAtPixel:CGPointMake(25, 25) inImage:img2]] <= 50 && [self color:[self colorAtPixel:CGPointMake(75, 75) inImage:img1] matchesColor:[self colorAtPixel:CGPointMake(75, 75) inImage:img2]] <= 50)
+                        {
+                            theImage.image = theImg;
+                            
+                            [_imagesScroll addSubview:theImage];
+                            
+                            workingFrame.origin.x = workingFrame.origin.x + workingFrame.size.width;
+                            
+                            numberOfImages++;
+                            
+                            NSLog(@"Images Added!");
+                        }
+                        else
+                        {
+                            NSLog(@"Duplicated Image");
+                        }
+                    }
+                    else
+                    {
+                        self.image = theImg;
+                        
+                        theImage.image = theImg;
+                        
+                        [_imagesScroll addSubview:theImage];
+                        
+                        workingFrame.origin.x = workingFrame.origin.x + workingFrame.size.width;
+                        
+                        numberOfImages++;
+                        
+                        NSLog(@"Images Added!");
+                    }
+                }
+                else
+                {
+                    NSLog(@"Small Image");
+                }
+            }
+            else
+            {
+                NSLog(@"Image == nil");
+            }
+        }
+        
+        if (i == images.count-1)
+        {
+            [_imagesScroll setPagingEnabled:YES];
+            [_imagesScroll setContentSize:CGSizeMake(workingFrame.origin.x, workingFrame.size.height)];
+            isImage = YES;
+            [_pageControl setHidden:NO];
+            [_pageControl setNumberOfPages:numberOfImages];
+            [_pageControl setCurrentPage:0];
+            [self scrollToImages];
+            NSLog(@"Done!");
+        }
+    });
+}
+
+-(void)addNewImgAtIndex:(NSString*)thei
+{
+    NSInteger i = [thei integerValue];
+    __block UIImageView *theImage;
+    
+    theImage = [[UIImageView alloc] initWithFrame:workingFrame];
+    
+    [theImage setContentMode:UIViewContentModeScaleAspectFill];
+    
+    theImage.clipsToBounds = YES;
+    
+    [theImage hnk_setImageFromURL:[NSURL URLWithString:[[images objectAtIndex:i] stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]] placeholder:[UIImage imageNamed:@"loading-img.png"] success:^(UIImage *theImg) {
+        
+        NSLog(@"%ld of %lu",i+1,(unsigned long)images.count);
+        
+        if (theImg != nil)
+        {
+            if (theImg.size.width > 250 && theImg.size.height > 200)
+            {
+                if (self.image != nil)
+                {
+                    UIImage *img1 = [self imageWithImage:self.image scaledToSize:CGSizeMake(100, 100)];
+                    UIImage *img2 = [self imageWithImage:theImg scaledToSize:CGSizeMake(100, 100)];
+                    
+                    if ([self color:[self colorAtPixel:CGPointMake(50, 50) inImage:img1] matchesColor:[self colorAtPixel:CGPointMake(50, 50) inImage:img2]] <= 50 && [self color:[self colorAtPixel:CGPointMake(25, 25) inImage:img1] matchesColor:[self colorAtPixel:CGPointMake(25, 25) inImage:img2]] <= 50 && [self color:[self colorAtPixel:CGPointMake(75, 75) inImage:img1] matchesColor:[self colorAtPixel:CGPointMake(75, 75) inImage:img2]] <= 50)
+                    {
+                        theImage = [[UIImageView alloc] initWithFrame:workingFrame];
+                        
+                        theImage.image = theImg;
+                        
+                        theImage.clipsToBounds = YES;
+                        
+                        theImage.tag = 80 + i;
+                        
+                        [theImage setContentMode:UIViewContentModeScaleAspectFill];
+                        
+                        [_imagesScroll addSubview:theImage];
+                        
+                        workingFrame.origin.x = workingFrame.origin.x + workingFrame.size.width;
+                        
+                        numberOfImages++;
+                        
+                        NSLog(@"Images Added!");
+                    }
+                    else
+                    {
+                        NSLog(@"Duplicated Image");
+                    }
+                }
+                else
+                {
+                    theImage = [[UIImageView alloc] initWithFrame:workingFrame];
+                    
+                    theImage.image = theImg;
+                    
+                    self.image = theImg;
+                    
+                    theImage.clipsToBounds = YES;
+                    
+                    theImage.tag = 80 + i;
+                    
+                    [theImage setContentMode:UIViewContentModeScaleAspectFill];
+                    
+                    [_imagesScroll addSubview:theImage];
+                    
+                    workingFrame.origin.x = workingFrame.origin.x + workingFrame.size.width;
+                    
+                    numberOfImages++;
+                    
+                    NSLog(@"Images Added!");
+                }
+            }
+            else
+            {
+                NSLog(@"Small Image");
+            }
+        }
+        else
+        {
+            NSLog(@"Image == nil");
+        }
+        
+        if (i == images.count-1)
+        {
+            [_imagesScroll setPagingEnabled:YES];
+            [_imagesScroll setContentSize:CGSizeMake(workingFrame.origin.x, workingFrame.size.height)];
+            isImage = YES;
+            [_pageControl setHidden:NO];
+            [_pageControl setNumberOfPages:numberOfImages];
+            [_pageControl setCurrentPage:0];
+            [self scrollToImages];
+        }
+    } failure:^(NSError *error) {
         [_pageControl setHidden:NO];
         [_pageControl setNumberOfPages:numberOfImages];
         [_pageControl setCurrentPage:0];
-    }
+    }];
+
 }
 
 - (IBAction)pageChanged:(id)sender {
@@ -2099,7 +2535,7 @@ static NSString * BCP47LanguageCodeForString(NSString *string) {
             [view removeFromSuperview];
         }
         
-        CGRect workingFrame = _videosScroll.frame;
+        workingFrame = _videosScroll.frame;
         workingFrame.origin.x = 0;
         workingFrame.origin.y = 0;
         
@@ -2109,9 +2545,10 @@ static NSString * BCP47LanguageCodeForString(NSString *string) {
         [_videosScroll scrollRectToVisible:frame animated:NO];
         
         for (int i = 0; i < videos.count;i++) {
-            NSURLRequest* req = [[NSURLRequest alloc]initWithURL:[NSURL URLWithString:[[videos objectAtIndex:i] stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]] cachePolicy:NSURLRequestReturnCacheDataElseLoad timeoutInterval:100];
+//            NSURLRequest* req = [[NSURLRequest alloc]initWithURL:[NSURL URLWithString:[[videos objectAtIndex:i] stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]] cachePolicy:NSURLRequestReturnCacheDataElseLoad timeoutInterval:100];
             UIWebView *theWebView = [[UIWebView alloc]init];
-            [theWebView loadRequest:req];
+            [theWebView loadHTMLString:[videos objectAtIndex:i] baseURL:nil];
+  //          [theWebView loadRequest:req];
             theWebView.scalesPageToFit=YES;
             theWebView.scrollView.scrollEnabled = NO;
             theWebView.frame = workingFrame;
@@ -2122,6 +2559,10 @@ static NSString * BCP47LanguageCodeForString(NSString *string) {
         
         [_videosScroll setPagingEnabled:YES];
         [_videosScroll setContentSize:CGSizeMake(workingFrame.origin.x, workingFrame.size.height)];
+        
+        isVideo = YES;
+        
+        [self stopTheLoading];
     });
 }
 
