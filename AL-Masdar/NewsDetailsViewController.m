@@ -2194,119 +2194,130 @@ static NSString * BCP47LanguageCodeForString(NSString *string) {
     
     NSLog(@"Images: %lu",(unsigned long)images.count);
     
-    dispatch_async(dispatch_get_main_queue(), ^{
         for (int i = 0; i < images.count; i++)
         {
-            UIImageView *theImage = [[UIImageView alloc] initWithFrame:workingFrame];
             
-            [theImage setContentMode:UIViewContentModeScaleAspectFit];
+            NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:[images objectAtIndex:i]]];
             
-            theImage.clipsToBounds = YES;
+            [NSURLConnection sendAsynchronousRequest:request
+                                               queue:[NSOperationQueue mainQueue]
+                                   completionHandler:^(NSURLResponse *response, NSData *data, NSError *error) {
+                                       if ( !error )
+                                       {
+                                           UIImage *theImg = [[UIImage alloc] initWithData:data];
+                                           UIImageView *theImage = [[UIImageView alloc] initWithFrame:workingFrame];
+                                           [theImage setContentMode:UIViewContentModeScaleAspectFit];
+                                           
+                                           theImage.clipsToBounds = YES;
+                                           
+                                           theImage.tag = 80 + numberOfImages;
+                                           
+                                           if (theImg != nil)
+                                           {
+                                               if (theImg.size.width > 250)
+                                               {
+                                                   if (self.image != nil)
+                                                   {
+                                                       UIImage *img1 = [self imageWithImage:self.image scaledToSize:CGSizeMake(100, 100)];
+                                                       UIImage *img2 = [self imageWithImage:theImg scaledToSize:CGSizeMake(100, 100)];
+                                                       
+                                                       if ([self color:[self colorAtPixel:CGPointMake(50, 50) inImage:img1] matchesColor:[self colorAtPixel:CGPointMake(50, 50) inImage:img2]] <= 50 && [self color:[self colorAtPixel:CGPointMake(25, 25) inImage:img1] matchesColor:[self colorAtPixel:CGPointMake(25, 25) inImage:img2]] <= 50 && [self color:[self colorAtPixel:CGPointMake(75, 75) inImage:img1] matchesColor:[self colorAtPixel:CGPointMake(75, 75) inImage:img2]] <= 50)
+                                                       {
+                                                           theImage.image = theImg;
+                                                           dispatch_async(dispatch_get_main_queue(), ^{
+                                                               [_imagesScroll addSubview:theImage];
+                                                           });
+                                                           
+                                                           workingFrame.origin.x = workingFrame.origin.x + workingFrame.size.width;
+                                                           
+                                                           numberOfImages++;
+                                                           
+                                                           NSLog(@"Images Added!");
+                                                       }
+                                                       else
+                                                       {
+                                                           NSLog(@"Duplicated Image");
+                                                       }
+                                                   }
+                                                   else
+                                                   {
+                                                       self.image = theImg;
+                                                       
+                                                       theImage.image = theImg;
+                                                       
+                                                       dispatch_async(dispatch_get_main_queue(), ^{
+                                                           [_imagesScroll addSubview:theImage];
+                                                       });
+                                                       
+                                                       workingFrame.origin.x = workingFrame.origin.x + workingFrame.size.width;
+                                                       
+                                                       numberOfImages++;
+                                                       
+                                                       NSLog(@"Images Added!");
+                                                   }
+                                               }
+                                               else
+                                               {
+                                                   NSLog(@"Small Image:\nWidth: %f",theImg.size.width);
+                                               }
+                                           }
+                                           else
+                                           {
+                                               NSLog(@"Image == nil");
+                                           }
+                                           
+                                           if (i == images.count-1)
+                                           {
+                                               dispatch_async(dispatch_get_main_queue(), ^{
+                                               [_imagesScroll setPagingEnabled:YES];
+                                               [_imagesScroll setContentSize:CGSizeMake(workingFrame.origin.x, workingFrame.size.height)];
+                                               });
+                                               isImage = YES;
+                                               if (numberOfImages == 0)
+                                               {
+                                                   UIImageView *theImage = [[UIImageView alloc] initWithFrame:workingFrame];
+                                                   
+                                                   [theImage setContentMode:UIViewContentModeCenter];
+                                                   
+                                                   theImage.clipsToBounds = YES;
+                                                   
+                                                   if ([[NSUserDefaults standardUserDefaults] integerForKey:@"currentColor"] == 2 && ![[NSUserDefaults standardUserDefaults] boolForKey:@"isNightOn"])
+                                                   {
+                                                       [theImage setTintColor:[UIColor lightGrayColor]];
+                                                       
+                                                       theImage.image = [[UIImage imageNamed:@"no-image-img.png"] imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+                                                   }
+                                                   else
+                                                   {
+                                                       [theImage setTintColor:[UIColor colorWithRed:50.0/255.0 green:50.0/255.0 blue:50.0/255.0 alpha:1.0]];
+                                                       
+                                                       [theImage setImage:[UIImage imageNamed:@"no-image-img.png"]];
+                                                   }
+                                                   dispatch_async(dispatch_get_main_queue(), ^{
+                                                       [self stopLoadingImage];
+                                                   
+                                                       [_imagesScroll addSubview:theImage];
+                                                   });
+                                               }
+                                               else
+                                               {
+                                                   dispatch_async(dispatch_get_main_queue(), ^{
+                                                       [self stopLoadingImage];
+                                                       [_pageControl setHidden:NO];
+                                                       [_pageControl setNumberOfPages:numberOfImages];
+                                                       [_pageControl setCurrentPage:0];
+                                                       [self scrollToImages];
+                                                   });
+                                               }
+                                               
+                                               NSLog(@"Done!");
+                                           }
+                                           
+                                       } else{}
+                                   }];
             
-            theImage.tag = 80 + numberOfImages;
-            
-            NSData *imgData = [NSData dataWithContentsOfURL:[NSURL URLWithString:[images objectAtIndex:i]]];
-            
-            if (imgData)
-            {
-                UIImage *theImg = [UIImage imageWithData:imgData];
-                
-                if (theImg != nil)
-                {
-                    if (theImg.size.width > 250)
-                    {
-                        if (self.image != nil)
-                        {
-                            UIImage *img1 = [self imageWithImage:self.image scaledToSize:CGSizeMake(100, 100)];
-                            UIImage *img2 = [self imageWithImage:theImg scaledToSize:CGSizeMake(100, 100)];
-                            
-                            if ([self color:[self colorAtPixel:CGPointMake(50, 50) inImage:img1] matchesColor:[self colorAtPixel:CGPointMake(50, 50) inImage:img2]] <= 50 && [self color:[self colorAtPixel:CGPointMake(25, 25) inImage:img1] matchesColor:[self colorAtPixel:CGPointMake(25, 25) inImage:img2]] <= 50 && [self color:[self colorAtPixel:CGPointMake(75, 75) inImage:img1] matchesColor:[self colorAtPixel:CGPointMake(75, 75) inImage:img2]] <= 50)
-                            {
-                                theImage.image = theImg;
-                                
-                                [_imagesScroll addSubview:theImage];
-                                
-                                workingFrame.origin.x = workingFrame.origin.x + workingFrame.size.width;
-                                
-                                numberOfImages++;
-                                
-                                NSLog(@"Images Added!");
-                            }
-                            else
-                            {
-                                NSLog(@"Duplicated Image");
-                            }
-                        }
-                        else
-                        {
-                            self.image = theImg;
-                            
-                            theImage.image = theImg;
-                            
-                            [_imagesScroll addSubview:theImage];
-                            
-                            workingFrame.origin.x = workingFrame.origin.x + workingFrame.size.width;
-                            
-                            numberOfImages++;
-                            
-                            NSLog(@"Images Added!");
-                        }
-                    }
-                    else
-                    {
-                        NSLog(@"Small Image:\nWidth: %f",theImg.size.width);
-                    }
-                }
-                else
-                {
-                    NSLog(@"Image == nil");
-                }
-            }
-            
-            if (i == images.count-1)
-            {
-                [_imagesScroll setPagingEnabled:YES];
-                [_imagesScroll setContentSize:CGSizeMake(workingFrame.origin.x, workingFrame.size.height)];
-                isImage = YES;
-                if (numberOfImages == 0)
-                {
-                    UIImageView *theImage = [[UIImageView alloc] initWithFrame:workingFrame];
-                    
-                    [theImage setContentMode:UIViewContentModeCenter];
-                    
-                    theImage.clipsToBounds = YES;
-                    
-                    if ([[NSUserDefaults standardUserDefaults] integerForKey:@"currentColor"] == 2 && ![[NSUserDefaults standardUserDefaults] boolForKey:@"isNightOn"])
-                    {
-                        [theImage setTintColor:[UIColor lightGrayColor]];
-                        
-                        theImage.image = [[UIImage imageNamed:@"no-image-img.png"] imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
-                    }
-                    else
-                    {
-                        [theImage setTintColor:[UIColor colorWithRed:50.0/255.0 green:50.0/255.0 blue:50.0/255.0 alpha:1.0]];
-                        
-                        [theImage setImage:[UIImage imageNamed:@"no-image-img.png"]];
-                    }
-                    
-                    [self stopLoadingImage];
-                    
-                    [_imagesScroll addSubview:theImage];
-                }
-                else
-                {
-                    [self stopLoadingImage];
-                    [_pageControl setHidden:NO];
-                    [_pageControl setNumberOfPages:numberOfImages];
-                    [_pageControl setCurrentPage:0];
-                    [self scrollToImages];
-                }
-                
-                NSLog(@"Done!");
-            }
         }
         
-    });
     
     if (images.count == 0)
     {
