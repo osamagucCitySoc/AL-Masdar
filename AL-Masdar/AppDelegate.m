@@ -58,6 +58,25 @@
     
     [[MMSDK sharedInstance] initializeWithSettings:nil withUserSettings:nil];
     
+    
+    NSDictionary* userInfo = [launchOptions valueForKey:UIApplicationLaunchOptionsRemoteNotificationKey];
+    if(userInfo)
+    {
+        NSString* ID = [[userInfo objectForKey:@"aps"] objectForKey:@"u"];
+        
+        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+            NSData * data = [[NSData alloc] initWithContentsOfURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@%@",@"http://almasdarapp.com/almasdar/getAllDetails.php?id=",ID]]];
+            NSError* error;
+            NSDictionary* dict = [NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingAllowFragments error:&error];
+            dispatch_async(dispatch_get_main_queue(), ^(void) {
+                if(!error)
+                {
+#warning HUSSAIN ADD HERE THE STORING AND PUSHING
+                }
+            });
+        });
+    }
+    
     return YES;
 }
 
