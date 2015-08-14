@@ -294,10 +294,10 @@ static NSDictionary *                kCRToastKeyClassMap                    = ni
 
 + (void)initialize {
     if (self == [CRToast class]) {
-        kCRFontDefault = [UIFont systemFontOfSize:12];
+        kCRFontDefault = [UIFont fontWithName:@"DroidArabicKufi" size:10.0];
         kCRTextColorDefault = [UIColor whiteColor];
         kCRTextShadowOffsetDefault = CGSizeZero;
-        kCRSubtitleFontDefault = [UIFont systemFontOfSize:12];
+        kCRSubtitleFontDefault = [UIFont fontWithName:@"DroidArabicKufi" size:10.0];
         kCRSubtitleTextColorDefault = [UIColor whiteColor];
         kCRSubtitleTextShadowOffsetDefault = CGSizeZero;
         kCRBackgroundColorDefault = [[UIApplication sharedApplication] delegate].window.tintColor ?: [UIColor redColor];

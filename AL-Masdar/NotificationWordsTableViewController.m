@@ -271,7 +271,7 @@
 {
     UIView *view = [[UIView alloc] initWithFrame:CGRectMake(0, 0, tableView2.frame.size.width, 30)];
     UILabel *label = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, tableView2.frame.size.width, 30)];
-    [label setFont:[UIFont systemFontOfSize:16]];
+    [label setFont:[UIFont fontWithName:@"DroidArabicKufi" size:14.0]];
     [label setTextAlignment:NSTextAlignmentRight];
     [label setTextColor:[UIColor colorWithRed:85.0/255.0 green:85.0/255.0 blue:85.0/255.0 alpha:0.9]];
     
@@ -290,12 +290,16 @@
         cell = [[UITableViewCell alloc]initWithStyle:UITableViewCellStyleDefault reuseIdentifier:cellID];
     }
     
+    [[cell textLabel] setFont:[UIFont fontWithName:@"DroidArabicKufi" size:15.0]];
+    
     [[cell textLabel] setText:[[[NSUserDefaults standardUserDefaults] objectForKey:@"notifWords"] objectAtIndex:indexPath.row]];
     
     return cell;
 }
 
-
+- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
+    
+}
 
 - (BOOL)tableView:(UITableView *)tableView canEditRowAtIndexPath:(NSIndexPath *)indexPath {
     return YES;

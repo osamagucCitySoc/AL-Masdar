@@ -14,6 +14,9 @@
 #import "CRToast.h"
 #import "NewsDetailsViewController.h"
 #import <Parse/Parse.h>
+#import "UIImageView+WebCache.h"
+
+#define MILLENNIAL_BANNER_AD_SIZE ((UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) ? MMInlineAdSizeLeaderboard : MMInlineAdSizeBanner)
 
 @interface InfoFeedViewController ()<UITableViewDataSource,UITableViewDelegate,UIActionSheetDelegate,UITextFieldDelegate>
 
@@ -135,10 +138,23 @@
         
     // [tableView setTranslatesAutoresizingMaskIntoConstraints:YES];
     
+    tableView.backgroundView = [UIView new];
+    tableView.backgroundView.backgroundColor = [UIColor clearColor];
+    
     isOnNews = YES;
 }
 
-
+-(void)playSound:(NSString*)theSound
+{
+    if (![[NSUserDefaults standardUserDefaults] boolForKey:@"isSoundEffects"])return;
+    
+    NSString* path = [[[NSBundle mainBundle] resourcePath] stringByAppendingPathComponent:[theSound stringByAppendingString:@".caf"]];
+    
+    NSError* error;
+    self.player = [[AVAudioPlayer alloc] initWithContentsOfURL:[NSURL fileURLWithPath:path] error:&error];
+    self.player.delegate = self;
+    [self.player play];
+}
 
 -(void)getBreakingNewsWords
 {
@@ -557,6 +573,10 @@
     
     if(indexPath)
     {
+        NSDictionary* news = [dataSource objectAtIndex:indexPath.row];
+        
+        if (![[news objectForKey:@"type"] isEqualToString:@"news"])return;
+        
         UITableViewCell *cell = [tableView cellForRowAtIndexPath:indexPath];
         
         indVal = indexPath.row;
@@ -564,6 +584,8 @@
         BOOL isAddIt = NO;
         
         CGRect rectOfCellInSuperview = [cell convertRect:[[cell viewWithTag:8] frame] toView:tableView];
+        
+        rectOfCellInSuperview = CGRectMake(rectOfCellInSuperview.origin.x, rectOfCellInSuperview.origin.y, rectOfCellInSuperview.size.width, rectOfCellInSuperview.size.height-2);
         
         UIView *favView = [[UIView alloc] initWithFrame:CGRectMake(-100, rectOfCellInSuperview.origin.y, 100, rectOfCellInSuperview.size.height)];
         
@@ -628,10 +650,12 @@
                                                       if (isAddIt)
                                                       {
                                                           favImg.image = [UIImage imageNamed:@"fav-on.png"];
+                                                          [self playSound:@"in-sound"];
                                                       }
                                                       else
                                                       {
                                                           favImg.image = [UIImage imageNamed:@"fav-off.png"];
+                                                          [self playSound:@"out-sound"];
                                                       }
                                                       [cell setFrame:CGRectMake(0, cell.frame.origin.y, cell.frame.size.width, cell.frame.size.height)];
                                                       [favView setFrame:CGRectMake(-100, rectOfCellInSuperview.origin.y, 100, rectOfCellInSuperview.size.height)];
@@ -713,6 +737,10 @@
     
     if(indexPath)
     {
+        NSDictionary* news = [dataSource objectAtIndex:indexPath.row];
+        
+        if (![[news objectForKey:@"type"] isEqualToString:@"news"])return;
+        
         indVal = indexPath.row;
         
         UITableViewCell *cell = [tableView cellForRowAtIndexPath:indexPath];
@@ -727,6 +755,8 @@
         }
         
         CGRect rectOfCellInSuperview = [cell convertRect:[[cell viewWithTag:8] frame] toView:tableView];
+        
+        rectOfCellInSuperview = CGRectMake(rectOfCellInSuperview.origin.x, rectOfCellInSuperview.origin.y, rectOfCellInSuperview.size.width, rectOfCellInSuperview.size.height-2);
         
         UIView *favView = [[UIView alloc] initWithFrame:CGRectMake(cell.frame.size.width, rectOfCellInSuperview.origin.y, 100, rectOfCellInSuperview.size.height)];
         
@@ -827,6 +857,7 @@
     [UIView animateWithDuration:0.3 delay:0.0 options:UIViewAnimationOptionCurveEaseInOut
                      animations:^(void) {
                          _shareView.transform = CGAffineTransformMakeScale(1, 1);
+                         [self playSound:@"swipe"];
                      }
                      completion:nil];
 }
@@ -918,7 +949,7 @@
     }
     else
     {
-        [self performSelector:@selector(openLink:) withObject:[news objectForKey:@"newsURL"] afterDelay:0.3];
+        [self performSelector:@selector(openLink:) withObject:[self getShareLinkForId:[news objectForKey:@"id"]] afterDelay:0.3];
         [self closeSmartShare:YES];
     }
 }
@@ -980,7 +1011,7 @@
     [tweetComposerSheet addImage:imgToSave];
     if(![[news objectForKey:@"newsURL"]isEqualToString:@""])
     {
-        [tweetComposerSheet addURL:[NSURL URLWithString:[[news objectForKey:@"newsURL"] stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]]];
+        [tweetComposerSheet addURL:[NSURL URLWithString:[[self getShareLinkForId:[news objectForKey:@"id"]] stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]]];
     }
     [tweetComposerSheet setCompletionHandler:^(SLComposeViewControllerResult result) {
         [self closeSmartShare:YES];
@@ -1012,7 +1043,7 @@
     [faceComposerSheet addImage:imgToSave];
     if(![[news objectForKey:@"newsURL"]isEqualToString:@""])
     {
-        [faceComposerSheet addURL:[NSURL URLWithString:[[news objectForKey:@"newsURL"] stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]]];
+        [faceComposerSheet addURL:[NSURL URLWithString:[[self getShareLinkForId:[news objectForKey:@"id"]] stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]]];
     }
     [self presentViewController:faceComposerSheet animated:YES completion:nil];
     
@@ -1114,10 +1145,9 @@
 
 -(void)addActivityView
 {
+    UIImage *img = [UIImage animatedImageWithImages:[NSArray arrayWithObjects:[UIImage imageNamed:[[self waitImgName] stringByAppendingString:@"wait-img-1.png"]], [UIImage imageNamed:[[self waitImgName] stringByAppendingString:@"wait-img-2.png"]],[UIImage imageNamed:[[self waitImgName] stringByAppendingString:@"wait-img-3.png"]],nil] duration:0.6];
     [_anmImg setHidden:NO];
-    _anmImg.animationImages = [NSArray arrayWithObjects:[UIImage imageNamed:[[self waitImgName] stringByAppendingString:@"wait-img-1.png"]], [UIImage imageNamed:[[self waitImgName] stringByAppendingString:@"wait-img-2.png"]],[UIImage imageNamed:[[self waitImgName] stringByAppendingString:@"wait-img-3.png"]],nil];
-    [_anmImg setAnimationRepeatCount:9999];
-    _anmImg.animationDuration = 0.6;
+    [_anmImg setImage:img];
     [_anmImg startAnimating];
 }
 
@@ -1464,7 +1494,31 @@
                 [(UILabel*)[tableView viewWithTag:837] setText:[@"عدد الأخبار المتبقية " stringByAppendingFormat:@"(%ld)",(long)[self getTheCount]]];
                 
                 breakingArray = [[NSMutableArray alloc] init];
+                
+                NSMutableArray *filterArr = [[NSMutableArray alloc] init];
+                NSMutableArray *checkArr = [[NSMutableArray alloc] init];
+                
                 NSDictionary* news;
+                
+                for (int i = 0; i < dataSource.count; i++)
+                {
+                    news = [dataSource objectAtIndex:i];
+                    if ([[news objectForKey:@"type"] isEqualToString:@"news"])
+                    {
+                        if (![checkArr containsObject:[news objectForKey:@"body"]])
+                        {
+                            [checkArr addObject:[news objectForKey:@"body"]];
+                            [filterArr addObject:[dataSource objectAtIndex:i]];
+                        }
+                    }
+                    else
+                    {
+                        [filterArr addObject:[dataSource objectAtIndex:i]];
+                    }
+                }
+                
+                dataSource = [[NSMutableArray alloc] initWithArray:filterArr];
+                
                 for (int i = 0; i < dataSource.count; i++)
                 {
                     news = [dataSource objectAtIndex:i];
@@ -1477,9 +1531,6 @@
                         [breakingArray addObject:@"0"];
                     }
                 }
-                
-                NSOrderedSet *orderedSet = [NSOrderedSet orderedSetWithArray:dataSource];
-                dataSource = [[NSMutableArray alloc] initWithArray:[orderedSet array]];
                 
                 [tableView reloadData];
                 [tableView setNeedsDisplay];
@@ -1536,7 +1587,41 @@
                     }
                     
                     breakingArray = [[NSMutableArray alloc] init];
+                    
+                    NSMutableArray *filterArr = [[NSMutableArray alloc] init];
+                    NSMutableArray *checkArr = [[NSMutableArray alloc] init];
+                    NSMutableArray *deleteArr = [[NSMutableArray alloc] init];
+                    
                     NSDictionary* news;
+                    
+                    for (int i = 0; i < dataSource.count; i++)
+                    {
+                        news = [dataSource objectAtIndex:i];
+                        if ([[news objectForKey:@"type"] isEqualToString:@"news"])
+                        {
+                            if (![checkArr containsObject:[news objectForKey:@"body"]])
+                            {
+                                [checkArr addObject:[news objectForKey:@"body"]];
+                                [filterArr addObject:[dataSource objectAtIndex:i]];
+                            }
+                            else
+                            {
+                                [deleteArr addObject:[dataSource objectAtIndex:i]];
+                            }
+                        }
+                        else
+                        {
+                            [filterArr addObject:[dataSource objectAtIndex:i]];
+                        }
+                    }
+                    
+                    for (int i = 0; i < deleteArr.count; i++)
+                    {
+                        [newNews removeObject:[deleteArr objectAtIndex:i]];
+                    }
+                    
+                    dataSource = [[NSMutableArray alloc] initWithArray:filterArr];
+                    
                     for (int i = 0; i < dataSource.count; i++)
                     {
                         news = [dataSource objectAtIndex:i];
@@ -1549,9 +1634,6 @@
                             [breakingArray addObject:@"0"];
                         }
                     }
-                    
-                    NSOrderedSet *orderedSet = [NSOrderedSet orderedSetWithArray:dataSource];
-                    dataSource = [[NSMutableArray alloc] initWithArray:[orderedSet array]];
                     
                     [tableView reloadData];
                     
@@ -2139,7 +2221,7 @@
     [scrollButton setBackgroundColor:[UIColor clearColor]];
     [scrollButton addTarget:self action:@selector(scrollToTopNow) forControlEvents:UIControlEventTouchUpInside];
     [scrollButton setTag:885];
-    [scrollButton.titleLabel setFont:[UIFont systemFontOfSize:15]];
+    [scrollButton.titleLabel setFont:[UIFont fontWithName:@"DroidArabicKufi" size:13.0]];
     [scrollButton setTitleColor:[UIColor colorWithRed:71.0/255.0 green:69.0/255.0 blue:9.0/255.0 alpha:1.0] forState:UIControlStateNormal];
     
     if (newsCount == 1)
@@ -2216,7 +2298,7 @@
     [scrollButton setBackgroundColor:[UIColor clearColor]];
     [scrollButton addTarget:self action:@selector(scrollBack) forControlEvents:UIControlEventTouchUpInside];
     [scrollButton setTag:885];
-    [scrollButton.titleLabel setFont:[UIFont systemFontOfSize:15]];
+    [scrollButton.titleLabel setFont:[UIFont fontWithName:@"DroidArabicKufi" size:13.0]];
     [scrollButton setTitleColor:[UIColor colorWithRed:241.0/255.0 green:241.0/255.0 blue:241.0/255.0 alpha:1.0] forState:UIControlStateNormal];
     
     [scrollButton setTitle:@"الرجوع للخبر الذي وصلت إليه بالقراءة" forState:UIControlStateNormal];
@@ -2328,12 +2410,12 @@
     
     UILabel *label = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, tableView2.frame.size.width, 30)];
     [label setTag:838];
-    [label setFont:[UIFont systemFontOfSize:16]];
+    [label setFont:[UIFont fontWithName:@"DroidArabicKufi" size:14.0]];
     [label setTextAlignment:NSTextAlignmentCenter];
     
     UILabel *countLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, tableView2.frame.size.width, 30)];
     [countLabel setTag:839];
-    [countLabel setFont:[UIFont systemFontOfSize:16]];
+    [countLabel setFont:[UIFont fontWithName:@"DroidArabicKufi" size:14.0]];
     [countLabel setTextAlignment:NSTextAlignmentLeft];
     
     //[countLabel setText:[@"       " stringByAppendingFormat:@"%ld",(long)countToEnd]];
@@ -2397,7 +2479,7 @@
     UIView *view = [[UIView alloc] initWithFrame:CGRectMake(0, 0, tableView2.frame.size.width, 30)];
     UILabel *label = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, tableView2.frame.size.width, 30)];
     [label setTag:837];
-    [label setFont:[UIFont systemFontOfSize:16]];
+    [label setFont:[UIFont fontWithName:@"DroidArabicKufi" size:14.0]];
     [label setTextAlignment:NSTextAlignmentCenter];
     if ([[NSUserDefaults standardUserDefaults] boolForKey:@"isNightOn"])
      {
@@ -2509,14 +2591,14 @@
                     BOOL isOnBreak = NO;
                     CGRect oldBreakRect;
                     NSDictionary* news = [dataSource objectAtIndex:indexPath.row];
-                    if (!isOnBreakingNews)
+                    if (!isOnBreakingNews && !isSearching)
                     {
                         if (showingFav)
                         {
                             if ([self isBreakingNews:[news objectForKey:@"body"]])
                             {
                                 isOnBreak = YES;
-                                if([[news objectForKey:@"mediaType"]isEqualToString:@""])
+                                if([[news objectForKey:@"mediaType"]isEqualToString:@""] && [[self imageUrlForRow:indexPath.row] length] == 0)
                                 {
                                     oldBreakRect = [cell viewWithTag:12].frame;
                                     [[cell viewWithTag:12] setHidden:NO];
@@ -2535,7 +2617,7 @@
                             if ([[breakingArray objectAtIndex:indexPath.row] integerValue] == 1)
                             {
                                 isOnBreak = YES;
-                                if([[news objectForKey:@"mediaType"]isEqualToString:@""])
+                                if([[news objectForKey:@"mediaType"]isEqualToString:@""] && [[self imageUrlForRow:indexPath.row] length] == 0)
                                 {
                                     oldBreakRect = [cell viewWithTag:12].frame;
                                     [[cell viewWithTag:12] setHidden:NO];
@@ -2557,7 +2639,7 @@
                                          [cell viewWithTag:9].transform=CGAffineTransformMakeRotation(M_PI / 2);
                                          if (isOnBreak)
                                          {
-                                             if([[news objectForKey:@"mediaType"]isEqualToString:@""])
+                                             if([[news objectForKey:@"mediaType"]isEqualToString:@""] && [[self imageUrlForRow:indexPath.row] length] == 0)
                                              {
                                                  [[cell viewWithTag:12] setFrame:CGRectMake([cell viewWithTag:12].frame.origin.x+100, [cell viewWithTag:12].frame.origin.y, [cell viewWithTag:12].frame.size.width, [cell viewWithTag:12].frame.size.height)];
                                              }
@@ -2577,7 +2659,7 @@
                                                               [[cell viewWithTag:12] setHidden:YES];
                                                               if (isOnBreak)
                                                               {
-                                                                  if([[news objectForKey:@"mediaType"]isEqualToString:@""])
+                                                                  if([[news objectForKey:@"mediaType"]isEqualToString:@""] && [[self imageUrlForRow:indexPath.row] length] == 0)
                                                                   {
                                                                       [[cell viewWithTag:12] setFrame:oldBreakRect];
                                                                   }
@@ -2595,13 +2677,13 @@
             else
             {
                 NSDictionary* news = [dataSource objectAtIndex:indexPath.row];
-                if (!isOnBreakingNews)
+                if (!isOnBreakingNews && !isSearching)
                 {
                     if (showingFav)
                     {
                         if ([self isBreakingNews:[news objectForKey:@"body"]])
                         {
-                            if([[news objectForKey:@"mediaType"]isEqualToString:@""])
+                            if([[news objectForKey:@"mediaType"]isEqualToString:@""] && [[self imageUrlForRow:indexPath.row] length] == 0)
                             {
                                 [[cell viewWithTag:12] setHidden:NO];
                                 [[cell viewWithTag:11] setHidden:YES];
@@ -2625,7 +2707,7 @@
                     {
                         if ([[breakingArray objectAtIndex:indexPath.row] integerValue] == 1)
                         {
-                            if([[news objectForKey:@"mediaType"]isEqualToString:@""])
+                            if([[news objectForKey:@"mediaType"]isEqualToString:@""] && [[self imageUrlForRow:indexPath.row] length] == 0)
                             {
                                 [[cell viewWithTag:12] setHidden:NO];
                                 [[cell viewWithTag:11] setHidden:YES];
@@ -2663,27 +2745,35 @@
                     [[cell viewWithTag:9] setAlpha:1.0];
                     [[cell viewWithTag:10] setAlpha:1.0];
                     
-                    if([[news objectForKey:@"mediaType"]isEqualToString:@""])
+                    if (!isOnBreakingNews && !isSearching)
                     {
-                        [[cell viewWithTag:12] setFrame:CGRectMake([cell viewWithTag:12].frame.origin.x+100, [cell viewWithTag:12].frame.origin.y, [cell viewWithTag:12].frame.size.width, [cell viewWithTag:12].frame.size.height)];
+                        if([[news objectForKey:@"mediaType"]isEqualToString:@""] && [[self imageUrlForRow:indexPath.row] length] == 0)
+                        {
+                            [[cell viewWithTag:12] setFrame:CGRectMake([cell viewWithTag:12].frame.origin.x+100, [cell viewWithTag:12].frame.origin.y, [cell viewWithTag:12].frame.size.width, [cell viewWithTag:12].frame.size.height)];
+                        }
+                        else
+                        {
+                            [[cell viewWithTag:11] setFrame:CGRectMake([cell viewWithTag:11].frame.origin.x+100, [cell viewWithTag:11].frame.origin.y, [cell viewWithTag:11].frame.size.width, [cell viewWithTag:11].frame.size.height)];
+                        }
                     }
-                    else
-                    {
-                        [[cell viewWithTag:11] setFrame:CGRectMake([cell viewWithTag:11].frame.origin.x+100, [cell viewWithTag:11].frame.origin.y, [cell viewWithTag:11].frame.size.width, [cell viewWithTag:11].frame.size.height)];
-                    }
+                    
                     
                     [UIView animateWithDuration:0.2 delay:0.0 options:0
                                      animations:^{
                                          [[cell viewWithTag:9] setAlpha:0.0];
                                          [[cell viewWithTag:10] setAlpha:0.0];
-                                         if([[news objectForKey:@"mediaType"]isEqualToString:@""])
+                                         if (!isOnBreakingNews && !isSearching)
                                          {
-                                             [[cell viewWithTag:12] setFrame:CGRectMake([cell viewWithTag:12].frame.origin.x-100, [cell viewWithTag:12].frame.origin.y, [cell viewWithTag:12].frame.size.width, [cell viewWithTag:12].frame.size.height)];
+                                             if([[news objectForKey:@"mediaType"]isEqualToString:@""] && [[self imageUrlForRow:indexPath.row] length] == 0)
+                                             {
+                                                 [[cell viewWithTag:12] setFrame:CGRectMake([cell viewWithTag:12].frame.origin.x-100, [cell viewWithTag:12].frame.origin.y, [cell viewWithTag:12].frame.size.width, [cell viewWithTag:12].frame.size.height)];
+                                             }
+                                             else
+                                             {
+                                                 [[cell viewWithTag:11] setFrame:CGRectMake([cell viewWithTag:11].frame.origin.x-100, [cell viewWithTag:11].frame.origin.y, [cell viewWithTag:11].frame.size.width, [cell viewWithTag:11].frame.size.height)];
+                                             }
                                          }
-                                         else
-                                         {
-                                             [[cell viewWithTag:11] setFrame:CGRectMake([cell viewWithTag:11].frame.origin.x-100, [cell viewWithTag:11].frame.origin.y, [cell viewWithTag:11].frame.size.width, [cell viewWithTag:11].frame.size.height)];
-                                         }
+                                         
                                      }
                                      completion:^(BOOL finished) {
                                          [[cell viewWithTag:9] setAlpha:1.0];
@@ -2703,13 +2793,13 @@
         else
         {
             NSDictionary* news = [dataSource objectAtIndex:indexPath.row];
-            if (!isOnBreakingNews)
+            if (!isOnBreakingNews && !isSearching)
             {
                 if (showingFav)
                 {
                     if ([self isBreakingNews:[news objectForKey:@"body"]])
                     {
-                        if([[news objectForKey:@"mediaType"]isEqualToString:@""])
+                        if([[news objectForKey:@"mediaType"]isEqualToString:@""] && [[self imageUrlForRow:indexPath.row] length] == 0)
                         {
                             [[cell viewWithTag:12] setHidden:NO];
                             [[cell viewWithTag:11] setHidden:YES];
@@ -2733,7 +2823,7 @@
                 {
                     if ([[breakingArray objectAtIndex:indexPath.row] integerValue] == 1)
                     {
-                        if([[news objectForKey:@"mediaType"]isEqualToString:@""])
+                        if([[news objectForKey:@"mediaType"]isEqualToString:@""] && [[self imageUrlForRow:indexPath.row] length] == 0)
                         {
                             [[cell viewWithTag:12] setHidden:NO];
                             [[cell viewWithTag:11] setHidden:YES];
@@ -2785,14 +2875,14 @@
                     BOOL isOnBreak = NO;
                     CGRect oldBreakRect;
                     NSDictionary* news = [dataSource objectAtIndex:indexPath.row];
-                    if (!isOnBreakingNews)
+                    if (!isOnBreakingNews && !isSearching)
                     {
                         if (showingFav)
                         {
                             if ([self isBreakingNews:[news objectForKey:@"body"]])
                             {
                                 isOnBreak = YES;
-                                if([[news objectForKey:@"mediaType"]isEqualToString:@""])
+                                if([[news objectForKey:@"mediaType"]isEqualToString:@""] && [[self imageUrlForRow:indexPath.row] length] == 0)
                                 {
                                     oldBreakRect = [cell viewWithTag:12].frame;
                                     [[cell viewWithTag:12] setHidden:NO];
@@ -2811,7 +2901,7 @@
                             if ([[breakingArray objectAtIndex:indexPath.row] integerValue] == 1)
                             {
                                 isOnBreak = YES;
-                                if([[news objectForKey:@"mediaType"]isEqualToString:@""])
+                                if([[news objectForKey:@"mediaType"]isEqualToString:@""] && [[self imageUrlForRow:indexPath.row] length] == 0)
                                 {
                                     oldBreakRect = [cell viewWithTag:12].frame;
                                     [[cell viewWithTag:12] setHidden:NO];
@@ -2834,7 +2924,7 @@
                                          [cell viewWithTag:9].transform=CGAffineTransformMakeRotation(M_PI / 2);
                                          if (isOnBreak)
                                          {
-                                             if([[news objectForKey:@"mediaType"]isEqualToString:@""])
+                                             if([[news objectForKey:@"mediaType"]isEqualToString:@""] && [[self imageUrlForRow:indexPath.row] length] == 0)
                                              {
                                                  [[cell viewWithTag:12] setFrame:CGRectMake([cell viewWithTag:12].frame.origin.x+100, [cell viewWithTag:12].frame.origin.y, [cell viewWithTag:12].frame.size.width, [cell viewWithTag:12].frame.size.height)];
                                              }
@@ -2854,7 +2944,7 @@
                                                               [[cell viewWithTag:12] setHidden:YES];
                                                               if (isOnBreak)
                                                               {
-                                                                  if([[news objectForKey:@"mediaType"]isEqualToString:@""])
+                                                                  if([[news objectForKey:@"mediaType"]isEqualToString:@""] && [[self imageUrlForRow:indexPath.row] length] == 0)
                                                                   {
                                                                       [[cell viewWithTag:12] setFrame:oldBreakRect];
                                                                   }
@@ -2872,13 +2962,13 @@
             else
             {
                 NSDictionary* news = [dataSource objectAtIndex:indexPath.row];
-                if (!isOnBreakingNews)
+                if (!isOnBreakingNews && !isSearching)
                 {
                     if (showingFav)
                     {
                         if ([self isBreakingNews:[news objectForKey:@"body"]])
                         {
-                            if([[news objectForKey:@"mediaType"]isEqualToString:@""])
+                            if([[news objectForKey:@"mediaType"]isEqualToString:@""] && [[self imageUrlForRow:indexPath.row] length] == 0)
                             {
                                 [[cell viewWithTag:12] setHidden:NO];
                                 [[cell viewWithTag:11] setHidden:YES];
@@ -2901,7 +2991,7 @@
                     {
                         if ([[breakingArray objectAtIndex:indexPath.row] integerValue] == 1)
                         {
-                            if([[news objectForKey:@"mediaType"]isEqualToString:@""])
+                            if([[news objectForKey:@"mediaType"]isEqualToString:@""] && [[self imageUrlForRow:indexPath.row] length] == 0)
                             {
                                 [[cell viewWithTag:12] setHidden:NO];
                                 [[cell viewWithTag:11] setHidden:YES];
@@ -2936,26 +3026,35 @@
                     [[cell viewWithTag:10] setHidden:NO];
                     [[cell viewWithTag:9] setAlpha:1.0];
                     [[cell viewWithTag:10] setAlpha:1.0];
-                    if([[news objectForKey:@"mediaType"]isEqualToString:@""])
+                    
+                    if (!isOnBreakingNews && !isSearching)
                     {
-                        [[cell viewWithTag:12] setFrame:CGRectMake([cell viewWithTag:12].frame.origin.x+100, [cell viewWithTag:12].frame.origin.y, [cell viewWithTag:12].frame.size.width, [cell viewWithTag:12].frame.size.height)];
+                        if([[news objectForKey:@"mediaType"]isEqualToString:@""] && [[self imageUrlForRow:indexPath.row] length] == 0)
+                        {
+                            [[cell viewWithTag:12] setFrame:CGRectMake([cell viewWithTag:12].frame.origin.x+100, [cell viewWithTag:12].frame.origin.y, [cell viewWithTag:12].frame.size.width, [cell viewWithTag:12].frame.size.height)];
+                        }
+                        else
+                        {
+                            [[cell viewWithTag:11] setFrame:CGRectMake([cell viewWithTag:11].frame.origin.x+100, [cell viewWithTag:11].frame.origin.y, [cell viewWithTag:11].frame.size.width, [cell viewWithTag:11].frame.size.height)];
+                        }
                     }
-                    else
-                    {
-                        [[cell viewWithTag:11] setFrame:CGRectMake([cell viewWithTag:11].frame.origin.x+100, [cell viewWithTag:11].frame.origin.y, [cell viewWithTag:11].frame.size.width, [cell viewWithTag:11].frame.size.height)];
-                    }
+                    
                     [UIView animateWithDuration:0.2 delay:0.0 options:0
                                      animations:^{
                                          [[cell viewWithTag:9] setAlpha:0.0];
                                          [[cell viewWithTag:10] setAlpha:0.0];
-                                         if([[news objectForKey:@"mediaType"]isEqualToString:@""])
+                                         if (!isOnBreakingNews && !isSearching)
                                          {
-                                             [[cell viewWithTag:12] setFrame:CGRectMake([cell viewWithTag:12].frame.origin.x-100, [cell viewWithTag:12].frame.origin.y, [cell viewWithTag:12].frame.size.width, [cell viewWithTag:12].frame.size.height)];
+                                             if([[news objectForKey:@"mediaType"]isEqualToString:@""] && [[self imageUrlForRow:indexPath.row] length] == 0)
+                                             {
+                                                 [[cell viewWithTag:12] setFrame:CGRectMake([cell viewWithTag:12].frame.origin.x-100, [cell viewWithTag:12].frame.origin.y, [cell viewWithTag:12].frame.size.width, [cell viewWithTag:12].frame.size.height)];
+                                             }
+                                             else
+                                             {
+                                                 [[cell viewWithTag:11] setFrame:CGRectMake([cell viewWithTag:11].frame.origin.x-100, [cell viewWithTag:11].frame.origin.y, [cell viewWithTag:11].frame.size.width, [cell viewWithTag:11].frame.size.height)];
+                                             }
                                          }
-                                         else
-                                         {
-                                             [[cell viewWithTag:11] setFrame:CGRectMake([cell viewWithTag:11].frame.origin.x-100, [cell viewWithTag:11].frame.origin.y, [cell viewWithTag:11].frame.size.width, [cell viewWithTag:11].frame.size.height)];
-                                         }
+                                         
                                      }
                                      completion:^(BOOL finished) {
                                          [[cell viewWithTag:9] setAlpha:1.0];
@@ -2975,13 +3074,13 @@
         else
         {
             NSDictionary* news = [dataSource objectAtIndex:indexPath.row];
-            if (!isOnBreakingNews)
+            if (!isOnBreakingNews && !isSearching)
             {
                 if (showingFav)
                 {
                     if ([self isBreakingNews:[news objectForKey:@"body"]])
                     {
-                        if([[news objectForKey:@"mediaType"]isEqualToString:@""])
+                        if([[news objectForKey:@"mediaType"]isEqualToString:@""] && [[self imageUrlForRow:indexPath.row] length] == 0)
                         {
                             [[cell viewWithTag:12] setHidden:NO];
                             [[cell viewWithTag:11] setHidden:YES];
@@ -3004,7 +3103,7 @@
                 {
                     if ([[breakingArray objectAtIndex:indexPath.row] integerValue] == 1)
                     {
-                        if([[news objectForKey:@"mediaType"]isEqualToString:@""])
+                        if([[news objectForKey:@"mediaType"]isEqualToString:@""] && [[self imageUrlForRow:indexPath.row] length] == 0)
                         {
                             [[cell viewWithTag:12] setHidden:NO];
                             [[cell viewWithTag:11] setHidden:YES];
@@ -3040,7 +3139,11 @@
         {
             if (indexPath.row <= indVal)
             {
-                isRectResume = YES;
+                if (indexPath.row > 0)
+                {
+                    isRectResume = YES;
+                }
+                
                 [self performSelector:@selector(setHeaderBack) withObject:nil afterDelay:0.2];
             }
         }
@@ -3048,7 +3151,12 @@
         if (isRectResume && indexPath.row == 0)
         {
             isRectResume = NO;
+            [self performSelector:@selector(setHeaderBack) withObject:nil afterDelay:0.2];
             [self performSelector:@selector(addBackToRect) withObject:nil afterDelay:5.0];
+        }
+        else if (indexPath.row == 0 && isScrollButton)
+        {
+            [self performSelector:@selector(setHeaderBack) withObject:nil afterDelay:0.2];
         }
     }
     
@@ -3099,9 +3207,38 @@
     }
 }
 
+-(NSString*)imageUrlForRow:(NSInteger)theRow
+{
+    NSDictionary* news = [dataSource objectAtIndex:theRow];
+    
+    NSArray *urls = [[news objectForKey:@"photos"] componentsSeparatedByString:@","];
+    
+    if (urls.count > 0)
+    {
+        if ([[urls objectAtIndex:0] length] > 5)
+        {
+            return [[urls objectAtIndex:0] stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
+        }
+        else
+        {
+            if (urls.count > 1)
+            {
+                if ([[urls objectAtIndex:1] length] > 5)
+                {
+                    return [[urls objectAtIndex:1] stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
+                }
+            }
+        }
+    }
+    
+    return @"";
+}
+
+//cell
 - (UITableViewCell *)tableView:(UITableView *)tableVieww cellForRowAtIndexPath:(NSIndexPath *)indexPath {
     
     static NSString* cellID = @"newsFeedCell";
+    
     UITableViewCell *cell = [tableVieww dequeueReusableCellWithIdentifier:cellID forIndexPath:indexPath];
     
     if(!cell)
@@ -3109,10 +3246,18 @@
         cell = [[UITableViewCell alloc]initWithStyle:UITableViewCellStyleDefault reuseIdentifier:cellID];
     }
     
+    cell.backgroundColor = [UIColor clearColor];
+    cell.backgroundView.backgroundColor = [UIColor clearColor];
+    cell.contentView.backgroundColor = [UIColor clearColor];
+    
+    NSDictionary* news = [dataSource objectAtIndex:indexPath.row];
+    
     if ([[NSUserDefaults standardUserDefaults] boolForKey:@"isNightOn"])
     {
-        [(UILabel*)[cell viewWithTag:2] setTextColor:[UIColor colorWithRed:200.0/255.0 green:200.0/255.0 blue:200.0/255.0 alpha:1.0]];
-        [(UILabel*)[cell viewWithTag:4] setTextColor:[UIColor lightGrayColor]];
+        [[cell viewWithTag:17] setBackgroundColor:[UIColor colorWithRed:70.0/255.0 green:70.0/255.0 blue:70.0/255.0 alpha:1.0]];
+        
+        [(UILabel*)[cell viewWithTag:3] setTextColor:[UIColor colorWithRed:120.0/255.0 green:120.0/255.0 blue:120.0/255.0 alpha:1.0]];
+        [(UILabel*)[cell viewWithTag:4] setTextColor:[UIColor colorWithRed:190.0/255.0 green:190.0/255.0 blue:190.0/255.0 alpha:1.0]];
         
         [(UILabel*)[cell viewWithTag:2] setHighlightedTextColor:[UIColor whiteColor]];
         [(UILabel*)[cell viewWithTag:3] setHighlightedTextColor:[UIColor whiteColor]];
@@ -3128,11 +3273,13 @@
     }
     else
     {
-        [(UILabel*)[cell viewWithTag:2] setTextColor:[UIColor colorWithRed:30.0/255.0 green:30.0/255.0 blue:30.0/255.0 alpha:1.0]];
+        [[cell viewWithTag:17] setBackgroundColor:[UIColor colorWithRed:85.0/255.0 green:85.0/255.0 blue:85.0/255.0 alpha:0.4]];
+        
+        [(UILabel*)[cell viewWithTag:3] setTextColor:[UIColor darkGrayColor]];
         [(UILabel*)[cell viewWithTag:4] setTextColor:[UIColor colorWithRed:37.0/255.0 green:37.0/255.0 blue:37.0/255.0 alpha:1.0]];
         
-        [(UILabel*)[cell viewWithTag:2] setHighlightedTextColor:[UIColor blackColor]];
-        [(UILabel*)[cell viewWithTag:3] setHighlightedTextColor:[UIColor colorWithRed:77.0/255.0 green:165.0/255.0 blue:224.0/255.0 alpha:1.0]];
+        [(UILabel*)[cell viewWithTag:2] setHighlightedTextColor:[UIColor colorWithRed:77.0/255.0 green:165.0/255.0 blue:224.0/255.0 alpha:1.0]];
+        [(UILabel*)[cell viewWithTag:3] setHighlightedTextColor:[UIColor blackColor]];
         [(UILabel*)[cell viewWithTag:4] setHighlightedTextColor:[UIColor blackColor]];
         
         cell.selectedBackgroundView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"news-selected-back.png"]];
@@ -3153,9 +3300,14 @@
         [(UILabel*)[tableView viewWithTag:837] setText:[@"عدد الأخبار المتبقية " stringByAppendingFormat:@"(%ld)",(long)[self getTheCount]]];
     }
     
-    NSDictionary* news = [dataSource objectAtIndex:indexPath.row];
+    //[(UILabel*)[cell viewWithTag:20] setText:[self getCitiesFor:[news objectForKey:@"fullBody"]]];
     
-    [(UIImageView*)[cell viewWithTag:1] hnk_setImageFromURL:[NSURL URLWithString:[[news objectForKey:@"icon"] stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]] placeholder:nil];
+    //[(UIImageView*)[cell viewWithTag:1] hnk_setImageFromURL:[NSURL URLWithString:[[news objectForKey:@"icon"] stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]] placeholder:nil];
+    
+    [(UIImageView*)[cell viewWithTag:1] sd_setImageWithURL:[NSURL URLWithString:[news objectForKey:@"icon"]]
+                                          placeholderImage:nil];
+    
+    
     [(UILabel*)[cell viewWithTag:2] setText:[news objectForKey:@"name"]];
     
     [[[cell viewWithTag:1] layer] setCornerRadius:5];
@@ -3172,145 +3324,152 @@
     NSString *dateString = [dateFormatter stringFromDate:[NSDate date]];
     NSDate* date = [dateFormatter dateFromString:dateString];
     
-    long currentStamp = [date timeIntervalSince1970];
-    long newsStamp = [[news objectForKey:@"createdAt"] longLongValue];
-    long diff = currentStamp-newsStamp;
-    
-    if(diff < 60)
+    if ([[news objectForKey:@"type"] isEqualToString:@"google"] || [[news objectForKey:@"type"] isEqualToString:@"ourAd"] || [[news objectForKey:@"type"] isEqualToString:@"millin"])
     {
-        [(UILabel*)[cell viewWithTag:3] setText:@"الآن"];
-        if (!showingFav)
-        {
-            [(UILabel*)[tableView viewWithTag:838] setText:@"أخبار اليوم"];
-        }
-    }else if (diff < 3600)
-    {
-        if ((int)(diff/60) == 1)
-        {
-            [(UILabel*)[cell viewWithTag:3] setText:@"منذ دقيقة"];
-        }
-        else if ((int)(diff/60) == 2)
-        {
-            [(UILabel*)[cell viewWithTag:3] setText:@"منذ دقيقتين"];
-        }
-        else if ((int)(diff/60) <= 10)
-        {
-            [(UILabel*)[cell viewWithTag:3] setText:[NSString stringWithFormat:@"منذ %i دقائق",(int)(diff/60)]];
-        }
-        else
-        {
-            [(UILabel*)[cell viewWithTag:3] setText:[NSString stringWithFormat:@"منذ %i دقيقة",(int)(diff/60)]];
-        }
-        
-        if (!showingFav)
-        {
-            [(UILabel*)[tableView viewWithTag:838] setText:@"أخبار اليوم"];
-        }
-    }else if (diff < 86400)
-    {
-        if ((int)(diff/3600) == 1)
-        {
-            [(UILabel*)[cell viewWithTag:3] setText:@"منذ ساعة"];
-        }
-        else if ((int)(diff/3600) == 2)
-        {
-            [(UILabel*)[cell viewWithTag:3] setText:@"منذ ساعتين"];
-        }
-        else if ((int)(diff/3600) <= 10)
-        {
-            [(UILabel*)[cell viewWithTag:3] setText:[NSString stringWithFormat:@"منذ %i ساعات",(int)(diff/3600)]];
-        }
-        else
-        {
-            [(UILabel*)[cell viewWithTag:3] setText:[NSString stringWithFormat:@"منذ %i ساعة",(int)(diff/3600)]];
-        }
-        if (!showingFav)
-        {
-            [(UILabel*)[tableView viewWithTag:838] setText:[self getDayStr:newsStamp andCompare:diff andToday:date]];
-        }
-    }else if (diff < 604800)
-    {
-        if ((int)(diff/86400) == 1)
-        {
-            [(UILabel*)[cell viewWithTag:3] setText:@"منذ يوم"];
-        }
-        else if ((int)(diff/86400) == 2)
-        {
-            [(UILabel*)[cell viewWithTag:3] setText:@"منذ يومين"];
-        }
-        else if ((int)(diff/86400) <= 10)
-        {
-            [(UILabel*)[cell viewWithTag:3] setText:[NSString stringWithFormat:@"منذ %i أيام",(int)(diff/86400)]];
-        }
-        else
-        {
-            [(UILabel*)[cell viewWithTag:3] setText:[NSString stringWithFormat:@"منذ %i يوم",(int)(diff/86400)]];
-        }
-        
-        if (!showingFav)
-        {
-            if ((int)(diff/86400) == 1)
-            {
-                [(UILabel*)[tableView viewWithTag:838] setText:@"أخبار أمس"];
-            }
-            else
-            {
-                [(UILabel*)[tableView viewWithTag:838] setText:@"أخبار الأسبوع"];
-            }
-        }
-    }else if (diff < 2592000)
-    {
-        if ((int)(diff/604800) == 1)
-        {
-            [(UILabel*)[cell viewWithTag:3] setText:@"منذ إسبوع"];
-        }
-        else if ((int)(diff/604800) == 2)
-        {
-            [(UILabel*)[cell viewWithTag:3] setText:@"منذ إسبوعين"];
-        }
-        else if ((int)(diff/604800) <= 10)
-        {
-            [(UILabel*)[cell viewWithTag:3] setText:[NSString stringWithFormat:@"منذ %i أسابيع",(int)(diff/604800)]];
-        }
-        else
-        {
-            [(UILabel*)[cell viewWithTag:3] setText:[NSString stringWithFormat:@"منذ %i إسبوع",(int)(diff/604800)]];
-        }
-        
-        if (!showingFav)
-        {
-            if ((int)(diff/604800) == 1)
-            {
-                [(UILabel*)[tableView viewWithTag:838] setText:@"أخبار الأسبوع"];
-            }
-            else
-            {
-                [(UILabel*)[tableView viewWithTag:838] setText:@"أخبار سابقة"];
-            }
-        }
+        [(UILabel*)[tableView viewWithTag:838] setText:@"إعلان"];
     }
     else
     {
-        if ((int)(diff/2592000) == 1)
+        long currentStamp = [date timeIntervalSince1970];
+        long newsStamp = [[news objectForKey:@"createdAt"] longLongValue];
+        long diff = currentStamp-newsStamp;
+        
+        if(diff < 60)
         {
-            [(UILabel*)[cell viewWithTag:3] setText:@"منذ شهر"];
-        }
-        else if ((int)(diff/2592000) == 2)
+            [(UILabel*)[cell viewWithTag:3] setText:@"الآن"];
+            if (!showingFav)
+            {
+                [(UILabel*)[tableView viewWithTag:838] setText:@"أخبار اليوم"];
+            }
+        }else if (diff < 3600)
         {
-            [(UILabel*)[cell viewWithTag:3] setText:@"منذ شهرين"];
-        }
-        else if ((int)(diff/2592000) <= 10)
+            if ((int)(diff/60) == 1)
+            {
+                [(UILabel*)[cell viewWithTag:3] setText:@"منذ دقيقة"];
+            }
+            else if ((int)(diff/60) == 2)
+            {
+                [(UILabel*)[cell viewWithTag:3] setText:@"منذ دقيقتين"];
+            }
+            else if ((int)(diff/60) <= 10)
+            {
+                [(UILabel*)[cell viewWithTag:3] setText:[NSString stringWithFormat:@"منذ %i دقائق",(int)(diff/60)]];
+            }
+            else
+            {
+                [(UILabel*)[cell viewWithTag:3] setText:[NSString stringWithFormat:@"منذ %i دقيقة",(int)(diff/60)]];
+            }
+            
+            if (!showingFav)
+            {
+                [(UILabel*)[tableView viewWithTag:838] setText:@"أخبار اليوم"];
+            }
+        }else if (diff < 86400)
         {
-            [(UILabel*)[cell viewWithTag:3] setText:[NSString stringWithFormat:@"منذ %i أشهر",(int)(diff/2592000)]];
+            if ((int)(diff/3600) == 1)
+            {
+                [(UILabel*)[cell viewWithTag:3] setText:@"منذ ساعة"];
+            }
+            else if ((int)(diff/3600) == 2)
+            {
+                [(UILabel*)[cell viewWithTag:3] setText:@"منذ ساعتين"];
+            }
+            else if ((int)(diff/3600) <= 10)
+            {
+                [(UILabel*)[cell viewWithTag:3] setText:[NSString stringWithFormat:@"منذ %i ساعات",(int)(diff/3600)]];
+            }
+            else
+            {
+                [(UILabel*)[cell viewWithTag:3] setText:[NSString stringWithFormat:@"منذ %i ساعة",(int)(diff/3600)]];
+            }
+            if (!showingFav)
+            {
+                [(UILabel*)[tableView viewWithTag:838] setText:[self getDayStr:newsStamp andCompare:diff andToday:date]];
+            }
+        }else if (diff < 604800)
+        {
+            if ((int)(diff/86400) == 1)
+            {
+                [(UILabel*)[cell viewWithTag:3] setText:@"منذ يوم"];
+            }
+            else if ((int)(diff/86400) == 2)
+            {
+                [(UILabel*)[cell viewWithTag:3] setText:@"منذ يومين"];
+            }
+            else if ((int)(diff/86400) <= 10)
+            {
+                [(UILabel*)[cell viewWithTag:3] setText:[NSString stringWithFormat:@"منذ %i أيام",(int)(diff/86400)]];
+            }
+            else
+            {
+                [(UILabel*)[cell viewWithTag:3] setText:[NSString stringWithFormat:@"منذ %i يوم",(int)(diff/86400)]];
+            }
+            
+            if (!showingFav)
+            {
+                if ((int)(diff/86400) == 1)
+                {
+                    [(UILabel*)[tableView viewWithTag:838] setText:@"أخبار أمس"];
+                }
+                else
+                {
+                    [(UILabel*)[tableView viewWithTag:838] setText:@"أخبار الأسبوع"];
+                }
+            }
+        }else if (diff < 2592000)
+        {
+            if ((int)(diff/604800) == 1)
+            {
+                [(UILabel*)[cell viewWithTag:3] setText:@"منذ إسبوع"];
+            }
+            else if ((int)(diff/604800) == 2)
+            {
+                [(UILabel*)[cell viewWithTag:3] setText:@"منذ إسبوعين"];
+            }
+            else if ((int)(diff/604800) <= 10)
+            {
+                [(UILabel*)[cell viewWithTag:3] setText:[NSString stringWithFormat:@"منذ %i أسابيع",(int)(diff/604800)]];
+            }
+            else
+            {
+                [(UILabel*)[cell viewWithTag:3] setText:[NSString stringWithFormat:@"منذ %i إسبوع",(int)(diff/604800)]];
+            }
+            
+            if (!showingFav)
+            {
+                if ((int)(diff/604800) == 1)
+                {
+                    [(UILabel*)[tableView viewWithTag:838] setText:@"أخبار الأسبوع"];
+                }
+                else
+                {
+                    [(UILabel*)[tableView viewWithTag:838] setText:@"أخبار سابقة"];
+                }
+            }
         }
         else
         {
-            [(UILabel*)[cell viewWithTag:3] setText:[NSString stringWithFormat:@"منذ %i شهر",(int)(diff/2592000)]];
-        }
-        
-        if (!showingFav)
-        {
-            [(UILabel*)[tableView viewWithTag:838] setText:@"أخبار سابقة"];
+            if ((int)(diff/2592000) == 1)
+            {
+                [(UILabel*)[cell viewWithTag:3] setText:@"منذ شهر"];
+            }
+            else if ((int)(diff/2592000) == 2)
+            {
+                [(UILabel*)[cell viewWithTag:3] setText:@"منذ شهرين"];
+            }
+            else if ((int)(diff/2592000) <= 10)
+            {
+                [(UILabel*)[cell viewWithTag:3] setText:[NSString stringWithFormat:@"منذ %i أشهر",(int)(diff/2592000)]];
+            }
+            else
+            {
+                [(UILabel*)[cell viewWithTag:3] setText:[NSString stringWithFormat:@"منذ %i شهر",(int)(diff/2592000)]];
+            }
+            
+            if (!showingFav)
+            {
+                [(UILabel*)[tableView viewWithTag:838] setText:@"أخبار سابقة"];
+            }
         }
     }
     
@@ -3451,7 +3610,176 @@
         }
     }
     
+    if ([[news objectForKey:@"type"] isEqualToString:@"google"])
+    {
+        [[cell viewWithTag:1] setHidden:YES];
+        [[cell viewWithTag:2] setHidden:YES];
+        [[cell viewWithTag:3] setHidden:YES];
+        [[cell viewWithTag:4] setHidden:YES];
+        [[cell viewWithTag:5] setHidden:YES];
+        [[cell viewWithTag:8] setHidden:YES];
+        [[cell viewWithTag:15] setHidden:YES];
+        [[cell viewWithTag:17] setHidden:NO];
+        [[cell viewWithTag:64] setHidden:YES];
+        
+        [[cell viewWithTag:2738] removeFromSuperview];
+        [[cell viewWithTag:2739] removeFromSuperview];
+        
+        GADBannerView* bannerView = [[GADBannerView alloc]initWithAdSize:kGADAdSizeMediumRectangle];
+        
+        [bannerView setTag:2738];
+        
+        [bannerView setFrame:CGRectMake([cell viewWithTag:8].frame.origin.x, [cell viewWithTag:8].frame.origin.y+10, [cell viewWithTag:8].frame.size.width, [cell viewWithTag:8].frame.size.height-20)];
+        
+        bannerView.adUnitID = @"ca-app-pub-5613925127009946/6827058314";
+        bannerView.rootViewController = self;
+        
+        GADRequest *request = [GADRequest request];
+        
+        request.testDevices = @[@"kGADSimulatorID",@"39d58745fe9b0532c8ee4722934037f7"];
+        
+        [bannerView loadRequest:request];
+        
+        bannerView.center = cell.contentView.center;
+        
+        [cell.contentView addSubview:bannerView];
+    }
+    else if ([[news objectForKey:@"type"] isEqualToString:@"millin"])
+    {
+        [[cell viewWithTag:1] setHidden:YES];
+        [[cell viewWithTag:2] setHidden:YES];
+        [[cell viewWithTag:3] setHidden:YES];
+        [[cell viewWithTag:4] setHidden:YES];
+        [[cell viewWithTag:5] setHidden:YES];
+        [[cell viewWithTag:8] setHidden:YES];
+        [[cell viewWithTag:15] setHidden:YES];
+        [[cell viewWithTag:17] setHidden:NO];
+        [[cell viewWithTag:64] setHidden:YES];
+        
+        [[cell viewWithTag:2738] removeFromSuperview];
+        [[cell viewWithTag:2739] removeFromSuperview];
+        [[cell viewWithTag:2740] removeFromSuperview];
+        
+        bannerAd = [[MMInlineAd alloc] initWithPlacementId:@"206845"
+                                                    adSize:MMInlineAdSizeMediumRectangle];
+        
+        [bannerAd.view setTag:2740];
+        
+        [bannerAd.view setFrame:CGRectMake([cell viewWithTag:8].frame.origin.x, [cell viewWithTag:8].frame.origin.y+10, [cell viewWithTag:8].frame.size.width, [cell viewWithTag:8].frame.size.height-20)];
+        
+        bannerAd.delegate = self;
+        
+        bannerAd.view.center = cell.contentView.center;
+        
+        [cell.contentView addSubview:bannerAd.view];
+        
+        [bannerAd request:nil];
+    }
+    else if ([[news objectForKey:@"type"] isEqualToString:@"ourAd"])
+    {
+        [[cell viewWithTag:1] setHidden:YES];
+        [[cell viewWithTag:2] setHidden:YES];
+        [[cell viewWithTag:3] setHidden:YES];
+        [[cell viewWithTag:4] setHidden:YES];
+        [[cell viewWithTag:5] setHidden:YES];
+        [[cell viewWithTag:8] setHidden:YES];
+        [[cell viewWithTag:15] setHidden:NO];
+        [[cell viewWithTag:17] setHidden:NO];
+        [[cell viewWithTag:64] setHidden:YES];
+        
+        [[cell viewWithTag:2738] removeFromSuperview];
+        [[cell viewWithTag:2739] removeFromSuperview];
+        [[cell viewWithTag:2740] removeFromSuperview];
+        
+        [(UIImageView*)[cell viewWithTag:15] setImage:nil];
+        
+        [[cell viewWithTag:15] setFrame:CGRectMake([cell viewWithTag:8].frame.origin.x, [cell viewWithTag:8].frame.origin.y+10, [cell viewWithTag:8].frame.size.width, [cell viewWithTag:8].frame.size.height-20)];
+        
+        UIImageView *anmImage = [[UIImageView alloc] initWithFrame:CGRectMake(0, 0, 83, 83)];
+        
+        [anmImage setTag:989];
+        
+        anmImage.clipsToBounds = YES;
+        
+        if ([[NSUserDefaults standardUserDefaults] boolForKey:@"isNightOn"])
+        {
+            [anmImage setTintColor:[UIColor lightGrayColor]];
+            
+            anmImage.image = [[UIImage imageNamed:@"image-loading-img.png"] imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+        }
+        else
+        {
+            [anmImage setTintColor:[UIColor colorWithRed:130.0/255.0 green:130.0/255.0 blue:130.0/255.0 alpha:1.0]];
+            
+            anmImage.image = [[UIImage imageNamed:@"image-loading-img.png"] imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+        }
+        
+        CABasicAnimation *animation = [CABasicAnimation animationWithKeyPath:@"transform.rotation.z"];
+        animation.fromValue = [NSNumber numberWithFloat:1.0f];
+        animation.toValue = [NSNumber numberWithFloat: 999];
+        animation.duration = 170.5f;
+        [anmImage.layer addAnimation:animation forKey:@"MyAnimation"];
+        
+        anmImage.center = [cell viewWithTag:15].center;
+        
+        [cell.contentView addSubview:anmImage];
+        
+        UIButton *button = [UIButton buttonWithType:UIButtonTypeCustom];
+        
+        [(UIImageView*)[cell viewWithTag:15] hnk_setImageFromURL:[NSURL URLWithString:[[news objectForKey:@"mediaURL"] stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]] placeholder:[UIImage imageNamed:@"loading-img.png"] success:^(UIImage *image) {
+            dispatch_async(dispatch_get_main_queue(), ^{
+                [(UIImageView*)[cell viewWithTag:15] setImage:image];
+                [anmImage stopAnimating];
+                [anmImage removeFromSuperview];
+                [[cell viewWithTag:989] removeFromSuperview];
+            });
+        } failure:^(NSError *error) {
+            NSLog(@"%@",error.description);
+            dispatch_async(dispatch_get_main_queue(), ^{
+                [anmImage stopAnimating];
+                [anmImage removeFromSuperview];
+                [[cell viewWithTag:989] removeFromSuperview];
+            });
+        }];
+        
+        [button addTarget:self action:@selector(adClicked:) forControlEvents:UIControlEventTouchUpInside];
+        [button setTag:2739];
+        [button setValue:[@"" stringByAppendingFormat:@"%ld",(long)indexPath.row] forKey:@"currentClickInd"];
+        [button setTitle:@"" forState:UIControlStateNormal];
+        [button setFrame:[[cell viewWithTag:8] frame]];
+        [button setBackgroundColor:[UIColor clearColor]];
+        [cell.contentView addSubview:button];
+    }
+    else
+    {
+        [[cell viewWithTag:1] setHidden:NO];
+        [[cell viewWithTag:2] setHidden:NO];
+        [[cell viewWithTag:3] setHidden:NO];
+        [[cell viewWithTag:4] setHidden:NO];
+        [[cell viewWithTag:5] setHidden:NO];
+        [[cell viewWithTag:8] setHidden:NO];
+        [[cell viewWithTag:15] setHidden:YES];
+        [[cell viewWithTag:17] setHidden:YES];
+        [[cell viewWithTag:64] setHidden:NO];
+        
+        [[cell viewWithTag:2738] removeFromSuperview];
+        [[cell viewWithTag:2739] removeFromSuperview];
+        [[cell viewWithTag:2740] removeFromSuperview];
+    }
+
+    
     return cell;
+}
+
+- (UIViewController *)viewControllerForPresentingModalView
+{
+    return self;
+}
+
+- (IBAction)adClicked:(id)sender
+{
+    NSDictionary* news = [dataSource objectAtIndex:[[sender valueForKey:@"currentClickInd"] integerValue]];
+    [[UIApplication sharedApplication] openURL:[NSURL URLWithString:[news objectForKey:@"newsURL"]]];
 }
 
 -(NSString*)getFilteredStringFrom:(NSString*)theString
@@ -3529,38 +3857,11 @@
                                 }];
 }
 
--(NSString*)imageUrlForRow:(NSInteger)theRow
-{
-    NSDictionary* news = [dataSource objectAtIndex:theRow];
-    
-    NSArray *urls = [[news objectForKey:@"photos"] componentsSeparatedByString:@","];
-    
-    if (urls.count > 0)
-    {
-        if ([[urls objectAtIndex:0] length] > 5)
-        {
-            return [[urls objectAtIndex:0] stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
-        }
-        else
-        {
-            if (urls.count > 1)
-            {
-                if ([[urls objectAtIndex:1] length] > 5)
-                {
-                    return [[urls objectAtIndex:1] stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
-                }
-            }
-        }
-    }
-    
-    return @"";
-}
-
 -(CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     NSDictionary* news = [dataSource objectAtIndex:indexPath.row];
     
-    if([[news objectForKey:@"mediaType"]isEqualToString:@""] && [[self imageUrlForRow:indexPath.row] length] == 0)
+    if([[news objectForKey:@"mediaType"]isEqualToString:@""] && [[self imageUrlForRow:indexPath.row] length] == 0 && ![[news objectForKey:@"type"] isEqualToString:@"google"] && ![[news objectForKey:@"type"] isEqualToString:@"millin"] && ![[news objectForKey:@"type"] isEqualToString:@"ourAd"])
     {
         return 150.0;
     }
@@ -3571,6 +3872,12 @@
 -(void)tableView:(UITableView *)tableView2 didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
     NSDictionary* news = [dataSource objectAtIndex:indexPath.row];
+    
+    if ([[news objectForKey:@"type"] isEqualToString:@"google"] || [[news objectForKey:@"type"] isEqualToString:@"ourAd"] || [[news objectForKey:@"type"] isEqualToString:@"millin"])
+    {
+        [tableView2 deselectRowAtIndexPath:indexPath animated:NO];
+        return;
+    }
     
     if([[news objectForKey:@"newsURL"]isEqualToString:@""])
     {
@@ -3607,7 +3914,14 @@
         
         if ([[cell viewWithTag:5] alpha] > 0 && ![[cell viewWithTag:5] isHidden])
         {
-            [[NSUserDefaults standardUserDefaults] setObject:UIImagePNGRepresentation([(UIImageView*)[cell viewWithTag:5] image]) forKey:@"currentImgData"];
+            if ([UIImagePNGRepresentation([(UIImageView*)[cell viewWithTag:5] image]) isEqualToData:UIImagePNGRepresentation([UIImage imageNamed:@"no-image-img.png"])] || [(UIImageView*)[cell viewWithTag:5] image] == nil || [cell isDescendantOfView:[cell viewWithTag:999]] || [cell viewWithTag:999])
+            {
+                [[NSUserDefaults standardUserDefaults] setObject:nil forKey:@"currentImgData"];
+            }
+            else
+            {
+                [[NSUserDefaults standardUserDefaults] setObject:UIImagePNGRepresentation([(UIImageView*)[cell viewWithTag:5] image]) forKey:@"currentImgData"];
+            }
         }
         else
         {
@@ -3615,6 +3929,8 @@
         }
         
         [[NSUserDefaults standardUserDefaults] setObject:sharedObjects forKey:@"objectsToShare"];
+        [[NSUserDefaults standardUserDefaults] setObject:[self getShareLinkForId:[news objectForKey:@"id"]] forKey:@"theSavedNewsId"];
+        [[NSUserDefaults standardUserDefaults] setObject:[news objectForKey:@"id"] forKey:@"commentsId"];
         [[NSUserDefaults standardUserDefaults] setObject:[news objectForKey:@"newsURL"] forKey:@"newsLinkToOpen"];
         [[NSUserDefaults standardUserDefaults] setObject:[news objectForKey:@"photos"] forKey:@"newsAllPhotos"];
         [[NSUserDefaults standardUserDefaults] setObject:[news objectForKey:@"videos"] forKey:@"newsAllVideos"];
@@ -3624,6 +3940,11 @@
         
         [self performSegueWithIdentifier:@"detailsSeg" sender:self];
     }
+}
+
+-(NSString*)getShareLinkForId:(NSString*)theId
+{
+    return [@"http://almasdarapp.com/almasdar/Sharing/index.html?id=" stringByAppendingString:theId];
 }
 
 -(BOOL)tableView:(UITableView *)tableView canEditRowAtIndexPath:(NSIndexPath *)indexPath

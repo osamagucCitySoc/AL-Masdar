@@ -14,25 +14,29 @@
 #import <Accounts/Accounts.h>
 #import <MessageUI/MFMailComposeViewController.h>
 #import <AVFoundation/AVFoundation.h>
+#import <GoogleMobileAds/GoogleMobileAds.h>
+#import <MMAdSDK/MMAdSDK.h>
 
 @interface customCell : UITableViewCell
 @end
 
-@interface NewsFeedViewController : UIViewController <UIGestureRecognizerDelegate,MFMailComposeViewControllerDelegate,AVAudioPlayerDelegate>
+@interface NewsFeedViewController : UIViewController <UIGestureRecognizerDelegate,MFMailComposeViewControllerDelegate,AVAudioPlayerDelegate,GADInterstitialDelegate,MMInlineDelegate>
 {
     UIRefreshControl *refreshControl;
-    BOOL tableIsReady,isRemoveAct,isOptions,isFullScreen,isScrollButton,isOnNews,isRectResume,isFromNight,isNoResume,isShowStatus,isSearching,isSearchMsg,isTap,isFirstDrag,isAfterSearch,isSearchYet,isFromRefresh,isOnBreakingNews,isReloaded,isFromSwipe,isFromBreaking,isCheckBrDone,isLoadComplated,isSettingsBack;
+    BOOL tableIsReady,isRemoveAct,isOptions,isFullScreen,isScrollButton,isOnNews,isRectResume,isFromNight,isNoResume,isShowStatus,isSearching,isSearchMsg,isTap,isFirstDrag,isAfterSearch,isSearchYet,isFromRefresh,isOnBreakingNews,isReloaded,isFromSwipe,isFromBreaking,isCheckBrDone,isLoadComplated,isSettingsBack,isManualNight,isStartSearch;
     UITapGestureRecognizer *tap,*dbTap;
     CGRect prevFrame;
     UIImage *imgToSave;
-    NSInteger indVal,countToEnd,theSavedCount,anmInt;
+    NSInteger indVal,countToEnd,theSavedCount,currentPickerRow;
     UIBackgroundTaskIdentifier bgTask;
     CGRect resumeRect,favRect,newsRect,breakingRect;
     float imageZoomScale;
     CGPoint scrollSavedPoint;
     UITableViewCell *cellToClose;
+    MMInlineAd *bannerAd;
 }
 
+@property (strong, nonatomic) IBOutlet UIScrollView *optionsScrollView;
 @property (strong, nonatomic) IBOutlet AVAudioPlayer *player;
 @property (strong, nonatomic) IBOutlet UIView *viewToClose;
 @property (strong, nonatomic) IBOutlet UIImageView *imageToClose;
@@ -66,5 +70,11 @@
 @property (strong, nonatomic) IBOutlet UILabel *shareLabel4;
 @property (strong, nonatomic) IBOutlet UIButton *shareCancelButton;
 @property (strong, nonatomic) IBOutlet UIToolbar *searchToolBar;
+@property (strong, nonatomic) IBOutlet UIButton *filterButton;
+@property (strong, nonatomic) IBOutlet UIView *selectSourceView;
+@property (strong, nonatomic) IBOutlet UIButton *darkFilterBack;
+@property (strong, nonatomic) IBOutlet UIPickerView *filterPickerView;
+@property (strong, nonatomic) IBOutlet UIButton *footballButton;
+@property (strong, nonatomic) IBOutlet UILabel *backBlockLabel;
 
 @end

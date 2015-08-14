@@ -16,6 +16,8 @@
 #import <Parse/Parse.h>
 #import "UIImageView+WebCache.h"
 
+#define MILLENNIAL_BANNER_AD_SIZE ((UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) ? MMInlineAdSizeLeaderboard : MMInlineAdSizeBanner)
+
 @interface NewsFeedViewController ()<UITableViewDataSource,UITableViewDelegate,UIActionSheetDelegate,UITextFieldDelegate>
 
 @end
@@ -27,6 +29,10 @@
     
     NSMutableArray* dataSource;
     NSMutableArray* breakingArray;
+    NSMutableArray* filteredNews;
+    NSMutableArray* filteredIds;
+    NSMutableArray* searchArr;
+    NSArray *ctArr;
     NSString* lowerCurrentID;
     NSString* upperCurrentID;
     NSString* createdAt;
@@ -78,12 +84,28 @@
     }
 }
 
+-(void)showNightMsg
+{
+    [SADAHMsg showMsgWithTitle:@"وضع القراءة الليلي" andMsg:@"تم تفعيل الوضع الليلي تلقائياً، وتستطيع ايقاف التفعيل التلقائي من الإعدادات." inView:[self.navigationController view] withCase:1];
+}
+
+-(void)showNormalMsg
+{
+    [SADAHMsg showMsgWithTitle:@"وضع القراءة العادي" andMsg:@"تم تفعيل الوضع العادي تلقائياً، وتستطيع ايقاف التفعيل التلقائي من الإعدادات." inView:[self.navigationController view] withCase:1];
+}
+
 -(void)checkBrightness:(NSTimer *)timer {
-    if (![[NSUserDefaults standardUserDefaults] boolForKey:@"isAutoNight"])return;
-    if ([UIScreen mainScreen].brightness < 0.5)
+    if (![[NSUserDefaults standardUserDefaults] boolForKey:@"isAutoNight"] || isManualNight)return;
+    if ([UIScreen mainScreen].brightness < 0.3)
     {
         if (![[NSUserDefaults standardUserDefaults] boolForKey:@"isNightOn"])
         {
+            if (![[NSUserDefaults standardUserDefaults] boolForKey:@"nightMsgDone"])
+            {
+                [[NSUserDefaults standardUserDefaults] setBool:YES forKey:@"nightMsgDone"];
+                [self performSelector:@selector(showNightMsg) withObject:nil afterDelay:1.5];
+            }
+            
             [[NSUserDefaults standardUserDefaults] setBool:YES forKey:@"isNightOn"];
             [[NSUserDefaults standardUserDefaults] synchronize];
             [self performSelector:@selector(enableNightMode) withObject:nil afterDelay:0.3];
@@ -93,6 +115,12 @@
     {
         if ([[NSUserDefaults standardUserDefaults] boolForKey:@"isNightOn"])
         {
+            if (![[NSUserDefaults standardUserDefaults] boolForKey:@"nightMsgDone"])
+            {
+                [[NSUserDefaults standardUserDefaults] setBool:YES forKey:@"nightMsgDone"];
+                [self performSelector:@selector(showNormalMsg) withObject:nil afterDelay:1.5];
+            }
+            
             [[NSUserDefaults standardUserDefaults] setBool:NO forKey:@"isNightOn"];
             [[NSUserDefaults standardUserDefaults] synchronize];
             [self performSelector:@selector(disableNightMode) withObject:nil afterDelay:0.3];
@@ -116,11 +144,54 @@
     
 }
 
+-(void)loadAllCities
+{
+    NSString * filePath =[[NSBundle mainBundle] pathForResource:@"cities" ofType:@"json"];
+    
+    NSError * error;
+    NSString* fileContents =[NSString stringWithContentsOfFile:filePath encoding:NSUTF8StringEncoding error:&error];
+    
+    if(error)
+    {
+        NSLog(@"Error reading file: %@",error.localizedDescription);
+    }
+    
+    
+    ctArr = [NSJSONSerialization
+                      JSONObjectWithData:[fileContents dataUsingEncoding:NSUTF8StringEncoding]
+                      options:0 error:NULL];
+}
+
+-(NSString*)getCitiesFor:(NSString*)theBody
+{
+    NSString *lastStr = @"";
+    
+    for (NSDictionary *dict in ctArr)
+    {
+        if ([theBody rangeOfString:[@"" stringByAppendingFormat:@" %@ ",[dict objectForKey:@"city"]]].location != NSNotFound)
+        {
+            if (lastStr.length == 0)
+            {
+                lastStr = [@"الخبر يتحدث عن: " stringByAppendingString:[dict objectForKey:@"city"]];
+            }
+            else
+            {
+                lastStr = [lastStr stringByAppendingFormat:@", %@",[dict objectForKey:@"city"]];
+            }
+            break;
+        }
+    }
+    
+    return lastStr;
+}
+
 - (void)viewDidLoad {
     [super viewDidLoad];
     [self getBreakingNewsWords];
+   // [self loadAllCities];
     theSavedCount = 0;
     countToEnd = 0;
+    currentPickerRow = 0;
     [tableView setDelegate:self];
     [tableView setDataSource:self];
     [loader setAlpha:0.0];
@@ -134,6 +205,9 @@
     createdAt = @"-1";
     loadingData = NO;
     dataSource = [[NSMutableArray alloc]init];
+    
+    tableView.backgroundView = [UIView new];
+    tableView.backgroundView.backgroundColor = [UIColor clearColor];
     
     //[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(brightnessDidChange:) name:UIScreenBrightnessDidChangeNotification object:nil];
     
@@ -178,6 +252,8 @@
     [_timeLineButton setBackgroundImage:[UIImage imageNamed:@"news-selected-back.png"] forState:UIControlStateHighlighted];
     [_favButton setBackgroundImage:[UIImage imageNamed:@"news-selected-back.png"] forState:UIControlStateHighlighted];
     [_breakingButton setBackgroundImage:[UIImage imageNamed:@"news-selected-back.png"] forState:UIControlStateHighlighted];
+    [_filterButton setBackgroundImage:[UIImage imageNamed:@"news-selected-back.png"] forState:UIControlStateHighlighted];
+    [_footballButton setBackgroundImage:[UIImage imageNamed:@"news-selected-back.png"] forState:UIControlStateHighlighted];
     [_notifyButton setBackgroundImage:[UIImage imageNamed:@"news-selected-back.png"] forState:UIControlStateHighlighted];
     [_nightButton setBackgroundImage:[UIImage imageNamed:@"news-selected-back.png"] forState:UIControlStateHighlighted];
     [_settingsButton setBackgroundImage:[UIImage imageNamed:@"news-selected-back.png"] forState:UIControlStateHighlighted];
@@ -185,6 +261,8 @@
     _timeLineButton.contentHorizontalAlignment = UIControlContentHorizontalAlignmentRight;
     _favButton.contentHorizontalAlignment = UIControlContentHorizontalAlignmentRight;
     _breakingButton.contentHorizontalAlignment = UIControlContentHorizontalAlignmentRight;
+    _filterButton.contentHorizontalAlignment = UIControlContentHorizontalAlignmentRight;
+    _footballButton.contentHorizontalAlignment = UIControlContentHorizontalAlignmentRight;
     _notifyButton.contentHorizontalAlignment = UIControlContentHorizontalAlignmentRight;
     _nightButton.contentHorizontalAlignment = UIControlContentHorizontalAlignmentRight;
     _settingsButton.contentHorizontalAlignment = UIControlContentHorizontalAlignmentRight;
@@ -192,6 +270,8 @@
     [_timeLineButton setTitle:@"         الأخبار" forState:UIControlStateNormal];
     [_favButton setTitle:@"         المفضلة" forState:UIControlStateNormal];
     [_breakingButton setTitle:@"         الأخبار العاجلة والهامة" forState:UIControlStateNormal];
+    [_filterButton setTitle:@"         إظهار الأخبار من مصدر معين" forState:UIControlStateNormal];
+    [_footballButton setTitle:@"         أهداف مباريات كرة القدم بالفيديو" forState:UIControlStateNormal];
     [_notifyButton setTitle:@"         التنبيه بكلمات وجمل معينة" forState:UIControlStateNormal];
     [_nightButton setTitle:@"         وضع القراءة الليلي" forState:UIControlStateNormal];
     [_settingsButton setTitle:@"         الإعدادات" forState:UIControlStateNormal];
@@ -218,6 +298,56 @@
     }
     
     [self playSound:@"Empty"];
+}
+
+-(void)startSearchWords
+{
+    searchArr = [[NSMutableArray alloc] initWithArray:[[NSUserDefaults standardUserDefaults] objectForKey:@"savedSearch"]];
+    
+    if (searchArr.count > 0)
+    {
+        isStartSearch = YES;
+        [tableView setEditing:YES animated:NO];
+        [tableView setSeparatorStyle:UITableViewCellSeparatorStyleSingleLine];
+        
+        if ([[NSUserDefaults standardUserDefaults] boolForKey:@"isNightOn"])
+        {
+            [tableView setSeparatorColor:[UIColor lightGrayColor]];
+        }
+        else
+        {
+            [tableView setSeparatorColor:[UIColor darkGrayColor]];
+        }
+        
+        [tableView reloadData];
+    }
+}
+
+-(void)stopSearchLog
+{
+    isStartSearch = NO;
+    [tableView setEditing:NO animated:NO];
+    [tableView setSeparatorStyle:UITableViewCellSeparatorStyleNone];
+}
+
+- (BOOL)textFieldShouldBeginEditing:(UITextField *)textField{
+    if (textField == searchTextField && !isStartSearch)
+    {
+        [self startSearchWords];
+    }
+    
+    return YES;
+}
+
+-(void)saveNewWord
+{
+    if (![searchArr containsObject:searchTextField.text])
+    {
+        [searchArr insertObject:searchTextField.text atIndex:0];
+        
+        [[NSUserDefaults standardUserDefaults] setObject:searchArr forKey:@"savedSearch"];
+        [[NSUserDefaults standardUserDefaults] synchronize];
+    }
 }
 
 -(void)getBreakingNewsWords
@@ -359,18 +489,24 @@
 {
     if ([[NSUserDefaults standardUserDefaults] boolForKey:@"isNightOn"])
     {
-        _searchToolBar.tintColor = [UIColor lightGrayColor];
-        _searchToolBar.barTintColor = [UIColor colorWithRed:70.0/255.0 green:70.0/255.0 blue:70.0/255.0 alpha:1.0];
-        _searchToolBar.backgroundColor = [UIColor colorWithRed:70.0/255.0 green:70.0/255.0 blue:70.0/255.0 alpha:1.0];
-        searchTextField.tintColor = [UIColor colorWithRed:70.0/255.0 green:70.0/255.0 blue:70.0/255.0 alpha:1.0];
+        [_searchToolBar setBackgroundColor:[UIColor blackColor]];
+        [_searchToolBar setBarTintColor:[UIColor blackColor]];
+        [_searchToolBar setTintColor:[UIColor whiteColor]];
     }
     else
     {
-        _searchToolBar.tintColor = [UIColor darkGrayColor];
-        _searchToolBar.barTintColor = [UIColor colorWithRed:230.0/255.0 green:230.0/255.0 blue:230.0/255.0 alpha:1.0];
-        _searchToolBar.backgroundColor = [UIColor colorWithRed:230.0/255.0 green:230.0/255.0 blue:230.0/255.0 alpha:1.0];
-        searchTextField.tintColor = [UIColor colorWithRed:70.0/255.0 green:70.0/255.0 blue:70.0/255.0 alpha:1.0];
+        [_searchToolBar setBackgroundColor:[UIColor colorWithRed:241.0/255.0 green:241.0/255.0 blue:241.0/255.0 alpha:1.0]];
+        [_searchToolBar setBarTintColor:[UIColor colorWithRed:241.0/255.0 green:241.0/255.0 blue:241.0/255.0 alpha:1.0]];
+        [_searchToolBar setTintColor:[UIColor colorWithRed:85.0/255.0 green:85.0/255.0 blue:85.0/255.0 alpha:1.0]];
     }
+    
+    [self startSearchWords];
+    
+    searchTextField.tintColor = [UIColor colorWithRed:70.0/255.0 green:70.0/255.0 blue:70.0/255.0 alpha:1.0];
+    
+    NSDictionary *attrDict = [NSDictionary dictionaryWithObjects:[NSArray arrayWithObject:[UIFont fontWithName:@"DroidArabicKufi" size:13]] forKeys:[NSArray arrayWithObject:NSFontAttributeName]];
+    
+    [searchSegment setTitleTextAttributes:attrDict forState:UIControlStateNormal];
     
     searchTextField.inputAccessoryView = _searchToolBar;
     theSavedCount = 0;
@@ -428,6 +564,8 @@
 
 -(void)handleLongPress:(UILongPressGestureRecognizer *)gestureRecognizer
 {
+    if (isStartSearch)return;
+    
     if (!(gestureRecognizer.state == UIGestureRecognizerStateBegan))
     {
         return;
@@ -714,12 +852,18 @@
 
 - (void)handleSwipeRight:(UISwipeGestureRecognizer *)gestureRecognizer
 {
+    if (isStartSearch)return;
+    
     CGPoint location = [gestureRecognizer locationInView:tableView];
     
     NSIndexPath *indexPath = [tableView indexPathForRowAtPoint:location];
     
     if(indexPath)
     {
+        NSDictionary* news = [dataSource objectAtIndex:indexPath.row];
+        
+        if (![[news objectForKey:@"type"] isEqualToString:@"news"])return;
+        
         UITableViewCell *cell = [tableView cellForRowAtIndexPath:indexPath];
         
         indVal = indexPath.row;
@@ -727,6 +871,8 @@
         BOOL isAddIt = NO;
         
         CGRect rectOfCellInSuperview = [cell convertRect:[[cell viewWithTag:8] frame] toView:tableView];
+        
+        rectOfCellInSuperview = CGRectMake(rectOfCellInSuperview.origin.x, rectOfCellInSuperview.origin.y, rectOfCellInSuperview.size.width, rectOfCellInSuperview.size.height-2);
         
         UIView *favView = [[UIView alloc] initWithFrame:CGRectMake(-100, rectOfCellInSuperview.origin.y, 100, rectOfCellInSuperview.size.height)];
         
@@ -878,12 +1024,18 @@
 
 - (void)handleSwipeLeft:(UISwipeGestureRecognizer *)gestureRecognizer
 {
+    if (isStartSearch)return;
+    
     CGPoint location = [gestureRecognizer locationInView:tableView];
     
     NSIndexPath *indexPath = [tableView indexPathForRowAtPoint:location];
     
     if(indexPath)
     {
+        NSDictionary* news = [dataSource objectAtIndex:indexPath.row];
+        
+        if (![[news objectForKey:@"type"] isEqualToString:@"news"])return;
+        
         indVal = indexPath.row;
         
         UITableViewCell *cell = [tableView cellForRowAtIndexPath:indexPath];
@@ -898,6 +1050,8 @@
         }
         
         CGRect rectOfCellInSuperview = [cell convertRect:[[cell viewWithTag:8] frame] toView:tableView];
+        
+        rectOfCellInSuperview = CGRectMake(rectOfCellInSuperview.origin.x, rectOfCellInSuperview.origin.y, rectOfCellInSuperview.size.width, rectOfCellInSuperview.size.height-2);
         
         UIView *favView = [[UIView alloc] initWithFrame:CGRectMake(cell.frame.size.width, rectOfCellInSuperview.origin.y, 100, rectOfCellInSuperview.size.height)];
         
@@ -1090,7 +1244,7 @@
     }
     else
     {
-        [self performSelector:@selector(openLink:) withObject:[news objectForKey:@"newsURL"] afterDelay:0.3];
+        [self performSelector:@selector(openLink:) withObject:[self getShareLinkForId:[news objectForKey:@"id"]] afterDelay:0.3];
         [self closeSmartShare:YES];
     }
 }
@@ -1137,6 +1291,11 @@
     }
 }
 
+-(NSString*)getShareLinkForId:(NSString*)theId
+{
+    return [@"http://almasdarapp.com/almasdar/Sharing/index.html?id=" stringByAppendingString:theId];
+}
+
 -(void)shareOnTwitter
 {
     if(![SLComposeViewController isAvailableForServiceType:SLServiceTypeTwitter])
@@ -1152,7 +1311,7 @@
     [tweetComposerSheet addImage:imgToSave];
     if(![[news objectForKey:@"newsURL"]isEqualToString:@""])
     {
-        [tweetComposerSheet addURL:[NSURL URLWithString:[[news objectForKey:@"newsURL"] stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]]];
+        [tweetComposerSheet addURL:[NSURL URLWithString:[[self getShareLinkForId:[news objectForKey:@"id"]] stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]]];
     }
     [tweetComposerSheet setCompletionHandler:^(SLComposeViewControllerResult result) {
         [self closeSmartShare:YES];
@@ -1184,7 +1343,7 @@
     [faceComposerSheet addImage:imgToSave];
     if(![[news objectForKey:@"newsURL"]isEqualToString:@""])
     {
-        [faceComposerSheet addURL:[NSURL URLWithString:[[news objectForKey:@"newsURL"] stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]]];
+        [faceComposerSheet addURL:[NSURL URLWithString:[[self getShareLinkForId:[news objectForKey:@"id"]] stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]]];
     }
     [self presentViewController:faceComposerSheet animated:YES completion:nil];
     
@@ -1286,10 +1445,9 @@
 
 -(void)addActivityView
 {
+    UIImage *img = [UIImage animatedImageWithImages:[NSArray arrayWithObjects:[UIImage imageNamed:[[self waitImgName] stringByAppendingString:@"wait-img-1.png"]], [UIImage imageNamed:[[self waitImgName] stringByAppendingString:@"wait-img-2.png"]],[UIImage imageNamed:[[self waitImgName] stringByAppendingString:@"wait-img-3.png"]],nil] duration:0.6];
     [_anmImg setHidden:NO];
-    _anmImg.animationImages = [NSArray arrayWithObjects:[UIImage imageNamed:[[self waitImgName] stringByAppendingString:@"wait-img-1.png"]], [UIImage imageNamed:[[self waitImgName] stringByAppendingString:@"wait-img-2.png"]],[UIImage imageNamed:[[self waitImgName] stringByAppendingString:@"wait-img-3.png"]],nil];
-    [_anmImg setAnimationRepeatCount:9999];
-    _anmImg.animationDuration = 0.6;
+    [_anmImg setImage:img];
     [_anmImg startAnimating];
 
     [self performSelector:@selector(addTheNewsImg1) withObject:nil afterDelay:0.2];
@@ -1386,6 +1544,14 @@
     [_newsImg3 setHidden:YES];
     [_newsImg4 setHidden:YES];
     
+    if (![[NSUserDefaults standardUserDefaults] boolForKey:@"isFirstHelp"])
+    {
+        [[NSUserDefaults standardUserDefaults] setBool:YES forKey:@"isFirstHelp"];
+        [[NSUserDefaults standardUserDefaults] synchronize];
+        
+        [self performSelector:@selector(showHelp) withObject:nil afterDelay:1.0];
+    }
+    
     if(![self connected])
     {
         [self showNoInternet];
@@ -1399,6 +1565,11 @@
         self.navigationItem.rightBarButtonItems = nil;
         [self refreshNavigationItems];
     }
+}
+
+-(void)showHelp
+{
+    [self performSegueWithIdentifier:@"helpSeg" sender:self];
 }
 
 - (void)refreshTable
@@ -1632,34 +1803,37 @@
     
     UITableViewCell *anmCell;
     
+    float finalWidth = 0;
+    
     for (int i = 0; i < visibleCellsArray.count; i++)
     {
         anmCell = [tableView cellForRowAtIndexPath:[visibleCellsArray objectAtIndex:i]];
         
-        [anmCell setFrame:CGRectMake(anmCell.frame.origin.x-anmCell.frame.size.width, anmCell.frame.origin.y, anmCell.frame.size.width, anmCell.frame.size.height)];
+        finalWidth = i*200;
+        
+        finalWidth = anmCell.frame.size.width+finalWidth;
+        
+        if (i == 0)
+        {
+            [anmCell setFrame:CGRectMake(anmCell.frame.origin.x-(anmCell.frame.size.width+100), anmCell.frame.origin.y, anmCell.frame.size.width, anmCell.frame.size.height)];
+        }
+        else
+        {
+            [anmCell setFrame:CGRectMake(anmCell.frame.origin.x-finalWidth, anmCell.frame.origin.y, anmCell.frame.size.width, anmCell.frame.size.height)];
+        }
     }
     
-    anmInt = 0;
-    
-    [self reloadCells:visibleCellsArray.count];
-}
-
--(void)reloadCells:(NSInteger)totalCells
-{
-    UITableViewCell *anmCell = [tableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:anmInt inSection:0]];
-    
-    [UIView animateWithDuration:0.3 delay:0.0 options:0
-                     animations:^{
-                         anmInt++;
-                         [anmCell setFrame:CGRectMake(anmCell.frame.origin.x+anmCell.frame.size.width, anmCell.frame.origin.y, anmCell.frame.size.width, anmCell.frame.size.height)];
-                     }
-                     completion:^(BOOL finished) {
-                         if (anmInt < totalCells)
-                         {
-                             [self reloadCells:totalCells];
+    for (int i = 0; i < visibleCellsArray.count; i++)
+    {
+        anmCell = [tableView cellForRowAtIndexPath:[visibleCellsArray objectAtIndex:i]];
+        [UIView animateWithDuration:0.4 delay:0.1 options:0
+                         animations:^{
+                             [anmCell setFrame:CGRectMake(0, anmCell.frame.origin.y, anmCell.frame.size.width, anmCell.frame.size.height)];
                          }
-                     }];
-    [UIView commitAnimations];
+                         completion:^(BOOL finished) {
+                         }];
+        [UIView commitAnimations];
+    }
 }
 
 -(void)viewWillDisappear:(BOOL)animated
@@ -1702,6 +1876,7 @@
     sources = [[NSMutableArray alloc]init];
     
     NSArray* subs = [[NSUserDefaults standardUserDefaults] objectForKey:@"subscriptions"];
+    
     for(NSDictionary* dict in subs)
     {
         [sources addObject:[dict objectForKey:@"twitterID"]];
@@ -1777,7 +1952,31 @@
                 [(UILabel*)[tableView viewWithTag:837] setText:[@"عدد الأخبار المتبقية " stringByAppendingFormat:@"(%ld)",(long)[self getTheCount]]];
                 
                 breakingArray = [[NSMutableArray alloc] init];
+                
+                NSMutableArray *filterArr = [[NSMutableArray alloc] init];
+                NSMutableArray *checkArr = [[NSMutableArray alloc] init];
+                
                 NSDictionary* news;
+                
+                for (int i = 0; i < dataSource.count; i++)
+                {
+                    news = [dataSource objectAtIndex:i];
+                    if ([[news objectForKey:@"type"] isEqualToString:@"news"])
+                    {
+                        if (![checkArr containsObject:[news objectForKey:@"body"]])
+                        {
+                            [checkArr addObject:[news objectForKey:@"body"]];
+                            [filterArr addObject:[dataSource objectAtIndex:i]];
+                        }
+                    }
+                    else
+                    {
+                        [filterArr addObject:[dataSource objectAtIndex:i]];
+                    }
+                }
+                
+                dataSource = [[NSMutableArray alloc] initWithArray:filterArr];
+                
                 for (int i = 0; i < dataSource.count; i++)
                 {
                     news = [dataSource objectAtIndex:i];
@@ -1790,9 +1989,6 @@
                         [breakingArray addObject:@"0"];
                     }
                 }
-                
-                NSOrderedSet *orderedSet = [NSOrderedSet orderedSetWithArray:dataSource];
-                dataSource = [[NSMutableArray alloc] initWithArray:[orderedSet array]];
                 
                 [tableView reloadData];
                 [tableView setNeedsDisplay];
@@ -1849,7 +2045,41 @@
                     }
                     
                     breakingArray = [[NSMutableArray alloc] init];
+                    
+                    NSMutableArray *filterArr = [[NSMutableArray alloc] init];
+                    NSMutableArray *checkArr = [[NSMutableArray alloc] init];
+                    NSMutableArray *deleteArr = [[NSMutableArray alloc] init];
+                    
                     NSDictionary* news;
+                    
+                    for (int i = 0; i < dataSource.count; i++)
+                    {
+                        news = [dataSource objectAtIndex:i];
+                        if ([[news objectForKey:@"type"] isEqualToString:@"news"])
+                        {
+                            if (![checkArr containsObject:[news objectForKey:@"body"]])
+                            {
+                                [checkArr addObject:[news objectForKey:@"body"]];
+                                [filterArr addObject:[dataSource objectAtIndex:i]];
+                            }
+                            else
+                            {
+                                [deleteArr addObject:[dataSource objectAtIndex:i]];
+                            }
+                        }
+                        else
+                        {
+                            [filterArr addObject:[dataSource objectAtIndex:i]];
+                        }
+                    }
+                    
+                    for (int i = 0; i < deleteArr.count; i++)
+                    {
+                        [newNews removeObject:[deleteArr objectAtIndex:i]];
+                    }
+                    
+                    dataSource = [[NSMutableArray alloc] initWithArray:filterArr];
+                    
                     for (int i = 0; i < dataSource.count; i++)
                     {
                         news = [dataSource objectAtIndex:i];
@@ -1863,12 +2093,17 @@
                         }
                     }
                     
-                    NSOrderedSet *orderedSet = [NSOrderedSet orderedSetWithArray:dataSource];
-                    dataSource = [[NSMutableArray alloc] initWithArray:[orderedSet array]];
-                    
                     [tableView reloadData];
                     
-                    [(UILabel*)[tableView viewWithTag:837] setText:[@"عدد الأخبار المتبقية " stringByAppendingFormat:@"(%ld)",(long)[self getTheCount]]];
+                    if (showingFav)
+                    {
+                        [(UILabel*)[tableView viewWithTag:837] setText:[@"عدد الأخبار في المفضلة " stringByAppendingFormat:@"(%ld)",(long)dataSource.count]];
+                    }
+                    else
+                    {
+                        [(UILabel*)[tableView viewWithTag:837] setText:[@"عدد الأخبار المتبقية " stringByAppendingFormat:@"(%ld)",(long)[self getTheCount]]];
+                    }
+                    
                     [tableView setContentOffset:offset animated:NO];
                     if (!isSearching)[self performSelector:@selector(addScrollTopButton:) withObject:[@"" stringByAppendingFormat:@"%lu",(unsigned long)newNews.count] afterDelay:0.2];
                 }
@@ -1993,6 +2228,8 @@
             [self showStatusBarMsg:@"يجب إدخال كلمة واحدة من ٣ أحرف على الأقل" isRed:YES];
         }else
         {
+            [self stopSearchLog];
+            
             lowerCurrentID = @"-1";
             upperCurrentID = @"-1";
             
@@ -2019,6 +2256,10 @@
 
 -(void)getSearchData
 {
+    [self stopSearchLog];
+    
+    [self saveNewWord];
+    
     [self hideNoResults];
     [searchTextField resignFirstResponder];
     NSString* keywords = [[searchTextField.text stringByReplacingOccurrencesOfString:@" ،" withString:@"،"] stringByReplacingOccurrencesOfString:@"، " withString:@"،"];
@@ -2043,8 +2284,22 @@
         
         [dataSource addObjectsFromArray:dataSourcee];
         
-        NSOrderedSet *orderedSet = [NSOrderedSet orderedSetWithArray:dataSource];
-        dataSource = [[NSMutableArray alloc] initWithArray:[orderedSet array]];
+        NSMutableArray *filterArr = [[NSMutableArray alloc] init];
+        NSMutableArray *checkArr = [[NSMutableArray alloc] init];
+        
+        NSDictionary* news;
+        
+        for (int i = 0; i < dataSource.count; i++)
+        {
+            news = [dataSource objectAtIndex:i];
+            if (![checkArr containsObject:[news objectForKey:@"body"]])
+            {
+                [checkArr addObject:[news objectForKey:@"body"]];
+                [filterArr addObject:[dataSource objectAtIndex:i]];
+            }
+        }
+        
+        dataSource = [[NSMutableArray alloc] initWithArray:filterArr];
         
         if(dataSourcee.count > 0)
         {
@@ -2116,6 +2371,12 @@
 
 -(void)cancelSearching
 {
+    if (isStartSearch)
+    {
+        [self stopSearchLog];
+        [tableView reloadData];
+    }
+    
     theSavedCount = 0;
     [self hideNoResults];
     isSearching = NO;
@@ -2250,6 +2511,111 @@
     [self hideOptionsTable];
 }
 
+- (IBAction)openFilterPicker:(id)sender {
+    [self hideOptionsTable];
+    [self performSelector:@selector(openFilterView) withObject:nil afterDelay:0.3];
+}
+
+-(void)openFilterView
+{
+    if (isSearching)
+    {
+        [searchView setHidden:YES];
+    }
+    
+    filteredNews = [[NSMutableArray alloc] init];
+    filteredIds = [[NSMutableArray alloc] init];
+    
+    NSDictionary *news;
+    
+    NSArray* subs = [[NSUserDefaults standardUserDefaults] objectForKey:@"subscriptions"];
+    
+    for (int i = 0; i < subs.count; i++)
+    {
+        news = [subs objectAtIndex:i];
+        
+        [filteredNews addObject:[news objectForKey:@"name"]];
+        [filteredIds addObject:[news objectForKey:@"twitterID"]];
+    }
+    
+    [_darkFilterBack setAlpha:0.0];
+    [[self.navigationController view] addSubview:_selectSourceView];
+    [_filterPickerView setTintColor:[UIColor blackColor]];
+    [_filterPickerView reloadAllComponents];
+    [_filterPickerView selectRow:currentPickerRow inComponent:0 animated:NO];
+    _selectSourceView.frame = CGRectMake(self.navigationController.view.frame.origin.x, self.navigationController.view.frame.size.height, self.navigationController.view.frame.size.width, self.navigationController.view.frame.size.height);
+    [UIView animateWithDuration:0.3 delay:0.0 options:0
+                     animations:^{
+                         _selectSourceView.frame = self.navigationController.view.frame;
+                     }
+                     completion:^(BOOL finished) {
+                         [UIView animateWithDuration:0.3 delay:0.0 options:0
+                                          animations:^{
+                                              [_darkFilterBack setAlpha:0.5];
+                                          }
+                                          completion:^(BOOL finished) {
+                                              
+                                          }];
+                         [UIView commitAnimations];
+                     }];
+    [UIView commitAnimations];
+}
+
+-(void)closeFilterView
+{
+    [_darkFilterBack setAlpha:0.0];
+    [UIView animateWithDuration:0.3 delay:0.0 options:0
+                     animations:^{
+                         _selectSourceView.frame = CGRectMake(self.navigationController.view.frame.origin.x, self.navigationController.view.frame.size.height, self.navigationController.view.frame.size.width, self.navigationController.view.frame.size.height);
+                     }
+                     completion:^(BOOL finished) {
+                         [_selectSourceView removeFromSuperview];
+                     }];
+    [UIView commitAnimations];
+}
+
+- (IBAction)closeFilter:(id)sender {
+    [self closeFilterView];
+}
+
+- (IBAction)openFootball:(id)sender {
+    [self hideOptionsTable];
+    [self performSelector:@selector(goToFootball) withObject:nil afterDelay:0.4];
+}
+
+-(void)goToFootball
+{
+    [self performSegueWithIdentifier:@"soccerSeg" sender:self];
+}
+
+- (IBAction)openInfo:(id)sender {
+    [self closeFilterView];
+    [self performSelector:@selector(openSelectedSource) withObject:nil afterDelay:0.4];
+}
+
+-(void)openSelectedSource
+{
+    [[NSUserDefaults standardUserDefaults] setObject:[filteredIds objectAtIndex:currentPickerRow] forKey:@"subscriptionsObject"];
+    [[NSUserDefaults standardUserDefaults] setObject:[filteredNews objectAtIndex:currentPickerRow] forKey:@"theInfoTitle"];
+    [[NSUserDefaults standardUserDefaults] setBool:YES forKey:@"isReloadNeeded"];
+    [[NSUserDefaults standardUserDefaults] synchronize];
+    
+    [self performSegueWithIdentifier:@"infoSeg" sender:self];
+}
+
+- (NSInteger)numberOfComponentsInPickerView:(UIPickerView *)picker {
+    return 1;
+}
+- (NSInteger)pickerView:(UIPickerView *)picker numberOfRowsInComponent:(NSInteger)component {
+    return [filteredNews count];
+}
+- (NSString *)pickerView:(UIPickerView *)picker titleForRow:(NSInteger)row forComponent:(NSInteger)component {
+    return [filteredNews objectAtIndex:row];
+}
+- (void)pickerView:(UIPickerView *)picker didSelectRow:(NSInteger)row inComponent:(NSInteger)component {
+    currentPickerRow = row;
+}
+
 -(void)getDataForBreakingNews:(NSInteger)theCase
 {
     if (theCase == 1)
@@ -2288,12 +2654,51 @@
                     //                        [tableView endUpdates];
                 }
                 
-                NSOrderedSet *orderedSet = [NSOrderedSet orderedSetWithArray:dataSource];
-                dataSource = [[NSMutableArray alloc] initWithArray:[orderedSet array]];
+                NSMutableArray *filterArr = [[NSMutableArray alloc] init];
+                NSMutableArray *checkArr = [[NSMutableArray alloc] init];
+                NSMutableArray *deleteArr = [[NSMutableArray alloc] init];
+                
+                NSDictionary* news;
+                
+                for (int i = 0; i < dataSource.count; i++)
+                {
+                    news = [dataSource objectAtIndex:i];
+                    if ([[news objectForKey:@"type"] isEqualToString:@"news"])
+                    {
+                        if (![checkArr containsObject:[news objectForKey:@"body"]])
+                        {
+                            [checkArr addObject:[news objectForKey:@"body"]];
+                            [filterArr addObject:[dataSource objectAtIndex:i]];
+                        }
+                        else
+                        {
+                            [deleteArr addObject:[dataSource objectAtIndex:i]];
+                        }
+                    }
+                    else
+                    {
+                        [filterArr addObject:[dataSource objectAtIndex:i]];
+                    }
+                }
+                
+                for (int i = 0; i < deleteArr.count; i++)
+                {
+                    [newNews removeObject:[deleteArr objectAtIndex:i]];
+                }
+                
+                dataSource = [[NSMutableArray alloc] initWithArray:filterArr];
                 
                 [tableView reloadData];
                 
-                [(UILabel*)[tableView viewWithTag:837] setText:[@"عدد الأخبار المتبقية " stringByAppendingFormat:@"(%ld)",(long)[self getTheCount]]];
+                if (showingFav)
+                {
+                    [(UILabel*)[tableView viewWithTag:837] setText:[@"عدد الأخبار في المفضلة " stringByAppendingFormat:@"(%ld)",(long)dataSource.count]];
+                }
+                else
+                {
+                    [(UILabel*)[tableView viewWithTag:837] setText:[@"عدد الأخبار المتبقية " stringByAppendingFormat:@"(%ld)",(long)[self getTheCount]]];
+                }
+                
                 [tableView setContentOffset:offset animated:NO];
                 if (!isSearching)[self performSelector:@selector(addScrollTopButton:) withObject:[@"" stringByAppendingFormat:@"%lu",(unsigned long)newNews.count] afterDelay:0.2];
             }
@@ -2328,8 +2733,29 @@
                 }
             }
             
-            NSOrderedSet *orderedSet = [NSOrderedSet orderedSetWithArray:dataSource];
-            dataSource = [[NSMutableArray alloc] initWithArray:[orderedSet array]];
+            NSMutableArray *filterArr = [[NSMutableArray alloc] init];
+            NSMutableArray *checkArr = [[NSMutableArray alloc] init];
+            
+            NSDictionary* news;
+            
+            for (int i = 0; i < dataSource.count; i++)
+            {
+                news = [dataSource objectAtIndex:i];
+                if ([[news objectForKey:@"type"] isEqualToString:@"news"])
+                {
+                    if (![checkArr containsObject:[news objectForKey:@"body"]])
+                    {
+                        [checkArr addObject:[news objectForKey:@"body"]];
+                        [filterArr addObject:[dataSource objectAtIndex:i]];
+                    }
+                }
+                else
+                {
+                    [filterArr addObject:[dataSource objectAtIndex:i]];
+                }
+            }
+            
+            dataSource = [[NSMutableArray alloc] initWithArray:filterArr];
             
             [tableView reloadData];
             
@@ -2353,8 +2779,31 @@
             //dataSource = [[NSMutableArray alloc] init];
             //dataSource = [NSJSONSerialization JSONObjectWithData:responseObject options:NSJSONReadingAllowFragments error:nil];
             dataSource = [[NSMutableArray alloc]initWithArray:[NSJSONSerialization JSONObjectWithData:responseObject options:NSJSONReadingAllowFragments error:nil]];
-            NSOrderedSet *orderedSet = [NSOrderedSet orderedSetWithArray:dataSource];
-            dataSource = [[NSMutableArray alloc] initWithArray:[orderedSet array]];
+            
+            NSMutableArray *filterArr = [[NSMutableArray alloc] init];
+            NSMutableArray *checkArr = [[NSMutableArray alloc] init];
+            
+            NSDictionary* news;
+            
+            for (int i = 0; i < dataSource.count; i++)
+            {
+                news = [dataSource objectAtIndex:i];
+                if ([[news objectForKey:@"type"] isEqualToString:@"news"])
+                {
+                    if (![checkArr containsObject:[news objectForKey:@"body"]])
+                    {
+                        [checkArr addObject:[news objectForKey:@"body"]];
+                        [filterArr addObject:[dataSource objectAtIndex:i]];
+                    }
+                }
+                else
+                {
+                    [filterArr addObject:[dataSource objectAtIndex:i]];
+                }
+            }
+            
+            dataSource = [[NSMutableArray alloc] initWithArray:filterArr];
+            
             createdAt = [[dataSource lastObject] objectForKey:@"id"];
             
             [self performSelector:@selector(reloadTheTable) withObject:nil afterDelay:0.2];
@@ -2446,6 +2895,7 @@
 
 - (IBAction)nightMood:(id)sender {
     [self hideOptionsTable];
+    isManualNight = YES;
     if ([[NSUserDefaults standardUserDefaults] boolForKey:@"isNightOn"])
     {
         [[NSUserDefaults standardUserDefaults] setBool:NO forKey:@"isNightOn"];
@@ -2519,6 +2969,17 @@
 }
 
 - (IBAction)optionsClicked:(id)sender {
+    CGFloat scrollViewHeight = 1.0f;
+    for (UIView* view in _optionsScrollView.subviews)
+    {
+        if ([[@"" stringByAppendingFormat:@"%@",view.class] isEqualToString:@"UIButton"])
+        {
+            scrollViewHeight += view.frame.size.height;
+        }
+    }
+    
+    [_optionsScrollView setContentSize:(CGSizeMake(_optionsScrollView.frame.size.width, scrollViewHeight))];
+    
     if ([[NSUserDefaults standardUserDefaults] boolForKey:@"isNightOn"])
     {
         [_nightButton setTitle:@"         وضع القراءة العادي" forState:UIControlStateNormal];
@@ -2541,23 +3002,71 @@
 
 -(void)setCurrentBackColor
 {
-    if (showingFav)
+    if ([[NSUserDefaults standardUserDefaults] boolForKey:@"isNightOn"])
     {
-        [_favButton setBackgroundColor:[UIColor colorWithRed:231.0/255.0 green:222.0/255.0 blue:199.0/255.0 alpha:1.0]];
-        [_timeLineButton setBackgroundColor:[UIColor clearColor]];
-        [_breakingButton setBackgroundColor:[UIColor clearColor]];
-    }
-    else if (isOnBreakingNews)
-    {
-        [_breakingButton setBackgroundColor:[UIColor colorWithRed:231.0/255.0 green:222.0/255.0 blue:199.0/255.0 alpha:1.0]];
-        [_timeLineButton setBackgroundColor:[UIColor clearColor]];
-        [_favButton setBackgroundColor:[UIColor clearColor]];
+        [_optionsView setBackgroundColor:[UIColor colorWithRed:50.0/255.0 green:50.0/255.0 blue:50.0/255.0 alpha:1.0]];
+        [_backBlockLabel setBackgroundColor:[UIColor colorWithRed:50.0/255.0 green:50.0/255.0 blue:50.0/255.0 alpha:1.0]];
+        
+        [_timeLineButton setTitleColor:[UIColor colorWithRed:200.0/255.0 green:200.0/255.0 blue:200.0/255.0 alpha:1.0] forState:UIControlStateNormal];
+        [_favButton setTitleColor:[UIColor colorWithRed:200.0/255.0 green:200.0/255.0 blue:200.0/255.0 alpha:1.0] forState:UIControlStateNormal];
+        [_breakingButton setTitleColor:[UIColor colorWithRed:200.0/255.0 green:200.0/255.0 blue:200.0/255.0 alpha:1.0] forState:UIControlStateNormal];
+        [_filterButton setTitleColor:[UIColor colorWithRed:200.0/255.0 green:200.0/255.0 blue:200.0/255.0 alpha:1.0] forState:UIControlStateNormal];
+        [_footballButton setTitleColor:[UIColor colorWithRed:200.0/255.0 green:200.0/255.0 blue:200.0/255.0 alpha:1.0] forState:UIControlStateNormal];
+        [_notifyButton setTitleColor:[UIColor colorWithRed:200.0/255.0 green:200.0/255.0 blue:200.0/255.0 alpha:1.0] forState:UIControlStateNormal];
+        [_nightButton setTitleColor:[UIColor colorWithRed:200.0/255.0 green:200.0/255.0 blue:200.0/255.0 alpha:1.0] forState:UIControlStateNormal];
+        [_settingsButton setTitleColor:[UIColor colorWithRed:200.0/255.0 green:200.0/255.0 blue:200.0/255.0 alpha:1.0] forState:UIControlStateNormal];
+        
+        if (showingFav)
+        {
+            [_favButton setBackgroundColor:[UIColor colorWithRed:20.0/255.0 green:20.0/255.0 blue:20.0/255.0 alpha:1.0]];
+            [_timeLineButton setBackgroundColor:[UIColor clearColor]];
+            [_breakingButton setBackgroundColor:[UIColor clearColor]];
+        }
+        else if (isOnBreakingNews)
+        {
+            [_breakingButton setBackgroundColor:[UIColor colorWithRed:20.0/255.0 green:20.0/255.0 blue:20.0/255.0 alpha:1.0]];
+            [_timeLineButton setBackgroundColor:[UIColor clearColor]];
+            [_favButton setBackgroundColor:[UIColor clearColor]];
+        }
+        else
+        {
+            [_timeLineButton setBackgroundColor:[UIColor colorWithRed:20.0/255.0 green:20.0/255.0 blue:20.0/255.0 alpha:1.0]];
+            [_favButton setBackgroundColor:[UIColor clearColor]];
+            [_breakingButton setBackgroundColor:[UIColor clearColor]];
+        }
     }
     else
     {
-        [_timeLineButton setBackgroundColor:[UIColor colorWithRed:231.0/255.0 green:222.0/255.0 blue:199.0/255.0 alpha:1.0]];
-        [_favButton setBackgroundColor:[UIColor clearColor]];
-        [_breakingButton setBackgroundColor:[UIColor clearColor]];
+        [_optionsView setBackgroundColor:[UIColor colorWithRed:230.0/255.0 green:230.0/255.0 blue:230.0/255.0 alpha:1.0]];
+        [_backBlockLabel setBackgroundColor:[UIColor colorWithRed:230.0/255.0 green:230.0/255.0 blue:230.0/255.0 alpha:1.0]];
+        
+        [_timeLineButton setTitleColor:[UIColor colorWithRed:37.0/255.0 green:37.0/255.0 blue:37.0/255.0 alpha:1.0] forState:UIControlStateNormal];
+        [_favButton setTitleColor:[UIColor colorWithRed:37.0/255.0 green:37.0/255.0 blue:37.0/255.0 alpha:1.0] forState:UIControlStateNormal];
+        [_breakingButton setTitleColor:[UIColor colorWithRed:37.0/255.0 green:37.0/255.0 blue:37.0/255.0 alpha:1.0] forState:UIControlStateNormal];
+        [_filterButton setTitleColor:[UIColor colorWithRed:37.0/255.0 green:37.0/255.0 blue:37.0/255.0 alpha:1.0] forState:UIControlStateNormal];
+        [_footballButton setTitleColor:[UIColor colorWithRed:37.0/255.0 green:37.0/255.0 blue:37.0/255.0 alpha:1.0] forState:UIControlStateNormal];
+        [_notifyButton setTitleColor:[UIColor colorWithRed:37.0/255.0 green:37.0/255.0 blue:37.0/255.0 alpha:1.0] forState:UIControlStateNormal];
+        [_nightButton setTitleColor:[UIColor colorWithRed:37.0/255.0 green:37.0/255.0 blue:37.0/255.0 alpha:1.0] forState:UIControlStateNormal];
+        [_settingsButton setTitleColor:[UIColor colorWithRed:37.0/255.0 green:37.0/255.0 blue:37.0/255.0 alpha:1.0] forState:UIControlStateNormal];
+        
+        if (showingFav)
+        {
+            [_favButton setBackgroundColor:[UIColor colorWithRed:231.0/255.0 green:222.0/255.0 blue:199.0/255.0 alpha:1.0]];
+            [_timeLineButton setBackgroundColor:[UIColor clearColor]];
+            [_breakingButton setBackgroundColor:[UIColor clearColor]];
+        }
+        else if (isOnBreakingNews)
+        {
+            [_breakingButton setBackgroundColor:[UIColor colorWithRed:231.0/255.0 green:222.0/255.0 blue:199.0/255.0 alpha:1.0]];
+            [_timeLineButton setBackgroundColor:[UIColor clearColor]];
+            [_favButton setBackgroundColor:[UIColor clearColor]];
+        }
+        else
+        {
+            [_timeLineButton setBackgroundColor:[UIColor colorWithRed:231.0/255.0 green:222.0/255.0 blue:199.0/255.0 alpha:1.0]];
+            [_favButton setBackgroundColor:[UIColor clearColor]];
+            [_breakingButton setBackgroundColor:[UIColor clearColor]];
+        }
     }
 }
 
@@ -2603,17 +3112,32 @@
     
     [_optionsNavBar setFrame:CGRectMake(0, 20, [self.navigationController view].frame.size.width, _optionsNavBar.frame.size.height)];
     [_optionsView setHidden:NO];
+    [_backBlockLabel setHidden:NO];
     [_darkBackButton setHidden:NO];
     [tableView setAlpha:1.0];
     [_darkBackButton setAlpha:0.0];
-    [_optionsView setFrame:CGRectMake(_optionsView.frame.origin.x, -325, _optionsView.frame.size.width, 325)];
+    [_optionsView setFrame:CGRectMake(_optionsView.frame.origin.x, -437, _optionsView.frame.size.width, 437)];
     [UIView animateWithDuration:0.2 delay:0.0 options:0
                      animations:^{
                          [tableView setAlpha:0.4];
                          [_darkBackButton setAlpha:0.8];
-                         [_optionsView setFrame:CGRectMake(0, 0, _optionsView.frame.size.width, _optionsView.frame.size.height)];
+                         [_optionsView setFrame:CGRectMake(0, 20, _optionsView.frame.size.width, _optionsView.frame.size.height)];
                      }
                      completion:^(BOOL finished) {
+                         [UIView animateWithDuration:0.1 delay:0.0 options:0
+                                          animations:^{
+                                              [_optionsView setFrame:CGRectMake(0, -10, _optionsView.frame.size.width, _optionsView.frame.size.height)];
+                                          }
+                                          completion:^(BOOL finished) {
+                                              [UIView animateWithDuration:0.1 delay:0.0 options:0
+                                                               animations:^{
+                                                                   [_optionsView setFrame:CGRectMake(0, 0, _optionsView.frame.size.width, _optionsView.frame.size.height)];
+                                                               }
+                                                               completion:^(BOOL finished) {
+                                                               }];
+                                              [UIView commitAnimations];
+                                          }];
+                         [UIView commitAnimations];
                      }];
     [UIView commitAnimations];
 }
@@ -2623,6 +3147,7 @@
     isOptions = NO;
     [self rotateImgBack:(UIImageView*)[_optionsNavBar viewWithTag:3338] isLeft:NO];
     [self rotateImgBack:(UIImageView*)[_optionsNavBar viewWithTag:3339] isLeft:YES];
+    [_backBlockLabel setHidden:YES];
     [tableView setAlpha:1.0];
     [_darkBackButton setAlpha:0.0];
     [UIView animateWithDuration:0.2 delay:0.0 options:0
@@ -2688,6 +3213,7 @@
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
+    if (isStartSearch)return searchArr.count;
     return dataSource.count;
 }
 
@@ -2711,7 +3237,7 @@
     [scrollButton setBackgroundColor:[UIColor clearColor]];
     [scrollButton addTarget:self action:@selector(scrollToTopNow) forControlEvents:UIControlEventTouchUpInside];
     [scrollButton setTag:885];
-    [scrollButton.titleLabel setFont:[UIFont systemFontOfSize:15]];
+    [scrollButton.titleLabel setFont:[UIFont fontWithName:@"DroidArabicKufi" size:14.0]];
     [scrollButton setTitleColor:[UIColor colorWithRed:71.0/255.0 green:69.0/255.0 blue:9.0/255.0 alpha:1.0] forState:UIControlStateNormal];
     
     if (newsCount == 1)
@@ -2788,7 +3314,7 @@
     [scrollButton setBackgroundColor:[UIColor clearColor]];
     [scrollButton addTarget:self action:@selector(scrollBack) forControlEvents:UIControlEventTouchUpInside];
     [scrollButton setTag:885];
-    [scrollButton.titleLabel setFont:[UIFont systemFontOfSize:15]];
+    [scrollButton.titleLabel setFont:[UIFont fontWithName:@"DroidArabicKufi" size:14.0]];
     [scrollButton setTitleColor:[UIColor colorWithRed:241.0/255.0 green:241.0/255.0 blue:241.0/255.0 alpha:1.0] forState:UIControlStateNormal];
     
     [scrollButton setTitle:@"الرجوع للخبر الذي وصلت إليه بالقراءة" forState:UIControlStateNormal];
@@ -2904,100 +3430,136 @@
 
 -(UIView *)tableView:(UITableView *)tableView2 viewForHeaderInSection:(NSInteger)section
 {
-    UIView *view = [[UIView alloc] initWithFrame:CGRectMake(0, 0, tableView2.frame.size.width, 30)];
-    view.autoresizingMask = UIViewAutoresizingFlexibleWidth;
-    
-    UILabel *label = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, tableView2.frame.size.width, 30)];
-    label.autoresizingMask = UIViewAutoresizingFlexibleWidth;
-    [label setTag:838];
-    [label setFont:[UIFont systemFontOfSize:16]];
-    [label setTextAlignment:NSTextAlignmentCenter];
-    
-    UILabel *countLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, tableView2.frame.size.width, 30)];
-    [countLabel setTag:839];
-    [countLabel setFont:[UIFont systemFontOfSize:16]];
-    [countLabel setTextAlignment:NSTextAlignmentLeft];
-    
-    [countLabel setText:[@"       " stringByAppendingFormat:@"%ld",(long)countToEnd]];
-    
-    UIImageView *topLeftImg = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"top-left-arrow.png"]];
-    [topLeftImg setFrame:CGRectMake(0, 0, 15, 16)];
-    [topLeftImg setCenter:view.center];
-    [topLeftImg setFrame:CGRectMake(10, topLeftImg.frame.origin.y, 15, 16)];
-    [topLeftImg setTag:840];
-    
-    UIButton *button = [UIButton buttonWithType:UIButtonTypeRoundedRect];
-    button.autoresizingMask = UIViewAutoresizingFlexibleWidth;
-    [button addTarget:self
-               action:@selector(scrollToNews)
-     forControlEvents:UIControlEventTouchUpInside];
-    [button setTitle:@"" forState:UIControlStateNormal];
-    button.frame = view.frame;
-    [view addSubview:button];
-    
-    if ([[NSUserDefaults standardUserDefaults] boolForKey:@"isNightOn"])
+    if (isStartSearch)
     {
-        [label setTextColor:[UIColor lightGrayColor]];
-        [countLabel setTextColor:[UIColor lightGrayColor]];
+        UIView *view = [[UIView alloc] initWithFrame:CGRectMake(0, 0, tableView2.frame.size.width, 30)];
+        UILabel *label = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, tableView2.frame.size.width, 30)];
+        [label setFont:[UIFont fontWithName:@"DroidArabicKufi" size:14.0]];
+        [label setTextAlignment:NSTextAlignmentRight];
+        [label setTextColor:[UIColor colorWithRed:50.0/255.0 green:50.0/255.0 blue:50.0/255.0 alpha:1.0]];
+        
+        [label setText:@"  عمليات البحث السابقة"];
+        
+        if ([[NSUserDefaults standardUserDefaults] boolForKey:@"isNightOn"])
+        {
+            [view setBackgroundColor:[UIColor colorWithRed:85.0/255.0 green:85.0/255.0 blue:85.0/255.0 alpha:0.9]];
+            [label setTextColor:[UIColor lightGrayColor]];
+        }
+        else
+        {
+            [view setBackgroundColor:[UIColor colorWithRed:235.0/255.0 green:235.0/255.0 blue:235.0/255.0 alpha:0.9]];
+            [label setTextColor:[UIColor colorWithRed:85.0/255.0 green:85.0/255.0 blue:85.0/255.0 alpha:0.9]];
+        }
+        
+        [view addSubview:label];
+        
+        return view;
     }
     else
     {
-        [label setTextColor:[UIColor colorWithRed:85.0/255.0 green:85.0/255.0 blue:85.0/255.0 alpha:0.9]];
-        [countLabel setTextColor:[UIColor colorWithRed:100.0/255.0 green:100.0/255.0 blue:100.0/255.0 alpha:0.9]];
+        UIView *view = [[UIView alloc] initWithFrame:CGRectMake(0, 0, tableView2.frame.size.width, 30)];
+        view.autoresizingMask = UIViewAutoresizingFlexibleWidth;
+        
+        UILabel *label = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, tableView2.frame.size.width, 30)];
+        label.autoresizingMask = UIViewAutoresizingFlexibleWidth;
+        [label setTag:838];
+        [label setFont:[UIFont fontWithName:@"DroidArabicKufi" size:14.0]];
+        [label setTextAlignment:NSTextAlignmentCenter];
+        
+        UILabel *countLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, tableView2.frame.size.width, 30)];
+        [countLabel setTag:839];
+        [countLabel setFont:[UIFont fontWithName:@"DroidArabicKufi" size:14.0]];
+        [countLabel setTextAlignment:NSTextAlignmentLeft];
+        
+        [countLabel setText:[@"       " stringByAppendingFormat:@"%ld",(long)countToEnd]];
+        
+        UIImageView *topLeftImg = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"top-left-arrow.png"]];
+        [topLeftImg setFrame:CGRectMake(0, 0, 15, 16)];
+        [topLeftImg setCenter:view.center];
+        [topLeftImg setFrame:CGRectMake(10, topLeftImg.frame.origin.y, 15, 16)];
+        [topLeftImg setTag:840];
+        
+        UIButton *button = [UIButton buttonWithType:UIButtonTypeRoundedRect];
+        button.autoresizingMask = UIViewAutoresizingFlexibleWidth;
+        [button addTarget:self
+                   action:@selector(scrollToNews)
+         forControlEvents:UIControlEventTouchUpInside];
+        [button setTitle:@"" forState:UIControlStateNormal];
+        button.frame = view.frame;
+        [view addSubview:button];
+        
+        if ([[NSUserDefaults standardUserDefaults] boolForKey:@"isNightOn"])
+        {
+            [label setTextColor:[UIColor lightGrayColor]];
+            [countLabel setTextColor:[UIColor lightGrayColor]];
+        }
+        else
+        {
+            [label setTextColor:[UIColor colorWithRed:85.0/255.0 green:85.0/255.0 blue:85.0/255.0 alpha:0.9]];
+            [countLabel setTextColor:[UIColor colorWithRed:100.0/255.0 green:100.0/255.0 blue:100.0/255.0 alpha:0.9]];
+        }
+        
+        if (showingFav)
+        {
+            [label setText:@"الأخبار المفضلة"];
+        }
+        else
+        {
+            [label setText:@"أخبار اليوم"];
+        }
+        
+        [view addSubview:label];
+        [view addSubview:countLabel];
+        [view addSubview:topLeftImg];
+        
+        if (countToEnd < 1)
+        {
+            [countLabel setAlpha:0.0];
+            [topLeftImg setAlpha:0.0];
+            NSLog(@"countToEnd hidden in header");
+        }
+        else
+        {
+            [countLabel setAlpha:1.0];
+            [topLeftImg setAlpha:1.0];
+            [countLabel setHidden:NO];
+            [topLeftImg setHidden:NO];
+        }
+        
+        if ([[NSUserDefaults standardUserDefaults] boolForKey:@"isNightOn"])
+        {
+            [view setBackgroundColor:[UIColor colorWithRed:85.0/255.0 green:85.0/255.0 blue:85.0/255.0 alpha:0.9]];
+        }
+        else
+        {
+            [view setBackgroundColor:[UIColor colorWithRed:235.0/255.0 green:235.0/255.0 blue:235.0/255.0 alpha:0.9]];
+        }
+        [view setTag:884];
+        
+        if (dataSource.count == 0)
+        {
+            [view setHidden:YES];
+        }
+        
+        return view;
     }
-    
-    if (showingFav)
-    {
-        [label setText:@"الأخبار المفضلة"];
-    }
-    else
-    {
-        [label setText:@"أخبار اليوم"];
-    }
-    
-    [view addSubview:label];
-    [view addSubview:countLabel];
-    [view addSubview:topLeftImg];
-    
-    if (countToEnd < 1)
-    {
-        [countLabel setAlpha:0.0];
-        [topLeftImg setAlpha:0.0];
-        NSLog(@"countToEnd hidden in header");
-    }
-    else
-    {
-        [countLabel setAlpha:1.0];
-        [topLeftImg setAlpha:1.0];
-        [countLabel setHidden:NO];
-        [topLeftImg setHidden:NO];
-    }
-    
-    if ([[NSUserDefaults standardUserDefaults] boolForKey:@"isNightOn"])
-    {
-        [view setBackgroundColor:[UIColor colorWithRed:85.0/255.0 green:85.0/255.0 blue:85.0/255.0 alpha:0.9]];
-    }
-    else
-    {
-        [view setBackgroundColor:[UIColor colorWithRed:235.0/255.0 green:235.0/255.0 blue:235.0/255.0 alpha:0.9]];
-    }
-    [view setTag:884];
-    
-    if (dataSource.count == 0)
-    {
-        [view setHidden:YES];
-    }
-    
-    return view;
 }
 
 -(UIView*)tableView:(UITableView *)tableView2 viewForFooterInSection:(NSInteger)section
 {
+    if (isStartSearch)
+    {
+        UIView *view = [[UIView alloc] initWithFrame:CGRectMake(0, 0, tableView2.frame.size.width, 30)];
+        [view setBackgroundColor:[UIColor clearColor]];
+        return view;
+    }
+    
     UIView *view = [[UIView alloc] initWithFrame:CGRectMake(0, 0, tableView2.frame.size.width, 30)];
     UILabel *label = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, tableView2.frame.size.width, 30)];
     [label setTag:837];
-    [label setFont:[UIFont systemFontOfSize:16]];
+    [label setFont:[UIFont fontWithName:@"DroidArabicKufi" size:14.0]];
     [label setTextAlignment:NSTextAlignmentCenter];
+    
     if ([[NSUserDefaults standardUserDefaults] boolForKey:@"isNightOn"])
      {
          [label setTextColor:[UIColor lightGrayColor]];
@@ -3007,7 +3569,14 @@
          [label setTextColor:[UIColor colorWithRed:85.0/255.0 green:85.0/255.0 blue:85.0/255.0 alpha:0.9]];
      }
     
-    [label setText:[@"عدد الأخبار المتبقية " stringByAppendingFormat:@"(%ld)",(long)[self getTheCount]]];
+    if (showingFav)
+    {
+        [label setText:[@"عدد الأخبار في المفضلة " stringByAppendingFormat:@"(%ld)",(long)dataSource.count]];
+    }
+    else
+    {
+        [label setText:[@"عدد الأخبار المتبقية " stringByAppendingFormat:@"(%ld)",(long)[self getTheCount]]];
+    }
     
     [view addSubview:label];
     if ([[NSUserDefaults standardUserDefaults] boolForKey:@"isNightOn"])
@@ -3070,6 +3639,8 @@
 
 - (void)tableView:(UITableView *)tableView2 willDisplayCell:(UITableViewCell *)cell forRowAtIndexPath:(NSIndexPath *)indexPath
 {
+    if (isStartSearch)return;
+    
     if (showingFav)
     {
         [[cell viewWithTag:9] setHidden:YES];
@@ -3695,7 +4266,6 @@
                          animations:^{
                              [[tableView viewWithTag:839] setAlpha:0.0];
                              [[tableView viewWithTag:840] setAlpha:0.0];
-                             NSLog(@"countToEnd hidden in cell");
                          }
                          completion:^(BOOL finished) {
                              //
@@ -3777,9 +4347,33 @@
     return @"";
 }
 
+- (BOOL)tableView:(UITableView *)tableView canEditRowAtIndexPath:(NSIndexPath *)indexPath {
+    if (isStartSearch)return YES;
+    return NO;
+}
+
+- (void)tableView:(UITableView *)tableView2 commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath {
+    if (editingStyle == UITableViewCellEditingStyleDelete) {
+        [searchArr removeObjectAtIndex:indexPath.row];
+        
+        [[NSUserDefaults standardUserDefaults] setObject:searchArr forKey:@"savedSearch"];
+        [[NSUserDefaults standardUserDefaults] synchronize];
+        
+        [tableView2 deleteRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationMiddle];
+        
+        if (searchArr.count == 0)
+        {
+            [self stopSearchLog];
+            [tableView reloadData];
+        }
+    }
+}
+
+//cell
 - (UITableViewCell *)tableView:(UITableView *)tableVieww cellForRowAtIndexPath:(NSIndexPath *)indexPath {
     
     static NSString* cellID = @"newsFeedCell";
+    
     UITableViewCell *cell = [tableVieww dequeueReusableCellWithIdentifier:cellID forIndexPath:indexPath];
     
     if(!cell)
@@ -3787,10 +4381,54 @@
         cell = [[UITableViewCell alloc]initWithStyle:UITableViewCellStyleDefault reuseIdentifier:cellID];
     }
     
+    if (isStartSearch)
+    {
+        [[cell viewWithTag:1] setHidden:YES];
+        [[cell viewWithTag:2] setHidden:YES];
+        [[cell viewWithTag:3] setHidden:YES];
+        [[cell viewWithTag:4] setHidden:YES];
+        [[cell viewWithTag:5] setHidden:YES];
+        [[cell viewWithTag:8] setHidden:YES];
+        [[cell viewWithTag:15] setHidden:YES];
+        [[cell viewWithTag:17] setHidden:YES];
+        [[cell viewWithTag:64] setHidden:YES];
+        
+        [[cell viewWithTag:2738] removeFromSuperview];
+        [[cell viewWithTag:2739] removeFromSuperview];
+        [[cell viewWithTag:2740] removeFromSuperview];
+        
+        if ([[NSUserDefaults standardUserDefaults] boolForKey:@"isNightOn"])
+        {
+            [(UILabel*)[cell viewWithTag:63] setTextColor:[UIColor colorWithRed:190.0/255.0 green:190.0/255.0 blue:190.0/255.0 alpha:1.0]];
+            [(UILabel*)[cell viewWithTag:63] setHighlightedTextColor:[UIColor whiteColor]];
+        }
+        else
+        {
+            [(UILabel*)[cell viewWithTag:63] setTextColor:[UIColor colorWithRed:37.0/255.0 green:37.0/255.0 blue:37.0/255.0 alpha:1.0]];
+            [(UILabel*)[cell viewWithTag:63] setHighlightedTextColor:[UIColor blackColor]];
+        }
+        
+        [(UILabel*)[cell viewWithTag:63] setText:[searchArr objectAtIndex:indexPath.row]];
+        
+        [[cell viewWithTag:63] setHidden:NO];
+        
+        return cell;
+    }
+    
+    [[cell viewWithTag:63] setHidden:YES];
+    
+    cell.backgroundColor = [UIColor clearColor];
+    cell.backgroundView.backgroundColor = [UIColor clearColor];
+    cell.contentView.backgroundColor = [UIColor clearColor];
+    
+    NSDictionary* news = [dataSource objectAtIndex:indexPath.row];
+    
     if ([[NSUserDefaults standardUserDefaults] boolForKey:@"isNightOn"])
     {
-        [(UILabel*)[cell viewWithTag:2] setTextColor:[UIColor colorWithRed:200.0/255.0 green:200.0/255.0 blue:200.0/255.0 alpha:1.0]];
-        [(UILabel*)[cell viewWithTag:4] setTextColor:[UIColor lightGrayColor]];
+        [[cell viewWithTag:17] setBackgroundColor:[UIColor colorWithRed:70.0/255.0 green:70.0/255.0 blue:70.0/255.0 alpha:1.0]];
+        
+        [(UILabel*)[cell viewWithTag:3] setTextColor:[UIColor colorWithRed:120.0/255.0 green:120.0/255.0 blue:120.0/255.0 alpha:1.0]];
+        [(UILabel*)[cell viewWithTag:4] setTextColor:[UIColor colorWithRed:190.0/255.0 green:190.0/255.0 blue:190.0/255.0 alpha:1.0]];
         
         [(UILabel*)[cell viewWithTag:2] setHighlightedTextColor:[UIColor whiteColor]];
         [(UILabel*)[cell viewWithTag:3] setHighlightedTextColor:[UIColor whiteColor]];
@@ -3806,11 +4444,13 @@
     }
     else
     {
-        [(UILabel*)[cell viewWithTag:2] setTextColor:[UIColor colorWithRed:30.0/255.0 green:30.0/255.0 blue:30.0/255.0 alpha:1.0]];
+        [[cell viewWithTag:17] setBackgroundColor:[UIColor colorWithRed:85.0/255.0 green:85.0/255.0 blue:85.0/255.0 alpha:0.4]];
+        
+        [(UILabel*)[cell viewWithTag:3] setTextColor:[UIColor darkGrayColor]];
         [(UILabel*)[cell viewWithTag:4] setTextColor:[UIColor colorWithRed:37.0/255.0 green:37.0/255.0 blue:37.0/255.0 alpha:1.0]];
         
-        [(UILabel*)[cell viewWithTag:2] setHighlightedTextColor:[UIColor blackColor]];
-        [(UILabel*)[cell viewWithTag:3] setHighlightedTextColor:[UIColor colorWithRed:77.0/255.0 green:165.0/255.0 blue:224.0/255.0 alpha:1.0]];
+        [(UILabel*)[cell viewWithTag:2] setHighlightedTextColor:[UIColor colorWithRed:77.0/255.0 green:165.0/255.0 blue:224.0/255.0 alpha:1.0]];
+        [(UILabel*)[cell viewWithTag:3] setHighlightedTextColor:[UIColor blackColor]];
         [(UILabel*)[cell viewWithTag:4] setHighlightedTextColor:[UIColor blackColor]];
         
         cell.selectedBackgroundView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"news-selected-back.png"]];
@@ -3831,7 +4471,7 @@
         [(UILabel*)[tableView viewWithTag:837] setText:[@"عدد الأخبار المتبقية " stringByAppendingFormat:@"(%ld)",(long)[self getTheCount]]];
     }
     
-    NSDictionary* news = [dataSource objectAtIndex:indexPath.row];
+    //[(UILabel*)[cell viewWithTag:20] setText:[self getCitiesFor:[news objectForKey:@"fullBody"]]];
     
     //[(UIImageView*)[cell viewWithTag:1] hnk_setImageFromURL:[NSURL URLWithString:[[news objectForKey:@"icon"] stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]] placeholder:nil];
     
@@ -3855,145 +4495,152 @@
     NSString *dateString = [dateFormatter stringFromDate:[NSDate date]];
     NSDate* date = [dateFormatter dateFromString:dateString];
     
-    long currentStamp = [date timeIntervalSince1970];
-    long newsStamp = [[news objectForKey:@"createdAt"] longLongValue];
-    long diff = currentStamp-newsStamp;
-    
-    if(diff < 60)
+    if ([[news objectForKey:@"type"] isEqualToString:@"google"] || [[news objectForKey:@"type"] isEqualToString:@"ourAd"] || [[news objectForKey:@"type"] isEqualToString:@"millin"])
     {
-        [(UILabel*)[cell viewWithTag:3] setText:@"الآن"];
-        if (!showingFav)
-        {
-            [(UILabel*)[tableView viewWithTag:838] setText:@"أخبار اليوم"];
-        }
-    }else if (diff < 3600)
-    {
-        if ((int)(diff/60) == 1)
-        {
-            [(UILabel*)[cell viewWithTag:3] setText:@"منذ دقيقة"];
-        }
-        else if ((int)(diff/60) == 2)
-        {
-            [(UILabel*)[cell viewWithTag:3] setText:@"منذ دقيقتين"];
-        }
-        else if ((int)(diff/60) <= 10)
-        {
-            [(UILabel*)[cell viewWithTag:3] setText:[NSString stringWithFormat:@"منذ %i دقائق",(int)(diff/60)]];
-        }
-        else
-        {
-            [(UILabel*)[cell viewWithTag:3] setText:[NSString stringWithFormat:@"منذ %i دقيقة",(int)(diff/60)]];
-        }
-        
-        if (!showingFav)
-        {
-            [(UILabel*)[tableView viewWithTag:838] setText:@"أخبار اليوم"];
-        }
-    }else if (diff < 86400)
-    {
-        if ((int)(diff/3600) == 1)
-        {
-            [(UILabel*)[cell viewWithTag:3] setText:@"منذ ساعة"];
-        }
-        else if ((int)(diff/3600) == 2)
-        {
-            [(UILabel*)[cell viewWithTag:3] setText:@"منذ ساعتين"];
-        }
-        else if ((int)(diff/3600) <= 10)
-        {
-            [(UILabel*)[cell viewWithTag:3] setText:[NSString stringWithFormat:@"منذ %i ساعات",(int)(diff/3600)]];
-        }
-        else
-        {
-            [(UILabel*)[cell viewWithTag:3] setText:[NSString stringWithFormat:@"منذ %i ساعة",(int)(diff/3600)]];
-        }
-        if (!showingFav)
-        {
-            [(UILabel*)[tableView viewWithTag:838] setText:[self getDayStr:newsStamp andCompare:diff andToday:date]];
-        }
-    }else if (diff < 604800)
-    {
-        if ((int)(diff/86400) == 1)
-        {
-            [(UILabel*)[cell viewWithTag:3] setText:@"منذ يوم"];
-        }
-        else if ((int)(diff/86400) == 2)
-        {
-            [(UILabel*)[cell viewWithTag:3] setText:@"منذ يومين"];
-        }
-        else if ((int)(diff/86400) <= 10)
-        {
-            [(UILabel*)[cell viewWithTag:3] setText:[NSString stringWithFormat:@"منذ %i أيام",(int)(diff/86400)]];
-        }
-        else
-        {
-            [(UILabel*)[cell viewWithTag:3] setText:[NSString stringWithFormat:@"منذ %i يوم",(int)(diff/86400)]];
-        }
-        
-        if (!showingFav)
-        {
-            if ((int)(diff/86400) == 1)
-            {
-                [(UILabel*)[tableView viewWithTag:838] setText:@"أخبار أمس"];
-            }
-            else
-            {
-                [(UILabel*)[tableView viewWithTag:838] setText:@"أخبار الأسبوع"];
-            }
-        }
-    }else if (diff < 2592000)
-    {
-        if ((int)(diff/604800) == 1)
-        {
-            [(UILabel*)[cell viewWithTag:3] setText:@"منذ إسبوع"];
-        }
-        else if ((int)(diff/604800) == 2)
-        {
-            [(UILabel*)[cell viewWithTag:3] setText:@"منذ إسبوعين"];
-        }
-        else if ((int)(diff/604800) <= 10)
-        {
-            [(UILabel*)[cell viewWithTag:3] setText:[NSString stringWithFormat:@"منذ %i أسابيع",(int)(diff/604800)]];
-        }
-        else
-        {
-            [(UILabel*)[cell viewWithTag:3] setText:[NSString stringWithFormat:@"منذ %i إسبوع",(int)(diff/604800)]];
-        }
-        
-        if (!showingFav)
-        {
-            if ((int)(diff/604800) == 1)
-            {
-                [(UILabel*)[tableView viewWithTag:838] setText:@"أخبار الأسبوع"];
-            }
-            else
-            {
-                [(UILabel*)[tableView viewWithTag:838] setText:@"أخبار سابقة"];
-            }
-        }
+        [(UILabel*)[tableView viewWithTag:838] setText:@"إعلان"];
     }
     else
     {
-        if ((int)(diff/2592000) == 1)
+        long currentStamp = [date timeIntervalSince1970];
+        long newsStamp = [[news objectForKey:@"createdAt"] longLongValue];
+        long diff = currentStamp-newsStamp;
+        
+        if(diff < 60)
         {
-            [(UILabel*)[cell viewWithTag:3] setText:@"منذ شهر"];
-        }
-        else if ((int)(diff/2592000) == 2)
+            [(UILabel*)[cell viewWithTag:3] setText:@"الآن"];
+            if (!showingFav)
+            {
+                [(UILabel*)[tableView viewWithTag:838] setText:@"أخبار اليوم"];
+            }
+        }else if (diff < 3600)
         {
-            [(UILabel*)[cell viewWithTag:3] setText:@"منذ شهرين"];
-        }
-        else if ((int)(diff/2592000) <= 10)
+            if ((int)(diff/60) == 1)
+            {
+                [(UILabel*)[cell viewWithTag:3] setText:@"منذ دقيقة"];
+            }
+            else if ((int)(diff/60) == 2)
+            {
+                [(UILabel*)[cell viewWithTag:3] setText:@"منذ دقيقتين"];
+            }
+            else if ((int)(diff/60) <= 10)
+            {
+                [(UILabel*)[cell viewWithTag:3] setText:[NSString stringWithFormat:@"منذ %i دقائق",(int)(diff/60)]];
+            }
+            else
+            {
+                [(UILabel*)[cell viewWithTag:3] setText:[NSString stringWithFormat:@"منذ %i دقيقة",(int)(diff/60)]];
+            }
+            
+            if (!showingFav)
+            {
+                [(UILabel*)[tableView viewWithTag:838] setText:@"أخبار اليوم"];
+            }
+        }else if (diff < 86400)
         {
-            [(UILabel*)[cell viewWithTag:3] setText:[NSString stringWithFormat:@"منذ %i أشهر",(int)(diff/2592000)]];
+            if ((int)(diff/3600) == 1)
+            {
+                [(UILabel*)[cell viewWithTag:3] setText:@"منذ ساعة"];
+            }
+            else if ((int)(diff/3600) == 2)
+            {
+                [(UILabel*)[cell viewWithTag:3] setText:@"منذ ساعتين"];
+            }
+            else if ((int)(diff/3600) <= 10)
+            {
+                [(UILabel*)[cell viewWithTag:3] setText:[NSString stringWithFormat:@"منذ %i ساعات",(int)(diff/3600)]];
+            }
+            else
+            {
+                [(UILabel*)[cell viewWithTag:3] setText:[NSString stringWithFormat:@"منذ %i ساعة",(int)(diff/3600)]];
+            }
+            if (!showingFav)
+            {
+                [(UILabel*)[tableView viewWithTag:838] setText:[self getDayStr:newsStamp andCompare:diff andToday:date]];
+            }
+        }else if (diff < 604800)
+        {
+            if ((int)(diff/86400) == 1)
+            {
+                [(UILabel*)[cell viewWithTag:3] setText:@"منذ يوم"];
+            }
+            else if ((int)(diff/86400) == 2)
+            {
+                [(UILabel*)[cell viewWithTag:3] setText:@"منذ يومين"];
+            }
+            else if ((int)(diff/86400) <= 10)
+            {
+                [(UILabel*)[cell viewWithTag:3] setText:[NSString stringWithFormat:@"منذ %i أيام",(int)(diff/86400)]];
+            }
+            else
+            {
+                [(UILabel*)[cell viewWithTag:3] setText:[NSString stringWithFormat:@"منذ %i يوم",(int)(diff/86400)]];
+            }
+            
+            if (!showingFav)
+            {
+                if ((int)(diff/86400) == 1)
+                {
+                    [(UILabel*)[tableView viewWithTag:838] setText:@"أخبار أمس"];
+                }
+                else
+                {
+                    [(UILabel*)[tableView viewWithTag:838] setText:@"أخبار الأسبوع"];
+                }
+            }
+        }else if (diff < 2592000)
+        {
+            if ((int)(diff/604800) == 1)
+            {
+                [(UILabel*)[cell viewWithTag:3] setText:@"منذ إسبوع"];
+            }
+            else if ((int)(diff/604800) == 2)
+            {
+                [(UILabel*)[cell viewWithTag:3] setText:@"منذ إسبوعين"];
+            }
+            else if ((int)(diff/604800) <= 10)
+            {
+                [(UILabel*)[cell viewWithTag:3] setText:[NSString stringWithFormat:@"منذ %i أسابيع",(int)(diff/604800)]];
+            }
+            else
+            {
+                [(UILabel*)[cell viewWithTag:3] setText:[NSString stringWithFormat:@"منذ %i إسبوع",(int)(diff/604800)]];
+            }
+            
+            if (!showingFav)
+            {
+                if ((int)(diff/604800) == 1)
+                {
+                    [(UILabel*)[tableView viewWithTag:838] setText:@"أخبار الأسبوع"];
+                }
+                else
+                {
+                    [(UILabel*)[tableView viewWithTag:838] setText:@"أخبار سابقة"];
+                }
+            }
         }
         else
         {
-            [(UILabel*)[cell viewWithTag:3] setText:[NSString stringWithFormat:@"منذ %i شهر",(int)(diff/2592000)]];
-        }
-        
-        if (!showingFav)
-        {
-            [(UILabel*)[tableView viewWithTag:838] setText:@"أخبار سابقة"];
+            if ((int)(diff/2592000) == 1)
+            {
+                [(UILabel*)[cell viewWithTag:3] setText:@"منذ شهر"];
+            }
+            else if ((int)(diff/2592000) == 2)
+            {
+                [(UILabel*)[cell viewWithTag:3] setText:@"منذ شهرين"];
+            }
+            else if ((int)(diff/2592000) <= 10)
+            {
+                [(UILabel*)[cell viewWithTag:3] setText:[NSString stringWithFormat:@"منذ %i أشهر",(int)(diff/2592000)]];
+            }
+            else
+            {
+                [(UILabel*)[cell viewWithTag:3] setText:[NSString stringWithFormat:@"منذ %i شهر",(int)(diff/2592000)]];
+            }
+            
+            if (!showingFav)
+            {
+                [(UILabel*)[tableView viewWithTag:838] setText:@"أخبار سابقة"];
+            }
         }
     }
     
@@ -4134,7 +4781,175 @@
         }
     }
     
+    if ([[news objectForKey:@"type"] isEqualToString:@"google"])
+    {
+        [[cell viewWithTag:1] setHidden:YES];
+        [[cell viewWithTag:2] setHidden:YES];
+        [[cell viewWithTag:3] setHidden:YES];
+        [[cell viewWithTag:4] setHidden:YES];
+        [[cell viewWithTag:5] setHidden:YES];
+        [[cell viewWithTag:8] setHidden:YES];
+        [[cell viewWithTag:15] setHidden:YES];
+        [[cell viewWithTag:17] setHidden:NO];
+        [[cell viewWithTag:64] setHidden:YES]; 
+        
+        [[cell viewWithTag:2738] removeFromSuperview];
+        [[cell viewWithTag:2739] removeFromSuperview];
+        
+        GADBannerView* bannerView = [[GADBannerView alloc]initWithAdSize:kGADAdSizeMediumRectangle];
+        
+        [bannerView setTag:2738];
+        
+        [bannerView setFrame:CGRectMake([cell viewWithTag:8].frame.origin.x, [cell viewWithTag:8].frame.origin.y+10, [cell viewWithTag:8].frame.size.width, [cell viewWithTag:8].frame.size.height-20)];
+        
+        bannerView.adUnitID = @"ca-app-pub-5613925127009946/6827058314";
+        bannerView.rootViewController = self;
+        
+        GADRequest *request = [GADRequest request];
+        
+        request.testDevices = @[@"kGADSimulatorID",@"39d58745fe9b0532c8ee4722934037f7"];
+        
+        [bannerView loadRequest:request];
+        
+        bannerView.center = cell.contentView.center;
+        
+        [cell.contentView addSubview:bannerView];
+    }
+    else if ([[news objectForKey:@"type"] isEqualToString:@"millin"])
+    {
+        [[cell viewWithTag:1] setHidden:YES];
+        [[cell viewWithTag:2] setHidden:YES];
+        [[cell viewWithTag:3] setHidden:YES];
+        [[cell viewWithTag:4] setHidden:YES];
+        [[cell viewWithTag:5] setHidden:YES];
+        [[cell viewWithTag:8] setHidden:YES];
+        [[cell viewWithTag:15] setHidden:YES];
+        [[cell viewWithTag:17] setHidden:NO];
+        [[cell viewWithTag:64] setHidden:YES];
+        
+        [[cell viewWithTag:2738] removeFromSuperview];
+        [[cell viewWithTag:2739] removeFromSuperview];
+        [[cell viewWithTag:2740] removeFromSuperview];
+        
+        bannerAd = [[MMInlineAd alloc] initWithPlacementId:@"206845"
+                                                    adSize:MMInlineAdSizeMediumRectangle];
+        
+        [bannerAd.view setTag:2740];
+        
+        [bannerAd.view setFrame:CGRectMake([cell viewWithTag:8].frame.origin.x, [cell viewWithTag:8].frame.origin.y+10, [cell viewWithTag:8].frame.size.width, [cell viewWithTag:8].frame.size.height-20)];
+        
+        bannerAd.delegate = self;
+        
+        bannerAd.view.center = cell.contentView.center;
+        
+        [cell.contentView addSubview:bannerAd.view];
+        
+        [bannerAd request:nil];
+    }
+    else if ([[news objectForKey:@"type"] isEqualToString:@"ourAd"])
+    {
+        [[cell viewWithTag:1] setHidden:YES];
+        [[cell viewWithTag:2] setHidden:YES];
+        [[cell viewWithTag:3] setHidden:YES];
+        [[cell viewWithTag:4] setHidden:YES];
+        [[cell viewWithTag:5] setHidden:YES];
+        [[cell viewWithTag:8] setHidden:YES];
+        [[cell viewWithTag:15] setHidden:NO];
+        [[cell viewWithTag:17] setHidden:NO];
+        [[cell viewWithTag:64] setHidden:YES];
+        
+        [[cell viewWithTag:2738] removeFromSuperview];
+        [[cell viewWithTag:2739] removeFromSuperview];
+        [[cell viewWithTag:2740] removeFromSuperview];
+        
+        [(UIImageView*)[cell viewWithTag:15] setImage:nil];
+        
+        [[cell viewWithTag:15] setFrame:CGRectMake([cell viewWithTag:8].frame.origin.x, [cell viewWithTag:8].frame.origin.y+10, [cell viewWithTag:8].frame.size.width, [cell viewWithTag:8].frame.size.height-20)];
+        
+        UIImageView *anmImage = [[UIImageView alloc] initWithFrame:CGRectMake(0, 0, 83, 83)];
+        
+        [anmImage setTag:989];
+        
+        anmImage.clipsToBounds = YES;
+        
+        if ([[NSUserDefaults standardUserDefaults] boolForKey:@"isNightOn"])
+        {
+            [anmImage setTintColor:[UIColor lightGrayColor]];
+            
+            anmImage.image = [[UIImage imageNamed:@"image-loading-img.png"] imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+        }
+        else
+        {
+            [anmImage setTintColor:[UIColor colorWithRed:130.0/255.0 green:130.0/255.0 blue:130.0/255.0 alpha:1.0]];
+            
+            anmImage.image = [[UIImage imageNamed:@"image-loading-img.png"] imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+        }
+        
+        CABasicAnimation *animation = [CABasicAnimation animationWithKeyPath:@"transform.rotation.z"];
+        animation.fromValue = [NSNumber numberWithFloat:1.0f];
+        animation.toValue = [NSNumber numberWithFloat: 999];
+        animation.duration = 170.5f;
+        [anmImage.layer addAnimation:animation forKey:@"MyAnimation"];
+        
+        anmImage.center = [cell viewWithTag:15].center;
+        
+        [cell.contentView addSubview:anmImage];
+        
+        UIButton *button = [UIButton buttonWithType:UIButtonTypeCustom];
+        
+        [(UIImageView*)[cell viewWithTag:15] hnk_setImageFromURL:[NSURL URLWithString:[[news objectForKey:@"mediaURL"] stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]] placeholder:[UIImage imageNamed:@"loading-img.png"] success:^(UIImage *image) {
+            dispatch_async(dispatch_get_main_queue(), ^{
+                [(UIImageView*)[cell viewWithTag:15] setImage:image];
+                [anmImage stopAnimating];
+                [anmImage removeFromSuperview];
+                [[cell viewWithTag:989] removeFromSuperview];
+            });
+        } failure:^(NSError *error) {
+            NSLog(@"%@",error.description);
+            dispatch_async(dispatch_get_main_queue(), ^{
+                [anmImage stopAnimating];
+                [anmImage removeFromSuperview];
+                [[cell viewWithTag:989] removeFromSuperview];
+            });
+        }];
+        
+        [button addTarget:self action:@selector(adClicked:) forControlEvents:UIControlEventTouchUpInside];
+        [button setTag:2739];
+        [button setValue:[@"" stringByAppendingFormat:@"%ld",(long)indexPath.row] forKey:@"currentClickInd"];
+        [button setTitle:@"" forState:UIControlStateNormal];
+        [button setFrame:[[cell viewWithTag:8] frame]];
+        [button setBackgroundColor:[UIColor clearColor]];
+        [cell.contentView addSubview:button];
+    }
+    else
+    {
+        [[cell viewWithTag:1] setHidden:NO];
+        [[cell viewWithTag:2] setHidden:NO];
+        [[cell viewWithTag:3] setHidden:NO];
+        [[cell viewWithTag:4] setHidden:NO];
+        [[cell viewWithTag:5] setHidden:NO];
+        [[cell viewWithTag:8] setHidden:NO];
+        [[cell viewWithTag:15] setHidden:YES];
+        [[cell viewWithTag:17] setHidden:YES];
+        [[cell viewWithTag:64] setHidden:NO];
+        
+        [[cell viewWithTag:2738] removeFromSuperview];
+        [[cell viewWithTag:2739] removeFromSuperview];
+        [[cell viewWithTag:2740] removeFromSuperview];
+    }
+    
     return cell;
+}
+
+- (UIViewController *)viewControllerForPresentingModalView
+{
+    return self;
+}
+
+- (IBAction)adClicked:(id)sender
+{
+    NSDictionary* news = [dataSource objectAtIndex:[[sender valueForKey:@"currentClickInd"] integerValue]];
+    [[UIApplication sharedApplication] openURL:[NSURL URLWithString:[news objectForKey:@"newsURL"]]];
 }
 
 -(NSString*)getFilteredStringFrom:(NSString*)theString
@@ -4214,9 +5029,11 @@
 
 -(CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
 {
+    if (isStartSearch)return 55.0;
+    
     NSDictionary* news = [dataSource objectAtIndex:indexPath.row];
     
-    if([[news objectForKey:@"mediaType"]isEqualToString:@""] && [[self imageUrlForRow:indexPath.row] length] == 0)
+    if([[news objectForKey:@"mediaType"]isEqualToString:@""] && [[self imageUrlForRow:indexPath.row] length] == 0 && ![[news objectForKey:@"type"] isEqualToString:@"google"] && ![[news objectForKey:@"type"] isEqualToString:@"millin"] && ![[news objectForKey:@"type"] isEqualToString:@"ourAd"])
     {
         return 150.0;
     }
@@ -4226,7 +5043,20 @@
 
 -(void)tableView:(UITableView *)tableView2 didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
+    if (isStartSearch)
+    {
+        searchTextField.text = [searchArr objectAtIndex:indexPath.row];
+        [self searchClicked:nil];
+        [tableView deselectRowAtIndexPath:indexPath animated:NO];
+        return;
+    }
     NSDictionary* news = [dataSource objectAtIndex:indexPath.row];
+    
+    if ([[news objectForKey:@"type"] isEqualToString:@"google"] || [[news objectForKey:@"type"] isEqualToString:@"ourAd"] || [[news objectForKey:@"type"] isEqualToString:@"millin"])
+    {
+        [tableView2 deselectRowAtIndexPath:indexPath animated:NO];
+        return;
+    }
     
     if([[news objectForKey:@"newsURL"]isEqualToString:@""])
     {
@@ -4263,7 +5093,14 @@
         
         if ([[cell viewWithTag:5] alpha] > 0 && ![[cell viewWithTag:5] isHidden])
         {
-            [[NSUserDefaults standardUserDefaults] setObject:UIImagePNGRepresentation([(UIImageView*)[cell viewWithTag:5] image]) forKey:@"currentImgData"];
+            if ([UIImagePNGRepresentation([(UIImageView*)[cell viewWithTag:5] image]) isEqualToData:UIImagePNGRepresentation([UIImage imageNamed:@"no-image-img.png"])] || [(UIImageView*)[cell viewWithTag:5] image] == nil || [cell isDescendantOfView:[cell viewWithTag:999]] || [cell viewWithTag:999])
+            {
+                [[NSUserDefaults standardUserDefaults] setObject:nil forKey:@"currentImgData"];
+            }
+            else
+            {
+                [[NSUserDefaults standardUserDefaults] setObject:UIImagePNGRepresentation([(UIImageView*)[cell viewWithTag:5] image]) forKey:@"currentImgData"];
+            }
         }
         else
         {
@@ -4271,6 +5108,8 @@
         }
         
         [[NSUserDefaults standardUserDefaults] setObject:sharedObjects forKey:@"objectsToShare"];
+        [[NSUserDefaults standardUserDefaults] setObject:[self getShareLinkForId:[news objectForKey:@"id"]] forKey:@"theSavedNewsId"];
+        [[NSUserDefaults standardUserDefaults] setObject:[news objectForKey:@"id"] forKey:@"commentsId"];
         [[NSUserDefaults standardUserDefaults] setObject:[news objectForKey:@"newsURL"] forKey:@"newsLinkToOpen"];
         [[NSUserDefaults standardUserDefaults] setObject:[news objectForKey:@"photos"] forKey:@"newsAllPhotos"];
         [[NSUserDefaults standardUserDefaults] setObject:[news objectForKey:@"videos"] forKey:@"newsAllVideos"];
@@ -4280,11 +5119,6 @@
         
         [self performSegueWithIdentifier:@"detailsSeg" sender:self];
     }
-}
-
--(BOOL)tableView:(UITableView *)tableView canEditRowAtIndexPath:(NSIndexPath *)indexPath
-{
-    return NO;
 }
 
 #pragma mark MISC methods

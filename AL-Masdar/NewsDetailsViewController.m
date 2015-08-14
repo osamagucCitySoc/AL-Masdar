@@ -92,6 +92,9 @@ static NSString * BCP47LanguageCodeForString(NSString *string) {
 - (void)viewDidLoad {
     [super viewDidLoad];
     
+    [[NSUserDefaults standardUserDefaults] setBool:YES forKey:@"isReadability"];
+    [[NSUserDefaults standardUserDefaults] synchronize];
+    
     [self playSound:@"Empty"];
     
     isShowStatus = YES;
@@ -130,8 +133,8 @@ static NSString * BCP47LanguageCodeForString(NSString *string) {
         [[NSUserDefaults standardUserDefaults] synchronize];
     }
     
-    [_titleTextView setFont:[UIFont fontWithName:@"HelveticaNeue-Bold" size:[[NSUserDefaults standardUserDefaults] integerForKey:@"theFontSize"]]];
-    [textView setFont:[UIFont fontWithName:@"HelveticaNeue" size:[[NSUserDefaults standardUserDefaults] integerForKey:@"theFontSize"]]];
+    [_titleTextView setFont:[UIFont fontWithName:@"DroidArabicKufi-Bold" size:[[NSUserDefaults standardUserDefaults] integerForKey:@"theFontSize"]]];
+    [textView setFont:[UIFont fontWithName:@"DroidArabicKufi" size:[[NSUserDefaults standardUserDefaults] integerForKey:@"theFontSize"]]];
     
     [_theSwitch setOn:[[NSUserDefaults standardUserDefaults] boolForKey:@"isReadability"]];
     
@@ -143,6 +146,59 @@ static NSString * BCP47LanguageCodeForString(NSString *string) {
     self.defUrl = [self.url stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
     
     [self performSelector:@selector(reloadWebPage) withObject:nil afterDelay:0.1];
+}
+
+-(void)addCommentsBadge
+{
+    AFHTTPRequestOperationManager *manager = [AFHTTPRequestOperationManager manager];
+    manager.responseSerializer = [AFHTTPResponseSerializer serializer];
+    
+    NSDictionary *params = @{@"id":[[NSUserDefaults standardUserDefaults] objectForKey:@"commentsId"]};
+    
+    [manager POST:@"http://almasdarapp.com/almasdar/getComments.php" parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
+        
+        NSMutableArray *dataArr = [[NSMutableArray alloc]initWithArray:[NSJSONSerialization JSONObjectWithData:responseObject options:NSJSONReadingAllowFragments error:nil]];
+        
+        if (dataArr.count > 0)
+        {
+            [[self.view viewWithTag:283] removeFromSuperview];
+            
+            UILabel *badgeLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, 0, 0)];
+            
+            [badgeLabel setTag:283];
+            
+            [badgeLabel setFont:[UIFont fontWithName:@"DroidArabicKufi" size:13]];
+            
+            [badgeLabel setTextAlignment:NSTextAlignmentCenter];
+            
+            badgeLabel.text = [@"" stringByAppendingFormat:@"%lu",(unsigned long)dataArr.count];
+            
+            [badgeLabel sizeToFit];
+            
+            [badgeLabel setTextColor:[UIColor whiteColor]];
+            
+            [badgeLabel setBackgroundColor:[UIColor colorWithRed:204.0/255.0 green:69.0/255.0 blue:54.0/255.0 alpha:1.0]];
+            
+            [self.view addSubview:badgeLabel];
+            
+            badgeLabel.center = _toolBar.center;
+            
+            [badgeLabel setClipsToBounds:YES];
+            
+            [badgeLabel.layer setCornerRadius:badgeLabel.frame.size.height/2];
+            
+            if (badgeLabel.frame.size.width < badgeLabel.frame.size.height)
+            {
+                [badgeLabel setFrame:CGRectMake(badgeLabel.frame.origin.x+62, badgeLabel.frame.origin.y-22, badgeLabel.frame.size.height, badgeLabel.frame.size.height)];
+            }
+            else
+            {
+                [badgeLabel setFrame:CGRectMake(badgeLabel.frame.origin.x+62, badgeLabel.frame.origin.y-22, badgeLabel.frame.size.width+10, badgeLabel.frame.size.height)];
+            }
+        }
+        
+    } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+    }];
 }
 
 -(void)showSmartShare
@@ -306,7 +362,7 @@ static NSString * BCP47LanguageCodeForString(NSString *string) {
 
 -(void)openLinkInSafari
 {
-    [self performSelector:@selector(openLink:) withObject:[[NSUserDefaults standardUserDefaults] objectForKey:@"newsLinkToOpen"] afterDelay:0.3];
+    [self performSelector:@selector(openLink:) withObject:[[NSUserDefaults standardUserDefaults] objectForKey:@"theSavedNewsId"] afterDelay:0.3];
     [self closeSmartShare:YES];
 }
 
@@ -372,14 +428,14 @@ static NSString * BCP47LanguageCodeForString(NSString *string) {
     {
         [SADAHMsg showMsgWithTitle:@"لا يمكن المشاركة" andMsg:@"تأكد من وجود حساب تويتر واحد على الأقل مفعل في جهازك وذلك من إعدادات الجهاز." inView:[self view] withCase:2];
         return;
-    }
+    }//[self getShareLinkForId:[news objectForKey:@"id"]]
     
     SLComposeViewController *tweetComposerSheet;
     tweetComposerSheet = [[SLComposeViewController alloc] init]; //initiate the Social Controller
     tweetComposerSheet = [SLComposeViewController composeViewControllerForServiceType:SLServiceTypeTwitter]; //Tell him with what social plattform to use it, e.g. facebook or twitter
     [tweetComposerSheet setInitialText:[NSString stringWithFormat:@"%@\n\n%@",[[NSUserDefaults standardUserDefaults] objectForKey:@"savedNewsTitle"],@"#تطبيق_من_المصدر"]];
     [tweetComposerSheet addImage:imgToSave];
-    [tweetComposerSheet addURL:[NSURL URLWithString:[[[NSUserDefaults standardUserDefaults] objectForKey:@"newsLinkToOpen"] stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]]];
+    [tweetComposerSheet addURL:[NSURL URLWithString:[[[NSUserDefaults standardUserDefaults] objectForKey:@"theSavedNewsId"] stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]]];
     [tweetComposerSheet setCompletionHandler:^(SLComposeViewControllerResult result) {
         [self closeSmartShare:YES];
         switch (result) {
@@ -407,7 +463,7 @@ static NSString * BCP47LanguageCodeForString(NSString *string) {
     faceComposerSheet = [SLComposeViewController composeViewControllerForServiceType:SLServiceTypeFacebook]; //Tell him with what social plattform to use it, e.g. facebook or twitter
     [faceComposerSheet setInitialText:[NSString stringWithFormat:@"%@\n\n%@",[[NSUserDefaults standardUserDefaults] objectForKey:@"savedNewsTitle"],@"#تطبيق_من_المصدر"]]; //the message you want to post
     [faceComposerSheet addImage:imgToSave];
-    [faceComposerSheet addURL:[NSURL URLWithString:[[[NSUserDefaults standardUserDefaults] objectForKey:@"newsLinkToOpen"] stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]]];
+    [faceComposerSheet addURL:[NSURL URLWithString:[[[NSUserDefaults standardUserDefaults] objectForKey:@"theSavedNewsId"] stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]]];
     [self presentViewController:faceComposerSheet animated:YES completion:nil];
     
     [faceComposerSheet setCompletionHandler:^(SLComposeViewControllerResult result) {
@@ -480,6 +536,8 @@ static NSString * BCP47LanguageCodeForString(NSString *string) {
 
 -(void)imageFullScreen:(UITapGestureRecognizer *)recognizeasdasrs
 {
+    if (isNoImg)return;
+    
     if (!isFullScreen) {
         
         if (isEmptyImg)return;
@@ -818,8 +876,8 @@ static NSString * BCP47LanguageCodeForString(NSString *string) {
             return;
         }
         
-        [_titleTextView setFont:[UIFont fontWithName:@"HelveticaNeue-Bold" size:theFontSize]];
-        [textView setFont:[UIFont fontWithName:@"HelveticaNeue" size:theFontSize]];
+        [_titleTextView setFont:[UIFont fontWithName:@"DroidArabicKufi-Bold" size:theFontSize]];
+        [textView setFont:[UIFont fontWithName:@"DroidArabicKufi" size:theFontSize]];
         [UIView animateWithDuration:0.1 delay:0.0 options:0
                          animations:^{
                              _titleTextView.transform = CGAffineTransformMakeScale(1.1, 1.1);
@@ -856,8 +914,8 @@ static NSString * BCP47LanguageCodeForString(NSString *string) {
         {
             return;
         }
-        [_titleTextView setFont:[UIFont fontWithName:@"HelveticaNeue-Bold" size:theFontSize]];
-        [textView setFont:[UIFont fontWithName:@"HelveticaNeue" size:theFontSize]];
+        [_titleTextView setFont:[UIFont fontWithName:@"DroidArabicKufi-Bold" size:theFontSize]];
+        [textView setFont:[UIFont fontWithName:@"DroidArabicKufi" size:theFontSize]];
         [UIView animateWithDuration:0.1 delay:0.0 options:0
                          animations:^{
                              _titleTextView.transform = CGAffineTransformMakeScale(0.9, 0.9);
@@ -911,6 +969,8 @@ static NSString * BCP47LanguageCodeForString(NSString *string) {
 
 -(void)setToPortrait
 {
+    if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad)return;
+    
     NSNumber *value = [NSNumber numberWithInt:UIInterfaceOrientationPortrait];
     [[UIDevice currentDevice] setValue:value forKey:@"orientation"];
     [self performSelector:@selector(setVideoFrameBack) withObject:nil afterDelay:0.5];
@@ -941,6 +1001,12 @@ static NSString * BCP47LanguageCodeForString(NSString *string) {
             [_listenButton setImage:nil];
             [_listenButton setTitle:@""];
             [_listenButton setEnabled:NO];
+            
+            [_commentsButton setImage:nil];
+            [_commentsButton setTitle:@""];
+            [_commentsButton setEnabled:NO];
+            
+            [[self.view viewWithTag:283] removeFromSuperview];
             
             [_zoomNextButton setImage:[UIImage imageNamed:@"right-arrow.png"]];
             [_previousButton setImage:[UIImage imageNamed:@"left-arrow.png"]];
@@ -977,6 +1043,11 @@ static NSString * BCP47LanguageCodeForString(NSString *string) {
                 [_listenButton setEnabled:YES];
                 [_listenButton setImage:[UIImage imageNamed:@"listen-icon.png"]];
                 
+                [_commentsButton setEnabled:YES];
+                [_commentsButton setImage:[UIImage imageNamed:@"comment-icon.png"]];
+                
+                [self addCommentsBadge];
+                
                 [self openURL];
             }
         }
@@ -992,6 +1063,12 @@ static NSString * BCP47LanguageCodeForString(NSString *string) {
         [_listenButton setImage:nil];
         [_listenButton setTitle:@""];
         [_listenButton setEnabled:NO];
+        
+        [_commentsButton setImage:nil];
+        [_commentsButton setTitle:@""];
+        [_commentsButton setEnabled:NO];
+        
+        [[self.view viewWithTag:283] removeFromSuperview];
         
         [_zoomNextButton setImage:[UIImage imageNamed:@"right-arrow.png"]];
         [_previousButton setImage:[UIImage imageNamed:@"left-arrow.png"]];
@@ -1350,6 +1427,7 @@ static NSString * BCP47LanguageCodeForString(NSString *string) {
     
     if (images.count > 0)
     {
+        [_loadingLabel setHidden:NO];
         [self addImages];
     }
     else if (self.image == nil)
@@ -1372,6 +1450,8 @@ static NSString * BCP47LanguageCodeForString(NSString *string) {
             theImage.tag = 80 + numberOfImages;
             
             theImage.image = [UIImage imageNamed:@"no-image-img.png"];
+            
+            isNoImg = YES;
             
             [_imagesScroll addSubview:theImage];
             
@@ -1398,11 +1478,22 @@ static NSString * BCP47LanguageCodeForString(NSString *string) {
             if([str rangeOfString:@"class=\"embedly-embed\""].location != NSNotFound)
             {
                 NSString* vidID = [[[[str componentsSeparatedByString:@"v%3D"] objectAtIndex:1] componentsSeparatedByString:@"%"] objectAtIndex:0];
-                NSString* iFrame = [NSString stringWithFormat:@"<iframe width=\"320\" height=\"250\" src=\"http://www.youtube.com/embed/%@\" allowfullscreen></iframe>",vidID];
+                
+                NSString* iFrame = [NSString stringWithFormat:@"<iframe width=\"%d\" height=\"%d\" src=\"http://www.youtube.com/embed/%@\" allowfullscreen></iframe>",(int)_videosScroll.frame.size.width,(int)_videosScroll.frame.size.height,vidID];
                 [videos addObject:iFrame];
             }else
             {
-                [videos addObject:str];
+                //NSLog(@"%@",str);
+                NSString* width = [[[[str componentsSeparatedByString:@"width=\""] objectAtIndex:1] componentsSeparatedByString:@"\""] objectAtIndex:0];
+                NSString* height = [[[[str componentsSeparatedByString:@"height=\""] objectAtIndex:1] componentsSeparatedByString:@"\""] objectAtIndex:0];
+                NSString *finalStr = str;
+                
+                finalStr = [finalStr stringByReplacingOccurrencesOfString:width withString:[@"" stringByAppendingFormat:@"%d",(int)_videosScroll.frame.size.width]];
+                finalStr = [finalStr stringByReplacingOccurrencesOfString:height withString:[@"" stringByAppendingFormat:@"%d",(int)_videosScroll.frame.size.height]];
+                
+                NSLog(@"%@",str);
+                NSLog(@"%@",finalStr);
+                [videos addObject:finalStr];
             }
         }
     }
@@ -1908,6 +1999,7 @@ static NSString * BCP47LanguageCodeForString(NSString *string) {
         [_videosScroll setBackgroundColor:[UIColor colorWithRed:20.0/255.0 green:20.0/255.0 blue:20.0/255.0 alpha:1.0]];
         [_pageControl setCurrentPageIndicatorTintColor:[UIColor lightGrayColor]];
         [_pageControl setPageIndicatorTintColor:[UIColor colorWithRed:70.0/255.0 green:70.0/255.0 blue:70.0/255.0 alpha:1.0]];
+        [_loadingLabel setTextColor:textView.textColor];
     }
     else
     {
@@ -1929,6 +2021,7 @@ static NSString * BCP47LanguageCodeForString(NSString *string) {
         [_videosScroll setBackgroundColor:[UIColor colorWithRed:221.0/255.0 green:221.0/255.0 blue:221.0/255.0 alpha:1.0]];
         [_pageControl setCurrentPageIndicatorTintColor:[UIColor colorWithRed:20.0/255.0 green:20.0/255.0 blue:20.0/255.0 alpha:1.0]];
         [_pageControl setPageIndicatorTintColor:[UIColor colorWithRed:120.0/255.0 green:120.0/255.0 blue:120.0/255.0 alpha:1.0]];
+        [_loadingLabel setTextColor:textView.textColor];
     }
     
     [_closeLabel setTextColor:_titleTextView.textColor];
@@ -1962,6 +2055,10 @@ static NSString * BCP47LanguageCodeForString(NSString *string) {
 {
     [super viewWillDisappear:animated];
     [[NSNotificationCenter defaultCenter]removeObserver:self name:@"" object:nil];
+}
+
+- (IBAction)showComments:(id)sender {
+    [self performSegueWithIdentifier:@"commentsSeg" sender:self];
 }
 
 - (IBAction)readChanged:(id)sender {
@@ -2275,11 +2372,15 @@ static NSString * BCP47LanguageCodeForString(NSString *string) {
                                                isImage = YES;
                                                if (numberOfImages == 0)
                                                {
+                                                   [_loadingLabel setHidden:YES];
+                                                   
                                                    UIImageView *theImage = [[UIImageView alloc] initWithFrame:workingFrame];
                                                    
                                                    [theImage setContentMode:UIViewContentModeCenter];
                                                    
                                                    theImage.clipsToBounds = YES;
+                                                   
+                                                   isNoImg = YES;
                                                    
                                                    if ([[NSUserDefaults standardUserDefaults] integerForKey:@"currentColor"] == 2 && ![[NSUserDefaults standardUserDefaults] boolForKey:@"isNightOn"])
                                                    {
@@ -2303,6 +2404,7 @@ static NSString * BCP47LanguageCodeForString(NSString *string) {
                                                {
                                                    dispatch_async(dispatch_get_main_queue(), ^{
                                                        [self stopLoadingImage];
+                                                       [_loadingLabel setHidden:YES];
                                                        [_pageControl setHidden:NO];
                                                        [_pageControl setNumberOfPages:numberOfImages];
                                                        [_pageControl setCurrentPage:0];
@@ -2313,11 +2415,39 @@ static NSString * BCP47LanguageCodeForString(NSString *string) {
                                                NSLog(@"Done!");
                                            }
                                            
-                                       } else{}
+                                       } else{
+                                           [_loadingLabel setHidden:YES];
+                                           
+                                           UIImageView *theImage = [[UIImageView alloc] initWithFrame:workingFrame];
+                                           
+                                           [theImage setContentMode:UIViewContentModeCenter];
+                                           
+                                           theImage.clipsToBounds = YES;
+                                           
+                                           isNoImg = YES;
+                                           
+                                           if ([[NSUserDefaults standardUserDefaults] integerForKey:@"currentColor"] == 2 && ![[NSUserDefaults standardUserDefaults] boolForKey:@"isNightOn"])
+                                           {
+                                               [theImage setTintColor:[UIColor lightGrayColor]];
+                                               
+                                               theImage.image = [[UIImage imageNamed:@"no-image-img.png"] imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+                                           }
+                                           else
+                                           {
+                                               [theImage setTintColor:[UIColor colorWithRed:50.0/255.0 green:50.0/255.0 blue:50.0/255.0 alpha:1.0]];
+                                               
+                                               [theImage setImage:[UIImage imageNamed:@"no-image-img.png"]];
+                                           }
+                                           dispatch_async(dispatch_get_main_queue(), ^{
+                                               [self stopLoadingImage];
+                                               
+                                               [_imagesScroll addSubview:theImage];
+                                           });
+                                       }
                                    }];
             
         }
-        
+    
     
     if (images.count == 0)
     {
@@ -2329,19 +2459,6 @@ static NSString * BCP47LanguageCodeForString(NSString *string) {
         [theImage setContentMode:UIViewContentModeCenter];
         
         theImage.clipsToBounds = YES;
-        
-        if ([[NSUserDefaults standardUserDefaults] integerForKey:@"currentColor"] == 2 && ![[NSUserDefaults standardUserDefaults] boolForKey:@"isNightOn"])
-        {
-            [theImage setTintColor:[UIColor lightGrayColor]];
-            
-            theImage.image = [[UIImage imageNamed:@"no-image-img.png"] imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
-        }
-        else
-        {
-            [theImage setTintColor:[UIColor colorWithRed:50.0/255.0 green:50.0/255.0 blue:50.0/255.0 alpha:1.0]];
-            
-            [theImage setImage:[UIImage imageNamed:@"no-image-img.png"]];
-        }
         
         [self stopLoadingImage];
         
@@ -2423,6 +2540,7 @@ static NSString * BCP47LanguageCodeForString(NSString *string) {
             [_imagesScroll setPagingEnabled:YES];
             [_imagesScroll setContentSize:CGSizeMake(workingFrame.origin.x, workingFrame.size.height)];
             isImage = YES;
+            [_loadingLabel setHidden:YES];
             [_pageControl setHidden:NO];
             [_pageControl setNumberOfPages:numberOfImages];
             [_pageControl setCurrentPage:0];
@@ -2519,12 +2637,14 @@ static NSString * BCP47LanguageCodeForString(NSString *string) {
             [_imagesScroll setPagingEnabled:YES];
             [_imagesScroll setContentSize:CGSizeMake(workingFrame.origin.x, workingFrame.size.height)];
             isImage = YES;
+            [_loadingLabel setHidden:YES];
             [_pageControl setHidden:NO];
             [_pageControl setNumberOfPages:numberOfImages];
             [_pageControl setCurrentPage:0];
             [self scrollToImages];
         }
     } failure:^(NSError *error) {
+        [_loadingLabel setHidden:YES];
         [_pageControl setHidden:NO];
         [_pageControl setNumberOfPages:numberOfImages];
         [_pageControl setCurrentPage:0];
@@ -2560,8 +2680,8 @@ static NSString * BCP47LanguageCodeForString(NSString *string) {
             UIWebView *theWebView = [[UIWebView alloc]init];
             [theWebView loadHTMLString:[videos objectAtIndex:i] baseURL:nil];
   //          [theWebView loadRequest:req];
-            theWebView.scalesPageToFit=YES;
-            theWebView.scrollView.scrollEnabled = NO;
+            //theWebView.scalesPageToFit=YES;
+           // theWebView.scrollView.scrollEnabled = NO;
             theWebView.frame = workingFrame;
             [_videosScroll addSubview:theWebView];
             
@@ -2635,12 +2755,12 @@ static NSString * BCP47LanguageCodeForString(NSString *string) {
 //    
 //    if ([[NSUserDefaults standardUserDefaults] boolForKey:@"isNightOn"])
 //    {
-//        mutableAttributedString = [[NSMutableAttributedString alloc] initWithString:self.utteranceString attributes:[NSDictionary dictionaryWithObjects:[NSArray arrayWithObjects:[UIFont fontWithName:@"HelveticaNeue" size:[[NSUserDefaults standardUserDefaults] integerForKey:@"theFontSize"]],[UIColor lightGrayColor], nil] forKeys:[NSArray arrayWithObjects:NSFontAttributeName,NSForegroundColorAttributeName, nil]]];
+//        mutableAttributedString = [[NSMutableAttributedString alloc] initWithString:self.utteranceString attributes:[NSDictionary dictionaryWithObjects:[NSArray arrayWithObjects:[UIFont fontWithName:@"DroidArabicKufi" size:[[NSUserDefaults standardUserDefaults] integerForKey:@"theFontSize"]],[UIColor lightGrayColor], nil] forKeys:[NSArray arrayWithObjects:NSFontAttributeName,NSForegroundColorAttributeName, nil]]];
 //        [mutableAttributedString addAttribute:NSBackgroundColorAttributeName value:[UIColor colorWithRed:121.0/255.0 green:100.0/255.0 blue:56.0/255.0 alpha:1.0] range:characterRange];
 //    }
 //    else
 //    {
-//        mutableAttributedString = [[NSMutableAttributedString alloc] initWithString:self.utteranceString attributes:[NSDictionary dictionaryWithObjects:[NSArray arrayWithObjects:[UIFont fontWithName:@"HelveticaNeue" size:[[NSUserDefaults standardUserDefaults] integerForKey:@"theFontSize"]],[UIColor colorWithRed:37.0/255.0 green:37.0/255.0 blue:37.0/255.0 alpha:1.0], nil] forKeys:[NSArray arrayWithObjects:NSFontAttributeName,NSForegroundColorAttributeName, nil]]];
+//        mutableAttributedString = [[NSMutableAttributedString alloc] initWithString:self.utteranceString attributes:[NSDictionary dictionaryWithObjects:[NSArray arrayWithObjects:[UIFont fontWithName:@"DroidArabicKufi" size:[[NSUserDefaults standardUserDefaults] integerForKey:@"theFontSize"]],[UIColor colorWithRed:37.0/255.0 green:37.0/255.0 blue:37.0/255.0 alpha:1.0], nil] forKeys:[NSArray arrayWithObjects:NSFontAttributeName,NSForegroundColorAttributeName, nil]]];
 //        [mutableAttributedString addAttribute:NSBackgroundColorAttributeName value:[UIColor colorWithRed:254.0/255.0 green:255.0/255.0 blue:0.0/255.0 alpha:1.0] range:characterRange];
 //    }
 //    
@@ -2698,7 +2818,7 @@ static NSString * BCP47LanguageCodeForString(NSString *string) {
 //    self.utteranceString = textView.text;
 //    textView.attributedText = [[NSAttributedString alloc] initWithString:self.utteranceString];
 //    
-//    textView.font = [UIFont fontWithName:@"HelveticaNeue" size:[[NSUserDefaults standardUserDefaults] integerForKey:@"theFontSize"]];
+//    textView.font = [UIFont fontWithName:@"DroidArabicKufi" size:[[NSUserDefaults standardUserDefaults] integerForKey:@"theFontSize"]];
 //    textView.textAlignment = NSTextAlignmentRight;
 //}
 
@@ -2709,11 +2829,11 @@ static NSString * BCP47LanguageCodeForString(NSString *string) {
     
     if ([[NSUserDefaults standardUserDefaults] boolForKey:@"isNightOn"])
     {
-        textView.attributedText = [[NSAttributedString alloc] initWithString:self.utteranceString attributes:[NSDictionary dictionaryWithObjects:[NSArray arrayWithObjects:[UIFont fontWithName:@"HelveticaNeue" size:[[NSUserDefaults standardUserDefaults] integerForKey:@"theFontSize"]],[UIColor lightGrayColor], nil] forKeys:[NSArray arrayWithObjects:NSFontAttributeName,NSForegroundColorAttributeName, nil]]];
+        textView.attributedText = [[NSAttributedString alloc] initWithString:self.utteranceString attributes:[NSDictionary dictionaryWithObjects:[NSArray arrayWithObjects:[UIFont fontWithName:@"DroidArabicKufi" size:[[NSUserDefaults standardUserDefaults] integerForKey:@"theFontSize"]],[UIColor lightGrayColor], nil] forKeys:[NSArray arrayWithObjects:NSFontAttributeName,NSForegroundColorAttributeName, nil]]];
     }
     else
     {
-        textView.attributedText = [[NSAttributedString alloc] initWithString:self.utteranceString attributes:[NSDictionary dictionaryWithObjects:[NSArray arrayWithObjects:[UIFont fontWithName:@"HelveticaNeue" size:[[NSUserDefaults standardUserDefaults] integerForKey:@"theFontSize"]],[UIColor colorWithRed:37.0/255.0 green:37.0/255.0 blue:37.0/255.0 alpha:1.0], nil] forKeys:[NSArray arrayWithObjects:NSFontAttributeName,NSForegroundColorAttributeName, nil]]];
+        textView.attributedText = [[NSAttributedString alloc] initWithString:self.utteranceString attributes:[NSDictionary dictionaryWithObjects:[NSArray arrayWithObjects:[UIFont fontWithName:@"DroidArabicKufi" size:[[NSUserDefaults standardUserDefaults] integerForKey:@"theFontSize"]],[UIColor colorWithRed:37.0/255.0 green:37.0/255.0 blue:37.0/255.0 alpha:1.0], nil] forKeys:[NSArray arrayWithObjects:NSFontAttributeName,NSForegroundColorAttributeName, nil]]];
     }
     
     textView.textAlignment = NSTextAlignmentRight;

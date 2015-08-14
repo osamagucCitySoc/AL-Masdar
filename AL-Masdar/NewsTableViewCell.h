@@ -1,9 +1,8 @@
 //
 //  NewsTableViewCell.h
-//  MicroTransfer
 //
-//  Created by jacksonpan on 13-1-15.
-//  Copyright (c) 2013年 weichuan. All rights reserved.
+//  Created by Housein Jouhar on 31/05/15.
+//  Copyright (c) 2015 SADAH Software Solutions. All rights reserved.
 //
 
 #import <UIKit/UIKit.h>

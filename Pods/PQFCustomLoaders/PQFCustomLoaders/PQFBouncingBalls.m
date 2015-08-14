@@ -147,7 +147,7 @@
     self.label.textAlignment = NSTextAlignmentCenter;
     self.label.numberOfLines = 3;
     self.label.textColor = [UIColor whiteColor];
-    self.label.font = [UIFont systemFontOfSize:self.fontSize];
+    self.label.font = [UIFont fontWithName:@"DroidArabicKufi" size:self.fontSize];
     
     self.ball1.position = CGPointMake(self.ball1.position.x, self.ball1.position.y - 10);
     self.ball2.position = CGPointMake(self.ball2.position.x, self.ball2.position.y - 10);

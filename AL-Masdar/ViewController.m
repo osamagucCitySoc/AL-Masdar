@@ -29,7 +29,10 @@
 {
     NSMutableArray* dataSource;
     NSMutableArray* sectionsAvailble;
+    NSMutableArray* arabicSources;
+    NSMutableArray* otherSources;
     NSMutableArray* iconsArray;
+    NSArray *ctArr;
     BOOL locationDone;
     BOOL sourcesDone;
     NSString* userCountry;
@@ -52,9 +55,133 @@
     {
         SourceChooserTableViewController* dst = (SourceChooserTableViewController*)[segue destinationViewController];
         [dst setDataSourcee:dataSource];
-        [dst setSection:[sectionsAvailble objectAtIndex:tableView.indexPathForSelectedRow.row]];
+        
+        NSInteger theSection = tableView.indexPathForSelectedRow.section;
+        NSInteger theRow = tableView.indexPathForSelectedRow.row;
+        NSString *finalStr = @"";
+        
+        if([[[NSUserDefaults standardUserDefaults] objectForKey:@"subscriptions"]count] != 0)
+        {
+            if(![userCountry isEqualToString:@""])
+            {
+                if (theSection == 0)
+                {
+                    finalStr = @"onlyMySources";
+                }
+                else if (theSection == 2)
+                {
+                    finalStr = [sectionsAvailble objectAtIndex:[sectionsAvailble indexOfObject:[arabicSources objectAtIndex:theRow]]];
+                }
+                else if (theSection == 3)
+                {
+                    finalStr = [sectionsAvailble objectAtIndex:[sectionsAvailble indexOfObject:@"مصادر عالمية"]];
+                }
+                else
+                {
+                    finalStr = [sectionsAvailble objectAtIndex:[sectionsAvailble indexOfObject:[otherSources objectAtIndex:theRow]]];
+                }
+            }
+            else
+            {
+                if (theSection == 0)
+                {
+                    finalStr = @"onlyMySources";
+                }
+                else if (theSection == 1)
+                {
+                    finalStr = [sectionsAvailble objectAtIndex:[sectionsAvailble indexOfObject:[arabicSources objectAtIndex:theRow]]];
+                }
+                else if (theSection == 2)
+                {
+                    finalStr = [sectionsAvailble objectAtIndex:[sectionsAvailble indexOfObject:@"مصادر عالمية"]];
+                }
+                else
+                {
+                    finalStr = [sectionsAvailble objectAtIndex:[sectionsAvailble indexOfObject:[otherSources objectAtIndex:theRow]]];
+                }
+            }
+        }
+        else
+        {
+            if(![userCountry isEqualToString:@""])
+            {
+                if (theSection == 0)
+                {
+                    finalStr = [sectionsAvailble objectAtIndex:[sectionsAvailble indexOfObject:[arabicSources objectAtIndex:theRow]]];
+                }
+                else if (theSection == 2)
+                {
+                    finalStr = [sectionsAvailble objectAtIndex:[sectionsAvailble indexOfObject:@"مصادر عالمية"]];
+                }
+                else
+                {
+                    finalStr = [sectionsAvailble objectAtIndex:[sectionsAvailble indexOfObject:[otherSources objectAtIndex:theRow]]];
+                }
+            }
+            else
+            {
+                if (theSection == 0)
+                {
+                    finalStr = [sectionsAvailble objectAtIndex:[sectionsAvailble indexOfObject:[arabicSources objectAtIndex:theRow]]];
+                }
+                else if (theSection == 1)
+                {
+                    finalStr = [sectionsAvailble objectAtIndex:[sectionsAvailble indexOfObject:@"مصادر عالمية"]];
+                }
+                else
+                {
+                    finalStr = [sectionsAvailble objectAtIndex:[sectionsAvailble indexOfObject:[otherSources objectAtIndex:theRow]]];
+                }
+            }
+        }
+        
+        [dst setSection:finalStr];
         [dst setCountry:@""];
     }
+}
+
+-(BOOL)isCity:(NSString*)theBody
+{
+    NSArray *countriesArr = [NSArray arrayWithObjects:@"السعودية",@"مصر",@"لبنان",@"الكويت",@"سوريا",@"الإمارات",@"قطر",@"البحرين",@"الأردن",@"فلسطين",@"تونس",@"عمان",@"اليمن",@"المغرب",@"الجزائر",@"السودان",@"العراق",@"الصومال",@"موريتانيا", nil];
+    
+    for (int i = 0; i < countriesArr.count; i++)
+    {
+        if ([theBody rangeOfString:[countriesArr objectAtIndex:i]].location != NSNotFound)
+        {
+            return YES;
+        }
+    }
+    
+    return NO;
+}
+
+-(void)getYoutubeLink
+{
+    NSURL *storeURL = [NSURL URLWithString:@"https://dl.dropboxusercontent.com/u/59230746/ArabDevs/youtube-link.txt"];
+    
+    NSMutableURLRequest *storeRequest = [NSMutableURLRequest requestWithURL:storeURL cachePolicy:NSURLRequestReloadIgnoringCacheData timeoutInterval:10];
+    
+    NSOperationQueue *queue = [[NSOperationQueue alloc] init];
+    [NSURLConnection sendAsynchronousRequest:storeRequest queue:queue
+                           completionHandler:^(NSURLResponse *response, NSData *data, NSError *connectionError) {
+                               if (!connectionError) {
+                                   NSError *error;
+                                   
+                                   NSString *firstdataStr = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
+                                   
+                                   if (error)
+                                   {
+                                       NSLog(@"Error: %@",error.description);
+                                   }
+                                   else
+                                   {
+                                       [[NSUserDefaults standardUserDefaults] setObject:firstdataStr forKey:@"youtubeLink"];
+                                       [[NSUserDefaults standardUserDefaults] synchronize];
+                                       
+                                       NSLog(@"linkSaved:\n%@",firstdataStr);
+                                   }
+                               }
+                           }];
 }
 
 - (void)viewDidLoad {
@@ -71,10 +198,33 @@
         [[NSUserDefaults standardUserDefaults] synchronize];
     }
     
+    [self getYoutubeLink];
+    
+    [[UINavigationBar appearance] setTitleTextAttributes:
+     [NSDictionary dictionaryWithObjectsAndKeys:
+      [UIFont fontWithName:@"DroidArabicKufi" size:17.0], NSFontAttributeName,nil]];
+    
+    [[UITabBarItem appearance] setTitleTextAttributes:[NSDictionary dictionaryWithObjectsAndKeys:[UIFont fontWithName:@"DroidArabicKufi" size:15.0], NSFontAttributeName, nil] forState:UIControlStateNormal];
+    
+    [[UIBarButtonItem appearance] setTitleTextAttributes:[NSDictionary dictionaryWithObjectsAndKeys:[UIFont fontWithName:@"DroidArabicKufi" size:15.0], NSFontAttributeName, nil] forState:UIControlStateNormal];
+    
+    NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
+    NSString *documentsDir = [paths objectAtIndex:0];
+    
+    if (![[NSFileManager defaultManager] fileExistsAtPath:[documentsDir stringByAppendingPathComponent:@"x.caf"]])
+    {
+        NSString* path = [[[NSBundle mainBundle] resourcePath] stringByAppendingPathComponent:@"1.caf"];
+        [[NSFileManager defaultManager] copyItemAtPath:path toPath:[documentsDir stringByAppendingPathComponent:@"x.caf"] error:nil];
+    }
+    
     [self showTheStatusBar];
     
     dataSource = [[NSMutableArray alloc]init];
     sectionsAvailble = [[NSMutableArray alloc]init];
+    
+    arabicSources = [[NSMutableArray alloc]init];
+    otherSources = [[NSMutableArray alloc]init];
+    
     iconsArray = [[NSMutableArray alloc]init];
     
     [tableView setDelegate:self];
@@ -85,13 +235,11 @@
     
     userCountry = @"";
     
-    if(![[[NSUserDefaults standardUserDefaults] objectForKey:@"subscriptions"]count] == 0)
+    if([[[NSUserDefaults standardUserDefaults] objectForKey:@"subscriptions"]count] != 0)
     {
-        //[self performSegueWithIdentifier:@"newsSeg" sender:self];
         UIViewController *aYourViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"theNewsSeg"];
         [self.navigationController pushViewController:aYourViewController animated:NO];
     }
-
 }
 
 - (void)didReceiveMemoryWarning {
@@ -102,6 +250,15 @@
 -(void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
+    
+    if (currentSubNum == 0 && [[[NSUserDefaults standardUserDefaults] objectForKey:@"subscriptions"] count] != 0)
+    {
+        isAllLoaded = NO;
+    }
+    else if (currentSubNum > 0 && [[[NSUserDefaults standardUserDefaults] objectForKey:@"subscriptions"] count] == 0)
+    {
+        isAllLoaded = NO;
+    }
     
     if (!isAllLoaded)
     {
@@ -117,11 +274,15 @@
     [tableView deselectRowAtIndexPath:[tableView indexPathForSelectedRow] animated:animated];
 }
 
+-(void)viewDidDisappear:(BOOL)animated
+{
+    [super viewDidDisappear:animated];
+    
+    currentSubNum = [[[NSUserDefaults standardUserDefaults] objectForKey:@"subscriptions"] count];
+}
+
 -(void)setTheColor
 {
-//    [self.navigationController.navigationBar setBarStyle:UIBarStyleBlack];
-//    [self.navigationController.navigationBar setTintColor:[UIColor whiteColor]];
-//    [self.navigationController.navigationBar setBarTintColor:[UIColor colorWithRed:20.0/255.0 green:20.0/255.0 blue:20.0/255.0 alpha:1.0]];
     if ([[NSUserDefaults standardUserDefaults] integerForKey:@"currentColor"] == 1)
     {
         [self.navigationController.navigationBar setBarStyle:UIBarStyleBlack];
@@ -194,9 +355,8 @@
     
     [backView addSubview:loadingImg];
     
-    loadingImg.animationImages = [NSArray arrayWithObjects:[UIImage imageNamed:@"wait-table-img-1.png"], [UIImage imageNamed:@"wait-table-img-2.png"],[UIImage imageNamed:@"wait-table-img-3.png"],nil];
-    [loadingImg setAnimationRepeatCount:9999];
-    loadingImg.animationDuration = 0.6;
+    UIImage *img = [UIImage animatedImageWithImages:[NSArray arrayWithObjects:[UIImage imageNamed:@"wait-table-img-1.png"], [UIImage imageNamed:@"wait-table-img-2.png"],[UIImage imageNamed:@"wait-table-img-3.png"],nil] duration:0.6];
+    [loadingImg setImage:img];
     [loadingImg startAnimating];
     
     [UIView animateWithDuration:0.2 delay:0.0 options:0
@@ -270,6 +430,18 @@
                 if(![iconsArray containsObject:[dict objectForKey:@"sourceImage"]])
                 {
                     [iconsArray addObject:[dict objectForKey:@"sourceImage"]];
+                }
+            }
+            
+            for (int i = 0; i < sectionsAvailble.count; i++)
+            {
+                if ([self isCity:[sectionsAvailble objectAtIndex:i]])
+                {
+                    [arabicSources addObject:[sectionsAvailble objectAtIndex:i]];
+                }
+                else if (![[sectionsAvailble objectAtIndex:i] isEqualToString:@"مصادر عالمية"])
+                {
+                    [otherSources addObject:[sectionsAvailble objectAtIndex:i]];
                 }
             }
             
@@ -397,27 +569,109 @@
 #pragma mark - Table view data source
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
-    if([userCountry isEqualToString:@""])
+    if([[[NSUserDefaults standardUserDefaults] objectForKey:@"subscriptions"]count] != 0)
     {
-        return 1;
-    }else
+        if([userCountry isEqualToString:@""])
+        {
+            return 4;
+        }else
+        {
+            return 5;
+        }
+    }
+    else
     {
-        return 2;
+        if([userCountry isEqualToString:@""])
+        {
+            return 3;
+        }else
+        {
+            return 4;
+        }
     }
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-    if([userCountry isEqualToString:@""])
+    if([[[NSUserDefaults standardUserDefaults] objectForKey:@"subscriptions"]count] != 0)
     {
-        return sectionsAvailble.count;
-    }else
+        if(![userCountry isEqualToString:@""])
+        {
+            if (section == 0)
+            {
+                return 1;
+            }
+            else if (section == 1)
+            {
+                return 1;
+            }
+            else if (section == 2)
+            {
+                return arabicSources.count;
+            }
+            else if (section == 3)
+            {
+                return 1;
+            }
+            else
+            {
+                return otherSources.count;
+            }
+        }
+        else
+        {
+            if (section == 0)
+            {
+                return 1;
+            }
+            else if (section == 1)
+            {
+                return arabicSources.count;
+            }
+            else if (section == 2)
+            {
+                return 1;
+            }
+            else
+            {
+                return otherSources.count;
+            }
+        }
+    }
+    else
     {
-        if(section == 0)
+        if(![userCountry isEqualToString:@""])
         {
-            return 1;
-        }else
+            if (section == 0)
+            {
+                return 1;
+            }
+            else if (section == 1)
+            {
+                return arabicSources.count;
+            }
+            else if (section == 2)
+            {
+                return 1;
+            }
+            else
+            {
+                return otherSources.count;
+            }
+        }
+        else
         {
-            return sectionsAvailble.count;
+            if (section == 0)
+            {
+                return arabicSources.count;
+            }
+            else if (section == 1)
+            {
+                return 1;
+            }
+            else
+            {
+                return otherSources.count;
+            }
         }
     }
 }
@@ -433,66 +687,130 @@
     
     cell.selectedBackgroundView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"settings-selected-back.png"]];
     
-    if([userCountry isEqualToString:@""])
+    if([[[NSUserDefaults standardUserDefaults] objectForKey:@"subscriptions"]count] != 0)
     {
-        [(UILabel*)[cell viewWithTag:1] setText:[sectionsAvailble objectAtIndex:indexPath.row]];
-    }else
-    {
-        if(indexPath.section == 0 && indexPath.row == 0)
+        if (![userCountry isEqualToString:@""])
         {
-            [(UILabel*)[cell viewWithTag:1] setText:userCountry];
-        }
-        else if(indexPath.section == 1)
-        {
-            [(UILabel*)[cell viewWithTag:1] setText:[sectionsAvailble objectAtIndex:indexPath.row]];
-        }
-    }
-    
-    if(![userCountry isEqualToString:@""] && indexPath.row == 0 && indexPath.section == 0)
-    {
-        if (iconsArray.count > indexPath.row)
-        {
-            [[[cell viewWithTag:2] layer] setCornerRadius:22];
-            [cell viewWithTag:2].layer.shouldRasterize = YES;
-            
-            
-            if (iconsArray.count > [sectionsAvailble indexOfObject:userCountry])
+            if (iconsArray.count == sectionsAvailble.count && sectionsAvailble.count > 0)
             {
-                [(UIImageView*)[cell viewWithTag:2] hnk_setImageFromURL:[NSURL URLWithString:[[iconsArray objectAtIndex:[sectionsAvailble indexOfObject:userCountry]] stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]] placeholder:[UIImage imageNamed:@"loading-img.png"]];
+                if (indexPath.section == 0)
+                {
+                    [(UILabel*)[cell viewWithTag:1] setText:@"مصادرك المختارة"];
+                    [(UIImageView*)[cell viewWithTag:2] setImage:[UIImage imageNamed:@"current-icon.png"]];
+                }
+                else if (indexPath.section == 1)
+                {
+                    [(UILabel*)[cell viewWithTag:1] setText:userCountry];
+                    [(UIImageView*)[cell viewWithTag:2] sd_setImageWithURL:[NSURL URLWithString:[[iconsArray objectAtIndex:[sectionsAvailble indexOfObject:userCountry]] stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]] placeholderImage:[UIImage imageNamed:@"loading-img.png"]];
+                    if ([arabicSources containsObject:userCountry])
+                    {
+                        [arabicSources removeObject:userCountry];
+                        [tableVieww reloadData];
+                        NSLog(@"Removed!!!!!!!!!!!!!!");
+                    }
+                }
+                else if (indexPath.section == 2)
+                {
+                    [(UILabel*)[cell viewWithTag:1] setText:[arabicSources objectAtIndex:indexPath.row]];
+                    [(UIImageView*)[cell viewWithTag:2] sd_setImageWithURL:[NSURL URLWithString:[[iconsArray objectAtIndex:[sectionsAvailble indexOfObject:[arabicSources objectAtIndex:indexPath.row]]] stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]] placeholderImage:[UIImage imageNamed:@"loading-img.png"]];
+                }
+                else if (indexPath.section == 3)
+                {
+                    [(UILabel*)[cell viewWithTag:1] setText:@"مصادر عالمية"];
+                    [(UIImageView*)[cell viewWithTag:2] sd_setImageWithURL:[NSURL URLWithString:[[iconsArray objectAtIndex:[sectionsAvailble indexOfObject:@"مصادر عالمية"]] stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]] placeholderImage:[UIImage imageNamed:@"loading-img.png"]];
+                }
+                else
+                {
+                    [(UILabel*)[cell viewWithTag:1] setText:[otherSources objectAtIndex:indexPath.row]];
+                    [(UIImageView*)[cell viewWithTag:2] sd_setImageWithURL:[NSURL URLWithString:[[iconsArray objectAtIndex:[sectionsAvailble indexOfObject:[otherSources objectAtIndex:indexPath.row]]] stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]] placeholderImage:[UIImage imageNamed:@"loading-img.png"]];
+                }
             }
-            else
+        }
+        else
+        {
+            if (iconsArray.count == sectionsAvailble.count && sectionsAvailble.count > 0)
             {
-                [(UIImageView*)[cell viewWithTag:2] hnk_setImageFromURL:[NSURL URLWithString:[[iconsArray objectAtIndex:indexPath.row] stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]] placeholder:[UIImage imageNamed:@"loading-img.png"]];
+                if (indexPath.section == 0)
+                {
+                    [(UILabel*)[cell viewWithTag:1] setText:@"مصادرك المختارة"];
+                    [(UIImageView*)[cell viewWithTag:2] setImage:[UIImage imageNamed:@"current-icon.png"]];
+                }
+                else if (indexPath.section == 1)
+                {
+                    [(UILabel*)[cell viewWithTag:1] setText:[arabicSources objectAtIndex:indexPath.row]];
+                    [(UIImageView*)[cell viewWithTag:2] sd_setImageWithURL:[NSURL URLWithString:[[iconsArray objectAtIndex:[sectionsAvailble indexOfObject:[arabicSources objectAtIndex:indexPath.row]]] stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]] placeholderImage:[UIImage imageNamed:@"loading-img.png"]];
+                }
+                else if (indexPath.section == 2)
+                {
+                    [(UILabel*)[cell viewWithTag:1] setText:@"مصادر عالمية"];
+                    [(UIImageView*)[cell viewWithTag:2] sd_setImageWithURL:[NSURL URLWithString:[[iconsArray objectAtIndex:[sectionsAvailble indexOfObject:@"مصادر عالمية"]] stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]] placeholderImage:[UIImage imageNamed:@"loading-img.png"]];
+                }
+                else
+                {
+                    [(UILabel*)[cell viewWithTag:1] setText:[otherSources objectAtIndex:indexPath.row]];
+                    [(UIImageView*)[cell viewWithTag:2] sd_setImageWithURL:[NSURL URLWithString:[[iconsArray objectAtIndex:[sectionsAvailble indexOfObject:[otherSources objectAtIndex:indexPath.row]]] stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]] placeholderImage:[UIImage imageNamed:@"loading-img.png"]];
+                }
             }
         }
     }
     else
     {
-        if (iconsArray.count > indexPath.row)
+        if (![userCountry isEqualToString:@""])
         {
-            [[[cell viewWithTag:2] layer] setCornerRadius:22];
-            [cell viewWithTag:2].layer.shouldRasterize = YES;
-            
-            [(UIImageView*)[cell viewWithTag:2] hnk_setImageFromURL:[NSURL URLWithString:[[iconsArray objectAtIndex:indexPath.row] stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]] placeholder:[UIImage imageNamed:@"loading-img.png"]];
+            if (iconsArray.count == sectionsAvailble.count && sectionsAvailble.count > 0)
+            {
+                if (indexPath.section == 0)
+                {
+                    [(UILabel*)[cell viewWithTag:1] setText:userCountry];
+                    [(UIImageView*)[cell viewWithTag:2] sd_setImageWithURL:[NSURL URLWithString:[[iconsArray objectAtIndex:[sectionsAvailble indexOfObject:userCountry]] stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]] placeholderImage:[UIImage imageNamed:@"loading-img.png"]];
+                    if ([arabicSources containsObject:userCountry])
+                    {
+                        [arabicSources removeObject:userCountry];
+                        [tableVieww reloadData];
+                    }
+                }
+                else if (indexPath.section == 1)
+                {
+                    [(UILabel*)[cell viewWithTag:1] setText:[arabicSources objectAtIndex:indexPath.row]];
+                    [(UIImageView*)[cell viewWithTag:2] sd_setImageWithURL:[NSURL URLWithString:[[iconsArray objectAtIndex:[sectionsAvailble indexOfObject:[arabicSources objectAtIndex:indexPath.row]]] stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]] placeholderImage:[UIImage imageNamed:@"loading-img.png"]];
+                }
+                else if (indexPath.section == 2)
+                {
+                    [(UILabel*)[cell viewWithTag:1] setText:@"مصادر عالمية"];
+                    [(UIImageView*)[cell viewWithTag:2] sd_setImageWithURL:[NSURL URLWithString:[[iconsArray objectAtIndex:[sectionsAvailble indexOfObject:@"مصادر عالمية"]] stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]] placeholderImage:[UIImage imageNamed:@"loading-img.png"]];
+                }
+                else
+                {
+                    [(UILabel*)[cell viewWithTag:1] setText:[otherSources objectAtIndex:indexPath.row]];
+                    [(UIImageView*)[cell viewWithTag:2] sd_setImageWithURL:[NSURL URLWithString:[[iconsArray objectAtIndex:[sectionsAvailble indexOfObject:[otherSources objectAtIndex:indexPath.row]]] stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]] placeholderImage:[UIImage imageNamed:@"loading-img.png"]];
+                }
+            }
+        }
+        else
+        {
+            if (iconsArray.count == sectionsAvailble.count && sectionsAvailble.count > 0)
+            {
+                if (indexPath.section == 0)
+                {
+                    [(UILabel*)[cell viewWithTag:1] setText:[arabicSources objectAtIndex:indexPath.row]];
+                    [(UIImageView*)[cell viewWithTag:2] sd_setImageWithURL:[NSURL URLWithString:[[iconsArray objectAtIndex:[sectionsAvailble indexOfObject:[arabicSources objectAtIndex:indexPath.row]]] stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]] placeholderImage:[UIImage imageNamed:@"loading-img.png"]];
+                }
+                else if (indexPath.section == 1)
+                {
+                    [(UILabel*)[cell viewWithTag:1] setText:@"مصادر عالمية"];
+                    [(UIImageView*)[cell viewWithTag:2] sd_setImageWithURL:[NSURL URLWithString:[[iconsArray objectAtIndex:[sectionsAvailble indexOfObject:@"مصادر عالمية"]] stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]] placeholderImage:[UIImage imageNamed:@"loading-img.png"]];
+                }
+                else
+                {
+                    [(UILabel*)[cell viewWithTag:1] setText:[otherSources objectAtIndex:indexPath.row]];
+                    [(UIImageView*)[cell viewWithTag:2] sd_setImageWithURL:[NSURL URLWithString:[[iconsArray objectAtIndex:[sectionsAvailble indexOfObject:[otherSources objectAtIndex:indexPath.row]]] stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]] placeholderImage:[UIImage imageNamed:@"loading-img.png"]];
+                }
+            }
         }
     }
     
-//    if (indexPath.row == 0)
-//    {
-//        [(UIImageView*)[cell viewWithTag:2] setImage:[UIImage imageNamed:@"arab-icon.png"]];
-//    }
-//    else if (indexPath.row == 1)
-//    {
-//        [(UIImageView*)[cell viewWithTag:2] setImage:[UIImage imageNamed:@"world-icon.png"]];
-//    }
-//    else if (indexPath.row == 2)
-//    {
-//        [(UIImageView*)[cell viewWithTag:2] setImage:[UIImage imageNamed:@"tech-icon.png"]];
-//    }
-//    else
-//    {
-//        [(UIImageView*)[cell viewWithTag:2] setImage:[UIImage imageNamed:@"sport-icon.png"]];
-//    }
+    [[[cell viewWithTag:2] layer] setCornerRadius:22];
+    [cell viewWithTag:2].layer.shouldRasterize = YES;
     
     return cell;
 }
@@ -501,24 +819,90 @@
 {
     UIView *view = [[UIView alloc] initWithFrame:CGRectMake(0, 0, tableView2.frame.size.width, 30)];
     UILabel *label = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, tableView2.frame.size.width, 30)];
-    [label setFont:[UIFont systemFontOfSize:16]];
+    [label setFont:[UIFont fontWithName:@"DroidArabicKufi" size:14.0]];
     [label setTextAlignment:NSTextAlignmentRight];
     [label setTextColor:[UIColor colorWithRed:50.0/255.0 green:50.0/255.0 blue:50.0/255.0 alpha:1.0]];
     
-    if([userCountry isEqualToString:@""])
+    if([[[NSUserDefaults standardUserDefaults] objectForKey:@"subscriptions"]count] != 0)
     {
-        if(section == 0)
+        if(![userCountry isEqualToString:@""])
         {
-            [label setText:@"  المصادر المتاحة"];
+            if (section == 0)
+            {
+                [label setText:@"  المصادر الحالية"];
+            }
+            else if (section == 1)
+            {
+                [label setText:@"  مصادر بالقرب منك"];
+            }
+            else if (section == 2)
+            {
+                [label setText:@"  مصادر عربية"];
+            }
+            else if (section == 3)
+            {
+                [label setText:@"  مصادر عالمية"];
+            }
+            else
+            {
+                [label setText:@"  مصادر أخرى"];
+            }
         }
-    }else
+        else
+        {
+            if (section == 0)
+            {
+                [label setText:@"  المصادر الحالية"];
+            }
+            else if (section == 1)
+            {
+                [label setText:@"  مصادر عربية"];
+            }
+            else if (section == 2)
+            {
+                [label setText:@"  مصادر عالمية"];
+            }
+            else
+            {
+                [label setText:@"  مصادر أخرى"];
+            }
+        }
+    }
+    else
     {
-        if(section == 0)
+        if(![userCountry isEqualToString:@""])
         {
-            [label setText:@"  مصادر بالقرب منك"];
-        }else
+            if (section == 0)
+            {
+                [label setText:@"  مصادر بالقرب منك"];
+            }
+            else if (section == 1)
+            {
+                [label setText:@"  مصادر عربية"];
+            }
+            else if (section == 2)
+            {
+                [label setText:@"  مصادر عالمية"];
+            }
+            else
+            {
+                [label setText:@"  مصادر أخرى"];
+            }
+        }
+        else
         {
-            [label setText:@"  المصادر الأخرى"];
+            if (section == 0)
+            {
+                [label setText:@"  مصادر عربية"];
+            }
+            else if (section == 1)
+            {
+                [label setText:@"  مصادر عالمية"];
+            }
+            else
+            {
+                [label setText:@"  مصادر أخرى"];
+            }
         }
     }
     
@@ -529,14 +913,25 @@
 
 -(void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    if(![userCountry isEqualToString:@""] && indexPath.section == 0)
+    if([[[NSUserDefaults standardUserDefaults] objectForKey:@"subscriptions"]count] != 0)
     {
-        [self performSegueWithIdentifier:@"sourcesSeg2" sender:self];
-    }else
-    {
-        if([[sectionsAvailble objectAtIndex:indexPath.row] isEqualToString:@"صحف عربية"])
+        if (indexPath.section == 0)
         {
-            [self performSegueWithIdentifier:@"countrySeg" sender:self];
+            [self performSegueWithIdentifier:@"sourcesSeg1" sender:self];
+        }
+        else if(![userCountry isEqualToString:@""] && indexPath.section == 1)
+        {
+            [self performSegueWithIdentifier:@"sourcesSeg2" sender:self];
+        }else
+        {
+            [self performSegueWithIdentifier:@"sourcesSeg1" sender:self];
+        }
+    }
+    else
+    {
+        if(![userCountry isEqualToString:@""] && indexPath.section == 0)
+        {
+            [self performSegueWithIdentifier:@"sourcesSeg2" sender:self];
         }else
         {
             [self performSegueWithIdentifier:@"sourcesSeg1" sender:self];

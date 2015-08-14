@@ -46,8 +46,8 @@ ActionBlock _actionBlock;
     
     float labelWidth = contanerView.frame.size.width-98;
     
-    UILabel *titleLabel = [[UILabel alloc] initWithFrame:CGRectMake(contanerView.frame.size.width -(labelWidth+53), 3, labelWidth, 31)];
-    [titleLabel setFont:[UIFont boldSystemFontOfSize:17]];
+    UILabel *titleLabel = [[UILabel alloc] initWithFrame:CGRectMake(contanerView.frame.size.width -(labelWidth+53), 2, labelWidth, 30)];
+    [titleLabel setFont:[UIFont fontWithName:@"DroidArabicKufi-Bold" size:15.0]];
     [titleLabel setTextAlignment:NSTextAlignmentRight];
     [titleLabel setTextColor:[UIColor whiteColor]];
     
@@ -55,8 +55,10 @@ ActionBlock _actionBlock;
     
     [contanerView addSubview:titleLabel];
     
-    UILabel *msgLabel = [[UILabel alloc] initWithFrame:CGRectMake(contanerView.frame.size.width -(labelWidth+53), contanerView.frame.size.height-50, labelWidth, 45)];
-    [msgLabel setFont:[UIFont systemFontOfSize:16]];
+    UILabel *msgLabel = [[UILabel alloc] initWithFrame:CGRectMake(contanerView.frame.size.width -(labelWidth+53), contanerView.frame.size.height-60, labelWidth, 60)];
+    [msgLabel setFont:[UIFont fontWithName:@"DroidArabicKufi" size:13.0]];
+    [msgLabel setAdjustsFontSizeToFitWidth:YES];
+    [msgLabel setMinimumScaleFactor:0.8];
     [msgLabel setTextAlignment:NSTextAlignmentRight];
     [msgLabel setNumberOfLines:2];
     [msgLabel setTextColor:[UIColor whiteColor]];
@@ -138,8 +140,8 @@ ActionBlock _actionBlock;
     
     float labelWidth = contanerView.frame.size.width-98;
     
-    UILabel *titleLabel = [[UILabel alloc] initWithFrame:CGRectMake(contanerView.frame.size.width -(labelWidth+53), 3, labelWidth, 31)];
-    [titleLabel setFont:[UIFont boldSystemFontOfSize:17]];
+    UILabel *titleLabel = [[UILabel alloc] initWithFrame:CGRectMake(contanerView.frame.size.width -(labelWidth+53), 2, labelWidth, 30)];
+    [titleLabel setFont:[UIFont fontWithName:@"DroidArabicKufi-Bold" size:15.0]];
     [titleLabel setTextAlignment:NSTextAlignmentRight];
     [titleLabel setTextColor:[UIColor whiteColor]];
     
@@ -147,8 +149,10 @@ ActionBlock _actionBlock;
     
     [contanerView addSubview:titleLabel];
     
-    UILabel *msgLabel = [[UILabel alloc] initWithFrame:CGRectMake(contanerView.frame.size.width -(labelWidth+53), contanerView.frame.size.height-50, labelWidth, 45)];
-    [msgLabel setFont:[UIFont systemFontOfSize:16]];
+    UILabel *msgLabel = [[UILabel alloc] initWithFrame:CGRectMake(contanerView.frame.size.width -(labelWidth+53), contanerView.frame.size.height-60, labelWidth, 60)];
+    [msgLabel setFont:[UIFont fontWithName:@"DroidArabicKufi" size:13.0]];
+    [msgLabel setAdjustsFontSizeToFitWidth:YES];
+    [msgLabel setMinimumScaleFactor:0.8];
     [msgLabel setTextAlignment:NSTextAlignmentRight];
     [msgLabel setNumberOfLines:2];
     [msgLabel setTextColor:[UIColor whiteColor]];
@@ -219,8 +223,8 @@ ActionBlock _actionBlock;
     
     float labelWidth = contanerView.frame.size.width-98;
     
-    UILabel *titleLabel = [[UILabel alloc] initWithFrame:CGRectMake(contanerView.frame.size.width -(labelWidth+53), 3, labelWidth, 31)];
-    [titleLabel setFont:[UIFont boldSystemFontOfSize:17]];
+    UILabel *titleLabel = [[UILabel alloc] initWithFrame:CGRectMake(contanerView.frame.size.width -(labelWidth+53), 2, labelWidth, 30)];
+    [titleLabel setFont:[UIFont fontWithName:@"DroidArabicKufi-Bold" size:15.0]];
     [titleLabel setTextAlignment:NSTextAlignmentRight];
     [titleLabel setTextColor:[UIColor whiteColor]];
     
@@ -228,8 +232,10 @@ ActionBlock _actionBlock;
     
     [contanerView addSubview:titleLabel];
     
-    UILabel *msgLabel = [[UILabel alloc] initWithFrame:CGRectMake(contanerView.frame.size.width -(labelWidth+53), contanerView.frame.size.height-50, labelWidth, 45)];
-    [msgLabel setFont:[UIFont systemFontOfSize:16]];
+    UILabel *msgLabel = [[UILabel alloc] initWithFrame:CGRectMake(contanerView.frame.size.width -(labelWidth+53), contanerView.frame.size.height-60, labelWidth, 60)];
+    [msgLabel setFont:[UIFont fontWithName:@"DroidArabicKufi" size:13.0]];
+    [msgLabel setAdjustsFontSizeToFitWidth:YES];
+    [msgLabel setMinimumScaleFactor:0.8];
     [msgLabel setTextAlignment:NSTextAlignmentRight];
     [msgLabel setNumberOfLines:2];
     [msgLabel setTextColor:[UIColor whiteColor]];
@@ -326,8 +332,8 @@ ActionBlock _actionBlock;
     
     float labelWidth = contanerView.frame.size.width-95;
     
-    UILabel *titleLabel = [[UILabel alloc] initWithFrame:CGRectMake(contanerView.frame.size.width -(labelWidth+53), 3, labelWidth, 31)];
-    [titleLabel setFont:[UIFont boldSystemFontOfSize:17]];
+    UILabel *titleLabel = [[UILabel alloc] initWithFrame:CGRectMake(contanerView.frame.size.width -(labelWidth+53), 2, labelWidth, 30)];
+    [titleLabel setFont:[UIFont fontWithName:@"DroidArabicKufi-Bold" size:15.0]];
     [titleLabel setTextAlignment:NSTextAlignmentRight];
     [titleLabel setTextColor:[UIColor whiteColor]];
     
@@ -335,8 +341,10 @@ ActionBlock _actionBlock;
     
     [contanerView addSubview:titleLabel];
     
-    UILabel *msgLabel = [[UILabel alloc] initWithFrame:CGRectMake(contanerView.frame.size.width -(labelWidth+53), contanerView.frame.size.height-50, labelWidth, 45)];
-    [msgLabel setFont:[UIFont systemFontOfSize:16]];
+    UILabel *msgLabel = [[UILabel alloc] initWithFrame:CGRectMake(contanerView.frame.size.width -(labelWidth+53), contanerView.frame.size.height-60, labelWidth, 60)];
+    [msgLabel setFont:[UIFont fontWithName:@"DroidArabicKufi" size:13.0]];
+    [msgLabel setAdjustsFontSizeToFitWidth:YES];
+    [msgLabel setMinimumScaleFactor:0.8];
     [msgLabel setTextAlignment:NSTextAlignmentRight];
     [msgLabel setNumberOfLines:2];
     [msgLabel setTextColor:[UIColor whiteColor]];

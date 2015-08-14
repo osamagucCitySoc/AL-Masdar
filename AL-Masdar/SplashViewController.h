@@ -9,9 +9,16 @@
 #import <MediaPlayer/MediaPlayer.h>
 
 @interface SplashViewController : UIViewController
+{
+    BOOL isDoneAnm;
+}
+
 @property (strong, nonatomic) IBOutlet UIImageView *splashImageView;
 @property (strong, nonatomic) IBOutlet UILabel *label1;
 @property (strong, nonatomic) IBOutlet UILabel *label2;
 @property (strong, nonatomic) IBOutlet UILabel *rightsLabel;
+@property (strong, nonatomic) IBOutlet UILabel *leftLabel;
+@property (strong, nonatomic) IBOutlet UILabel *rightLabel;
+@property (strong, nonatomic) IBOutlet UIView *mainView;
 
 @end

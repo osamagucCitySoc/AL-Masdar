@@ -13,11 +13,14 @@
 #import <Social/Social.h>
 #import <Accounts/Accounts.h>
 #import <MessageUI/MFMailComposeViewController.h>
+#import <AVFoundation/AVFoundation.h>
+#import <GoogleMobileAds/GoogleMobileAds.h>
+#import <MMAdSDK/MMAdSDK.h>
 
 @interface customCell : UITableViewCell
 @end
 
-@interface InfoFeedViewController : UIViewController <UIGestureRecognizerDelegate,MFMailComposeViewControllerDelegate>
+@interface InfoFeedViewController : UIViewController <UIGestureRecognizerDelegate,MFMailComposeViewControllerDelegate,AVAudioPlayerDelegate,GADInterstitialDelegate,MMInlineDelegate>
 {
     UIRefreshControl *refreshControl;
     BOOL tableIsReady,isRemoveAct,isOptions,isFullScreen,isScrollButton,isOnNews,isRectResume,isFromNight,isNoResume,isShowStatus,isSearching,isSearchMsg,isTap,isFirstDrag,isAfterSearch,isSearchYet,isFromRefresh,isOnBreakingNews,isReloaded,isFromSwipe,isFromBreaking,isInfoDone;
@@ -30,8 +33,10 @@
     float imageZoomScale;
     CGPoint scrollSavedPoint;
     UITableViewCell *cellToClose;
+    MMInlineAd *bannerAd;
 }
 
+@property (strong, nonatomic) IBOutlet AVAudioPlayer *player;
 @property (strong, nonatomic) IBOutlet UIView *viewToClose;
 @property (strong, nonatomic) IBOutlet UIImageView *imageToClose;
 @property (strong, nonatomic) IBOutlet UIImageView *anmImg;

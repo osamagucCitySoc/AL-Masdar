@@ -156,7 +156,7 @@
     self.label.textAlignment = NSTextAlignmentCenter;
     self.label.numberOfLines = 3;
     self.label.textColor = [UIColor whiteColor];
-    self.label.font = [UIFont systemFontOfSize:self.fontSize];
+    self.label.font = [UIFont fontWithName:@"DroidArabicKufi" size:self.fontSize];
     
     CGFloat xCenter = self.center.x;
     CGFloat yCenter = self.center.y;

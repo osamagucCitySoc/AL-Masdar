@@ -32,25 +32,50 @@
     NSMutableArray* myDataSource = [[NSMutableArray alloc]init];
     sectionedSource = [[NSMutableArray alloc]init];
     
-    if(![country isEqualToString:@""])
+    if ([section isEqualToString:@"onlyMySources"])
     {
-        [self setTitle:country];
-    }else
-    {
-        [self setTitle:section];
-    }
-    
-    for(NSDictionary* dict in dataSourcee)
-    {
-        if([[dict objectForKey:@"section"]isEqualToString:section])
+        [self setTitle:@"مصادرك المختارة"];
+        
+        NSMutableArray *mySourcee = [[NSMutableArray alloc] initWithArray:[[NSUserDefaults standardUserDefaults] objectForKey:@"subscriptions"]];
+        NSMutableArray *filteredArr = [[NSMutableArray alloc] init];
+        
+        for(NSDictionary* dict in dataSourcee)
         {
-            [myDataSource addObject:dict];
-        }else if([[dict objectForKey:@"countryAR"]isEqualToString:country])
+            for (NSDictionary* dict2 in mySourcee)
+            {
+                if ([[dict objectForKey:@"twitterID"] isEqualToString:[dict2 objectForKey:@"twitterID"]])
+                {
+                    [filteredArr addObject:dict];
+                }
+            }
+        }
+        
+        for(NSDictionary* dict in filteredArr)
         {
             [myDataSource addObject:dict];
         }
     }
-    
+    else
+    {
+        if(![country isEqualToString:@""])
+        {
+            [self setTitle:country];
+        }else
+        {
+            [self setTitle:section];
+        }
+        
+        for(NSDictionary* dict in dataSourcee)
+        {
+            if([[dict objectForKey:@"section"]isEqualToString:section])
+            {
+                [myDataSource addObject:dict];
+            }else if([[dict objectForKey:@"countryAR"]isEqualToString:country])
+            {
+                [myDataSource addObject:dict];
+            }
+        }
+    }
     
     NSArray *aSortedArray = [myDataSource sortedArrayUsingComparator:^(NSDictionary *obj1,NSDictionary *obj2) {
         NSString *num1 =[obj1 objectForKey:@"subSection"];
@@ -201,7 +226,7 @@
 {
     UIView *view = [[UIView alloc] initWithFrame:CGRectMake(0, 0, tableView2.frame.size.width, 30)];
     UILabel *label = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, tableView2.frame.size.width, 30)];
-    [label setFont:[UIFont systemFontOfSize:16]];
+    [label setFont:[UIFont fontWithName:@"DroidArabicKufi" size:14.0]];
     [label setTextAlignment:NSTextAlignmentRight];
     [label setTextColor:[UIColor colorWithRed:50.0/255.0 green:50.0/255.0 blue:50.0/255.0 alpha:1.0]];
     
@@ -231,7 +256,14 @@
     
     [(UILabel*)[cell viewWithTag:1] setText:[dict2 objectForKey:@"name"]];
     
-    [(UILabel*)[cell viewWithTag:4] setText:[dict2 objectForKey:@"descc"]];
+    if ([[dict2 objectForKey:@"descc"] length] == 0)
+    {
+        [(UILabel*)[cell viewWithTag:4] setText:@"--"];
+    }
+    else
+    {
+        [(UILabel*)[cell viewWithTag:4] setText:[dict2 objectForKey:@"descc"]];
+    }
     
     [[[cell viewWithTag:2] layer] setCornerRadius:22];
     [cell viewWithTag:2].layer.shouldRasterize = YES;
@@ -300,15 +332,23 @@
         
         if([[[NSUserDefaults standardUserDefaults] objectForKey:@"subscriptions"] containsObject:dict2])
         {
-            [(UIImageView*)[cell viewWithTag:3] setAlpha:0.0];
-            [UIView animateWithDuration:0.4 delay:0.0 options:0
+            [UIView animateWithDuration:0.2 delay:0.0 options:0
                              animations:^{
-                                 [(UIImageView*)[cell viewWithTag:3] setAlpha:1.0];
+                                 [[cell viewWithTag:3] setTransform:CGAffineTransformMakeScale(0.7, 0.7)];
                                  [(UIImageView*)[cell viewWithTag:3] setImage:[UIImage imageNamed:@"check-off.png"]];
                              }
                              completion:^(BOOL finished) {
+                                 [UIView animateWithDuration:0.1 delay:0.0 options:0
+                                                  animations:^{
+                                                      [[cell viewWithTag:3] setTransform:CGAffineTransformMakeScale(1.0, 1.0)];
+                                                  }
+                                                  completion:^(BOOL finished) {
+                                                  }];
+                                 [UIView commitAnimations];
                              }];
             [UIView commitAnimations];
+            
+            
             
             NSMutableArray* mutArray = [[NSMutableArray alloc]initWithArray:[[NSUserDefaults standardUserDefaults] objectForKey:@"subscriptions"] copyItems:YES];
             [mutArray removeObject:dict2];
@@ -341,13 +381,19 @@
             
         }else
         {
-            [(UIImageView*)[cell viewWithTag:3] setAlpha:0.0];
-            [UIView animateWithDuration:0.4 delay:0.0 options:0
+            [UIView animateWithDuration:0.2 delay:0.0 options:0
                              animations:^{
-                                 [(UIImageView*)[cell viewWithTag:3] setAlpha:1.0];
+                                 [[cell viewWithTag:3] setTransform:CGAffineTransformMakeScale(1.3, 1.3)];
                                  [(UIImageView*)[cell viewWithTag:3] setImage:[UIImage imageNamed:@"check-on.png"]];
                              }
                              completion:^(BOOL finished) {
+                                 [UIView animateWithDuration:0.1 delay:0.0 options:0
+                                                  animations:^{
+                                                      [[cell viewWithTag:3] setTransform:CGAffineTransformMakeScale(1.0, 1.0)];
+                                                  }
+                                                  completion:^(BOOL finished) {
+                                                  }];
+                                 [UIView commitAnimations];
                              }];
             [UIView commitAnimations];
             

@@ -20,5 +20,11 @@
 	<string>????</string>
 	<key>CFBundleVersion</key>
 	<string>1</string>
+	<key>UIAppFonts</key>
+	<array>
+		<string>JF.ttf</string>
+		<string>DroidKufi-Regular.ttf</string>
+		<string>DroidKufi-Bold.ttf</string>
+	</array>
 </dict>
 </plist>

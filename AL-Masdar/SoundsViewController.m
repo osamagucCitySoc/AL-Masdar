@@ -1,5 +1,5 @@
 //
-//  SettingsViewController.m
+//  SoundsViewController.m
 //
 //  Created by Housein Jouhar on 7/3/15.
 //  Copyright (c) 2015 SADAH Software Solutions. All rights reserved.
@@ -50,7 +50,7 @@
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-    return 10;
+    return 9;
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
@@ -97,10 +97,6 @@
     }
     else if (indexPath.row == 8)
     {
-        [(UILabel*)[cell viewWithTag:1] setText:@"الصوت الافتراضي"];
-    }
-    else if (indexPath.row == 9)
-    {
         [(UILabel*)[cell viewWithTag:1] setText:@"بدون صوت"];
     }
     
@@ -118,14 +114,13 @@
 
 -(void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    if (indexPath.row == 8)
-    {
-        AudioServicesPlaySystemSound(1315);
-    }
-    else if (indexPath.row != 9)
+    if (indexPath.row != 8)
     {
         [self playSound:[@"" stringByAppendingFormat:@"%ld",indexPath.row+1]];
     }
+    
+    NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
+    NSString *documentsDir = [paths objectAtIndex:0];
     
     UITableViewCell *cell = [tableView cellForRowAtIndexPath:indexPath];
     
@@ -133,14 +128,41 @@
     {
         UITableViewCell *selectedCell = [tableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:[[NSUserDefaults standardUserDefaults] integerForKey:@"selectedSound"] inSection:0]];
         [(UIImageView*)[selectedCell viewWithTag:2] setImage:[UIImage imageNamed:@"check-off.png"]];
+        
+        [[NSFileManager defaultManager] removeItemAtPath:[documentsDir stringByAppendingPathComponent:@"x.caf"] error:nil];
+        
+        NSString* path = [[[NSBundle mainBundle] resourcePath] stringByAppendingPathComponent:[[@"" stringByAppendingFormat:@"%ld",indexPath.row+1] stringByAppendingString:@".caf"]];
+        
+        [[NSFileManager defaultManager] copyItemAtPath:path toPath:[documentsDir stringByAppendingPathComponent:@"x.caf"] error:nil];
     }
     
     [(UIImageView*)[cell viewWithTag:2] setImage:[UIImage imageNamed:@"check-on.png"]];
     
+    if([[NSUserDefaults standardUserDefaults] integerForKey:@"selectedSound"] != indexPath.row)
+    {
+        [UIView animateWithDuration:0.2 delay:0.0 options:0
+                         animations:^{
+                             [[cell viewWithTag:2] setTransform:CGAffineTransformMakeScale(1.3, 1.3)];
+                         }
+                         completion:^(BOOL finished) {
+                             [UIView animateWithDuration:0.2 delay:0.0 options:0
+                                              animations:^{
+                                                  [[cell viewWithTag:2] setTransform:CGAffineTransformMakeScale(1.0, 1.0)];
+                                              }
+                                              completion:^(BOOL finished) {
+                                                  [tableView deselectRowAtIndexPath:indexPath animated:YES];
+                                              }];
+                             [UIView commitAnimations];
+                         }];
+        [UIView commitAnimations];
+    }
+    else
+    {
+        [tableView deselectRowAtIndexPath:indexPath animated:YES];
+    }
+    
     [[NSUserDefaults standardUserDefaults] setInteger:indexPath.row forKey:@"selectedSound"];
     [[NSUserDefaults standardUserDefaults] synchronize];
-    
-    [tableView deselectRowAtIndexPath:indexPath animated:YES];
 }
 
 - (void)didReceiveMemoryWarning

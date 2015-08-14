@@ -22,7 +22,7 @@
 
 @interface NewsDetailsViewController : UIViewController <UIWebViewDelegate,AVSpeechSynthesizerDelegate,UIGestureRecognizerDelegate,UIScrollViewDelegate,UIActionSheetDelegate,MFMailComposeViewControllerDelegate,AVAudioPlayerDelegate>
 {
-    BOOL isFristLoad,isVideo,isAnimation,isFirstOneDone,isWebOnly,isFromZoom,isVideoDone,isImageDone,isImage,isFirstDrag,isTap,isFullScreen,isShowStatus,isTextDone,isFrameChanged,isUrlDone,isEmptyImg;
+    BOOL isFristLoad,isVideo,isAnimation,isFirstOneDone,isWebOnly,isFromZoom,isVideoDone,isImageDone,isImage,isFirstDrag,isTap,isFullScreen,isShowStatus,isTextDone,isFrameChanged,isUrlDone,isEmptyImg,isNoImg;
     UIImage *firstImg,*imgToSave;
     CGRect oldVideoRect,prevFrame,workingFrame;
     UITapGestureRecognizer *tap,*dbTap;
@@ -60,5 +60,7 @@
 @property (strong, nonatomic) IBOutlet UILabel *shareLabel3;
 @property (strong, nonatomic) IBOutlet UILabel *shareLabel4;
 @property (strong, nonatomic) IBOutlet UIButton *shareCancelButton;
+@property (strong, nonatomic) IBOutlet UILabel *loadingLabel;
+@property (strong, nonatomic) IBOutlet UIBarButtonItem *commentsButton;
 
 @end

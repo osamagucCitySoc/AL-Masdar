@@ -8,6 +8,8 @@
 
 #import "AppDelegate.h"
 #import <Parse/Parse.h>
+#import "AFHTTPRequestOperationManager.h"
+#import <MMAdSDK/MMAdSDK.h>
 
 #define SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(v)  ([[[UIDevice currentDevice] systemVersion] compare:v options:NSNumericSearch] != NSOrderedAscending)
 
@@ -54,10 +56,17 @@
          (UIRemoteNotificationTypeBadge | UIRemoteNotificationTypeSound | UIRemoteNotificationTypeAlert)];
     }
     
+    [[MMSDK sharedInstance] initializeWithSettings:nil withUserSettings:nil];
+    
     return YES;
 }
 
 -(NSUInteger)application:(UIApplication *)application supportedInterfaceOrientationsForWindow:(UIWindow *)window{
+    if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad)
+    {
+        return UIInterfaceOrientationMaskAll;
+    }
+    
     if ([[NSUserDefaults standardUserDefaults] boolForKey:@"isLandscapeOn"])return UIInterfaceOrientationMaskAllButUpsideDown;
     return UIInterfaceOrientationMaskPortrait;
 }
@@ -67,6 +76,216 @@
     return NO;
     // Return YES for supported orientations
     //    return (interfaceOrientation == UIInterfaceOrientationPortrait);
+}
+
+- (void)application:(UIApplication *)application handleWatchKitExtensionRequest:(NSDictionary *)userInfo reply:(void (^)(NSDictionary *))reply
+{
+    __block UIBackgroundTaskIdentifier bogusWorkaroundTask;
+    bogusWorkaroundTask = [[UIApplication sharedApplication] beginBackgroundTaskWithExpirationHandler:^{
+        [[UIApplication sharedApplication] endBackgroundTask:bogusWorkaroundTask];
+    }];
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(2 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+        [[UIApplication sharedApplication] endBackgroundTask:bogusWorkaroundTask];
+    });
+    // --------------------
+    __block UIBackgroundTaskIdentifier realBackgroundTask;
+    realBackgroundTask = [[UIApplication sharedApplication] beginBackgroundTaskWithExpirationHandler:^{
+        dataSource = [[NSMutableArray alloc] init];
+        
+        upperCurrentID = [userInfo objectForKey:@"upperCurrentID"];
+        lowerCurrentID = [userInfo objectForKey:@"lowerCurrentID"];
+        
+        isLoadingDone = NO;
+        
+        NSMutableArray *sources = [[NSMutableArray alloc]init];
+        
+        NSArray* subs = [[NSUserDefaults standardUserDefaults] objectForKey:@"subscriptions"];
+        
+        for(NSDictionary* dict in subs)
+        {
+            [sources addObject:[dict objectForKey:@"twitterID"]];
+        }
+        
+        AFHTTPRequestOperationManager *manager = [AFHTTPRequestOperationManager manager];
+        manager.responseSerializer = [AFHTTPResponseSerializer serializer];
+        
+        NSDictionary* params;
+        
+        NSString *urlStr;
+        
+        if ([[userInfo objectForKey:@"request"] isEqualToString:@"getNewsData"])
+        {
+            if ([upperCurrentID integerValue] == 0)
+            {
+                params = @{@"lowerID":lowerCurrentID,@"sources":[sources componentsJoinedByString:@","]};
+                urlStr = @"http://almasdarapp.com/almasdar/getNewerNewsWatch.php";
+            }
+            else
+            {
+                params = @{@"lowerID":upperCurrentID,@"sources":[sources componentsJoinedByString:@","]};
+                urlStr = @"http://almasdarapp.com/almasdar/getOlderNewsWatch.php";
+            }
+        }
+        else if ([[userInfo objectForKey:@"request"] isEqualToString:@"getFavData"])
+        {
+            NSMutableArray* favs = [[NSMutableArray alloc]initWithArray:[[NSUserDefaults standardUserDefaults] objectForKey:@"favs"] copyItems:YES];
+            NSArray *aSortedArray = [favs sortedArrayUsingComparator:^(NSDictionary *obj1,NSDictionary *obj2) {
+                NSString *num1 =[obj1 objectForKey:@"createdAt"];
+                NSString *num2 =[obj2 objectForKey:@"createdAt"];
+                return (NSComparisonResult) [num2 compare:num1 options:(NSNumericSearch)];
+            }];
+            
+            dataSource = [[NSMutableArray alloc]initWithArray:aSortedArray copyItems:YES];
+            
+            reply ([NSDictionary dictionaryWithObjects:[NSArray arrayWithObjects:dataSource,lowerCurrentID, nil] forKeys:[NSArray arrayWithObjects:@"theReply",@"upperId", nil]]);
+            return;
+        }
+        else if ([[userInfo objectForKey:@"request"] isEqualToString:@"getBreakingData"])
+        {
+            if ([upperCurrentID integerValue] == 0)
+            {
+                params = @{@"lowerID":lowerCurrentID,@"sources":[sources componentsJoinedByString:@","]};
+                urlStr = @"http://almasdarapp.com/almasdar/getBreakingNewsNewerWatch.php";
+            }
+            else
+            {
+                params = @{@"lowerID":upperCurrentID,@"sources":[sources componentsJoinedByString:@","]};
+                urlStr = @"http://almasdarapp.com/almasdar/getBreakingNewsWatch.php";
+            }
+        }
+        
+        [manager POST:urlStr parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
+            
+            dataSource = [[NSMutableArray alloc]initWithArray:[NSJSONSerialization JSONObjectWithData:responseObject options:NSJSONReadingAllowFragments error:nil]];
+            
+            if([dataSource count]>0)
+            {
+                lowerCurrentID = [[dataSource lastObject] objectForKey:@"id"];
+            }
+            
+            NSMutableArray *filterArr = [[NSMutableArray alloc] init];
+            NSMutableArray *checkArr = [[NSMutableArray alloc] init];
+            
+            NSDictionary* news;
+            
+            for (int i = 0; i < dataSource.count; i++)
+            {
+                news = [dataSource objectAtIndex:i];
+                if (![checkArr containsObject:[news objectForKey:@"body"]])
+                {
+                    [checkArr addObject:[news objectForKey:@"body"]];
+                    [filterArr addObject:[dataSource objectAtIndex:i]];
+                }
+            }
+            
+            dataSource = [[NSMutableArray alloc] initWithArray:filterArr];
+            
+            reply ([NSDictionary dictionaryWithObjects:[NSArray arrayWithObjects:dataSource,lowerCurrentID, nil] forKeys:[NSArray arrayWithObjects:@"theReply",@"upperId", nil]]);
+            
+        } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+            reply (nil);
+        }];
+        [[UIApplication sharedApplication] endBackgroundTask:realBackgroundTask];
+    }];
+    // Kick off a network request, heavy processing work, etc.
+    // Return any data you need to, obviously.
+    dataSource = [[NSMutableArray alloc] init];
+    
+    upperCurrentID = [userInfo objectForKey:@"upperCurrentID"];
+    lowerCurrentID = [userInfo objectForKey:@"lowerCurrentID"];
+    
+    isLoadingDone = NO;
+    
+    NSMutableArray *sources = [[NSMutableArray alloc]init];
+    
+    NSArray* subs = [[NSUserDefaults standardUserDefaults] objectForKey:@"subscriptions"];
+    
+    for(NSDictionary* dict in subs)
+    {
+        [sources addObject:[dict objectForKey:@"twitterID"]];
+    }
+    
+    AFHTTPRequestOperationManager *manager = [AFHTTPRequestOperationManager manager];
+    manager.responseSerializer = [AFHTTPResponseSerializer serializer];
+    
+    NSDictionary* params;
+    
+    NSString *urlStr;
+    
+    if ([[userInfo objectForKey:@"request"] isEqualToString:@"getNewsData"])
+    {
+        if ([upperCurrentID integerValue] == 0)
+        {
+            params = @{@"lowerID":lowerCurrentID,@"sources":[sources componentsJoinedByString:@","]};
+            urlStr = @"http://almasdarapp.com/almasdar/getNewerNewsWatch.php";
+        }
+        else
+        {
+            params = @{@"lowerID":upperCurrentID,@"sources":[sources componentsJoinedByString:@","]};
+            urlStr = @"http://almasdarapp.com/almasdar/getOlderNewsWatch.php";
+        }
+    }
+    else if ([[userInfo objectForKey:@"request"] isEqualToString:@"getFavData"])
+    {
+        NSMutableArray* favs = [[NSMutableArray alloc]initWithArray:[[NSUserDefaults standardUserDefaults] objectForKey:@"favs"] copyItems:YES];
+        NSArray *aSortedArray = [favs sortedArrayUsingComparator:^(NSDictionary *obj1,NSDictionary *obj2) {
+            NSString *num1 =[obj1 objectForKey:@"createdAt"];
+            NSString *num2 =[obj2 objectForKey:@"createdAt"];
+            return (NSComparisonResult) [num2 compare:num1 options:(NSNumericSearch)];
+        }];
+        
+        dataSource = [[NSMutableArray alloc]initWithArray:aSortedArray copyItems:YES];
+        
+        reply ([NSDictionary dictionaryWithObjects:[NSArray arrayWithObjects:dataSource,lowerCurrentID, nil] forKeys:[NSArray arrayWithObjects:@"theReply",@"upperId", nil]]);
+        return;
+    }
+    else if ([[userInfo objectForKey:@"request"] isEqualToString:@"getBreakingData"])
+    {
+        if ([upperCurrentID integerValue] == 0)
+        {
+            params = @{@"lowerID":lowerCurrentID,@"sources":[sources componentsJoinedByString:@","]};
+            urlStr = @"http://almasdarapp.com/almasdar/getBreakingNewsNewerWatch.php";
+        }
+        else
+        {
+            params = @{@"lowerID":upperCurrentID,@"sources":[sources componentsJoinedByString:@","]};
+            urlStr = @"http://almasdarapp.com/almasdar/getBreakingNewsWatch.php";
+        }
+    }
+    
+    [manager POST:urlStr parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
+        
+        dataSource = [[NSMutableArray alloc]initWithArray:[NSJSONSerialization JSONObjectWithData:responseObject options:NSJSONReadingAllowFragments error:nil]];
+        
+        if([dataSource count]>0)
+        {
+            lowerCurrentID = [[dataSource lastObject] objectForKey:@"id"];
+        }
+        
+        NSMutableArray *filterArr = [[NSMutableArray alloc] init];
+        NSMutableArray *checkArr = [[NSMutableArray alloc] init];
+        
+        NSDictionary* news;
+        
+        for (int i = 0; i < dataSource.count; i++)
+        {
+            news = [dataSource objectAtIndex:i];
+            if (![checkArr containsObject:[news objectForKey:@"body"]])
+            {
+                [checkArr addObject:[news objectForKey:@"body"]];
+                [filterArr addObject:[dataSource objectAtIndex:i]];
+            }
+        }
+        
+        dataSource = [[NSMutableArray alloc] initWithArray:filterArr];
+        
+        reply ([NSDictionary dictionaryWithObjects:[NSArray arrayWithObjects:dataSource,lowerCurrentID, nil] forKeys:[NSArray arrayWithObjects:@"theReply",@"upperId", nil]]);
+        
+    } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+        reply (nil);
+    }];
+    
+    [[UIApplication sharedApplication] endBackgroundTask:realBackgroundTask];
 }
 
 - (void)applicationWillResignActive:(UIApplication *)application {

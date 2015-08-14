@@ -1,9 +1,8 @@
 //
 //  NewsTableViewCell.m
-//  MicroTransfer
 //
-//  Created by jacksonpan on 13-1-15.
-//  Copyright (c) 2013年 weichuan. All rights reserved.
+//  Created by Housein Jouhar on 31/05/15.
+//  Copyright (c) 2015 SADAH Software Solutions. All rights reserved.
 //
 
 #import "NewsTableViewCell.h"
@@ -13,7 +12,7 @@
 - (void )layoutSubviews {
     [super layoutSubviews];
     
-    self.selectedBackgroundView.frame = CGRectMake(5, 7, self.frame.size.width -10, self.frame.size.height -11);
+    self.selectedBackgroundView.frame = CGRectMake(5, 0, self.frame.size.width -10, self.frame.size.height);
 }
 
 @end

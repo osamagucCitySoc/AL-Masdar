@@ -28,6 +28,15 @@
     
     [self setRights];
     
+    if ([[NSUserDefaults standardUserDefaults] boolForKey:@"isNightOn"] && [[[NSUserDefaults standardUserDefaults] objectForKey:@"subscriptions"] count] != 0)
+    {
+        [_mainView setBackgroundColor:[UIColor blackColor]];
+    }
+    else
+    {
+        [_mainView setBackgroundColor:[UIColor whiteColor]];
+    }
+    
     [self performSelector:@selector(startTheAnimation) withObject:nil afterDelay:0.3];
 }
 
@@ -72,8 +81,20 @@
                                                                                         [_label2 setFrame:CGRectMake(_label2.frame.origin.x, _label2.frame.origin.y+self.view.frame.size.height, _label2.frame.size.width, _label2.frame.size.height)];
                                                                                         
                                                                                         [_rightsLabel setFrame:CGRectMake(_rightsLabel.frame.origin.x, _rightsLabel.frame.origin.y+self.view.frame.size.height, _rightsLabel.frame.size.width, _rightsLabel.frame.size.height)];
+                                                                                        
                                                                                     }
                                                                                     completion:^(BOOL finished) {
+                                                                                        [UIView animateWithDuration:0.2 delay:0.0 options:0
+                                                                                                         animations:^{
+                                                                                                             [_leftLabel setFrame:CGRectMake(_leftLabel.frame.origin.x-_leftLabel.frame.size.width, _leftLabel.frame.origin.y, _leftLabel.frame.size.width, _leftLabel.frame.size.height)];
+                                                                                                             [_rightLabel setFrame:CGRectMake(_rightLabel.frame.origin.x+_rightLabel.frame.size.width, _rightLabel.frame.origin.y, _rightLabel.frame.size.width, _rightLabel.frame.size.height)];
+                                                                                                             
+                                                                                                         }
+                                                                                                         completion:^(BOOL finished) {
+                                                                                                         }];
+                                                                                        [UIView commitAnimations];
+                                                                                        isDoneAnm = YES;
+                                                                                        [self setNeedsStatusBarAppearanceUpdate];
                                                                                         [self performSegueWithIdentifier:@"firstSeg" sender:self];
                                                                                     }];
                                                                    [UIView commitAnimations];
@@ -95,7 +116,8 @@
 }
 
 -(UIStatusBarStyle)preferredStatusBarStyle{
-    return UIStatusBarStyleLightContent;
+    if ([[NSUserDefaults standardUserDefaults] boolForKey:@"isNightOn"] || !isDoneAnm) return UIStatusBarStyleLightContent;
+    return UIStatusBarStyleDefault;
 }
 
 - (void)didReceiveMemoryWarning

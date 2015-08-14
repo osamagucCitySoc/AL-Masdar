@@ -9,10 +9,12 @@
 #import <UIKit/UIKit.h>
 #import "SADAHBlurView.h"
 #import "SADAHMsg.h"
+#import "UIImageView+WebCache.h"
 
 @interface ViewController : UIViewController
 {
     BOOL isAllLoaded,isShowStatus;
+    NSInteger currentSubNum;
 }
 
 @end
