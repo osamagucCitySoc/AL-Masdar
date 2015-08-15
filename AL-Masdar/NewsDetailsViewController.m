@@ -91,7 +91,11 @@ static NSString * BCP47LanguageCodeForString(NSString *string) {
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    
+    [self initMe];
+}
+
+-(void)initMe
+{
     [[NSUserDefaults standardUserDefaults] setBool:YES forKey:@"isReadability"];
     [[NSUserDefaults standardUserDefaults] synchronize];
     
@@ -1979,6 +1983,8 @@ static NSString * BCP47LanguageCodeForString(NSString *string) {
 {
     [super viewWillAppear:animated];
     
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(openedFromNotification:) name:@"OpenDetailsNotification" object:nil];
+    
     if ([[NSUserDefaults standardUserDefaults] boolForKey:@"isNightOn"])
     {
         [_mainView setBackgroundColor:[UIColor colorWithRed:50.0/255.0 green:50.0/255.0 blue:50.0/255.0 alpha:1.0]];
@@ -2051,9 +2057,16 @@ static NSString * BCP47LanguageCodeForString(NSString *string) {
     }
 }
 
+- (void)openedFromNotification:(NSNotification *)notification {
+    [self setUrl:[[NSUserDefaults standardUserDefaults] objectForKey:@"newsUrlNotif"]];
+    [self initMe];
+}
+
+
 -(void)viewWillDisappear:(BOOL)animated
 {
     [super viewWillDisappear:animated];
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
     [[NSNotificationCenter defaultCenter]removeObserver:self name:@"" object:nil];
 }
 

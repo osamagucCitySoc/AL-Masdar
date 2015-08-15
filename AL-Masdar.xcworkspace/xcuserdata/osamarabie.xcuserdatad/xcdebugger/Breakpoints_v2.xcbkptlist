@@ -10,12 +10,12 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "AL-Masdar/NewsDetailsViewController.m"
-            timestampString = "459396481.124749"
+            timestampString = "461346164.90066"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "1353"
-            endingLineNumber = "1353"
-            landmarkName = "-getImages"
+            startingLineNumber = "1357"
+            endingLineNumber = "1357"
+            landmarkName = "-openURLold"
             landmarkType = "5">
          </BreakpointContent>
       </BreakpointProxy>
