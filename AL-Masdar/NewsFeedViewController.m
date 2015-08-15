@@ -81,6 +81,12 @@
     {
         NewsDetailsViewController* dst = (NewsDetailsViewController*)[segue destinationViewController];
         [dst setUrl:[[dataSource objectAtIndex:tableView.indexPathForSelectedRow.row] objectForKey:@"newsURL"]];
+    }else if([[segue identifier]isEqualToString:@"detailsSegNotif"])
+    {
+        NewsDetailsViewController* dst = (NewsDetailsViewController*)[segue destinationViewController];
+        [dst setUrl:[[NSUserDefaults standardUserDefaults] objectForKey:@"newsUrlNotif"]];
+        [[NSUserDefaults standardUserDefaults]setObject:nil forKey:@"newsUrlNotif"];
+        [[NSUserDefaults standardUserDefaults]synchronize];
     }
 }
 
@@ -1846,7 +1852,8 @@
 -(void)viewDidDisappear:(BOOL)animated
 {
     [super viewDidDisappear:animated];
-    
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
+
     if (isSearching)
     {
         [searchView setHidden:YES];
@@ -1856,6 +1863,10 @@
 -(void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
+    
+    
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(openedFromNotification:) name:@"OpenDetailsNotification" object:nil];
+
     
     if (isSearching)
     {
@@ -1888,6 +1899,11 @@
         [self startBackAnimation];
     }
 }
+
+- (void)openedFromNotification:(NSNotification *)notification {
+    [self performSegueWithIdentifier:@"detailsSegNotif" sender:self];
+}
+
 -(void)viewDidAppear:(BOOL)animated
 {
     if (isReloaded)

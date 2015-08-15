@@ -62,16 +62,58 @@
     NSDictionary* userInfo = [launchOptions valueForKey:UIApplicationLaunchOptionsRemoteNotificationKey];
     if(userInfo)
     {
-        NSString* ID = [[userInfo objectForKey:@"aps"] objectForKey:@"u"];
+        NSString* ID = [userInfo objectForKey:@"u"];
         
         dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
             NSData * data = [[NSData alloc] initWithContentsOfURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@%@",@"http://almasdarapp.com/almasdar/getAllDetails.php?id=",ID]]];
+            UIImage* image = nil;
             NSError* error;
-            NSDictionary* dict = [NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingAllowFragments error:&error];
+             NSDictionary* news = [[NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingAllowFragments error:&error] objectAtIndex:0];            if(!error)
+            {
+                if(![[news objectForKey:@"mediaURL"] isEqualToString:@""])
+                {
+                    NSData* imageData = [[NSData alloc]initWithContentsOfURL:[NSURL URLWithString:[news objectForKey:@"mediaURL"]]];
+                    image = [[UIImage alloc]initWithData:imageData];
+                }else
+                {
+                    image = [UIImage imageNamed:@"no-image-img.png"];
+                }
+            }
             dispatch_async(dispatch_get_main_queue(), ^(void) {
                 if(!error)
                 {
-#warning HUSSAIN ADD HERE THE STORING AND PUSHING
+                    
+                    NSString *sharedMsg=[news objectForKey:@"body"];
+                    NSArray* sharedObjects;
+                    
+                    if([[news objectForKey:@"mediaURL"]isEqualToString:@""])
+                    {
+                        sharedObjects=[NSArray arrayWithObjects:sharedMsg, nil];
+                        [[NSUserDefaults standardUserDefaults] setObject:sharedMsg forKey:@"textToShare"];
+                        [[NSUserDefaults standardUserDefaults] setObject:@"" forKey:@"imgToShare"];
+                        
+                    }
+                    else
+                    {
+                        [[NSUserDefaults standardUserDefaults] setObject:sharedMsg forKey:@"textToShare"];
+                        [[NSUserDefaults standardUserDefaults] setObject:[news objectForKey:@"mediaURL"] forKey:@"imgToShare"];
+                    }
+                    
+                    [[NSUserDefaults standardUserDefaults] setObject:UIImagePNGRepresentation(image) forKey:@"currentImgData"];
+                    
+                    [[NSUserDefaults standardUserDefaults] setObject:sharedObjects forKey:@"objectsToShare"];
+                    [[NSUserDefaults standardUserDefaults] setObject:[self getShareLinkForId:[news objectForKey:@"id"]] forKey:@"theSavedNewsId"];
+                    [[NSUserDefaults standardUserDefaults] setObject:[news objectForKey:@"id"] forKey:@"commentsId"];
+                    [[NSUserDefaults standardUserDefaults] setObject:[news objectForKey:@"newsURL"] forKey:@"newsLinkToOpen"];
+                    [[NSUserDefaults standardUserDefaults] setObject:[news objectForKey:@"photos"] forKey:@"newsAllPhotos"];
+                    [[NSUserDefaults standardUserDefaults] setObject:[news objectForKey:@"videos"] forKey:@"newsAllVideos"];
+                    [[NSUserDefaults standardUserDefaults] setObject:[news objectForKey:@"body"] forKey:@"savedNewsTitle"];
+                    [[NSUserDefaults standardUserDefaults] setObject:[news objectForKey:@"fullBody"] forKey:@"savedNewsBody"];
+                    [[NSUserDefaults standardUserDefaults] synchronize];
+                    [[NSUserDefaults standardUserDefaults]setObject:[news objectForKey:@"newsURL"] forKey:@"newsUrlNotif"];
+                    
+                    [[NSNotificationCenter defaultCenter] postNotificationName:@"OpenDetailsNotification" object:self];
+
                 }
             });
         });
@@ -79,6 +121,12 @@
     
     return YES;
 }
+
+-(NSString*)getShareLinkForId:(NSString*)theId
+{
+    return [@"http://almasdarapp.com/almasdar/Sharing/index.html?id=" stringByAppendingString:theId];
+}
+
 
 -(NSUInteger)application:(UIApplication *)application supportedInterfaceOrientationsForWindow:(UIWindow *)window{
     if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad)
@@ -340,6 +388,69 @@
 
 - (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo {
     [PFPush handlePush:userInfo];
+    if ( application.applicationState == UIApplicationStateInactive || application.applicationState == UIApplicationStateBackground  )
+    {
+        if(userInfo)
+        {
+            NSString* ID = [userInfo objectForKey:@"u"];
+            
+            dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+                NSData * data = [[NSData alloc] initWithContentsOfURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@%@",@"http://almasdarapp.com/almasdar/getAllDetails.php?id=",ID]]];
+                UIImage* image = nil;
+                NSError* error;
+                NSLog(@"%@",[[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding]);
+                NSDictionary* news = [[NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingAllowFragments error:&error] objectAtIndex:0];
+                if(!error)
+                {
+                    if(![[news objectForKey:@"mediaURL"] isEqualToString:@""])
+                    {
+                        NSData* imageData = [[NSData alloc]initWithContentsOfURL:[NSURL URLWithString:[news objectForKey:@"mediaURL"]]];
+                        image = [[UIImage alloc]initWithData:imageData];
+                    }else
+                    {
+                        image = [UIImage imageNamed:@"no-image-img.png"];
+                    }
+                }
+                dispatch_async(dispatch_get_main_queue(), ^(void) {
+                    if(!error)
+                    {
+                        
+                        NSString *sharedMsg=[news objectForKey:@"body"];
+                        NSArray* sharedObjects;
+                        
+                        if([[news objectForKey:@"mediaURL"]isEqualToString:@""])
+                        {
+                            sharedObjects=[NSArray arrayWithObjects:sharedMsg, nil];
+                            [[NSUserDefaults standardUserDefaults] setObject:sharedMsg forKey:@"textToShare"];
+                            [[NSUserDefaults standardUserDefaults] setObject:@"" forKey:@"imgToShare"];
+                            
+                        }
+                        else
+                        {
+                            [[NSUserDefaults standardUserDefaults] setObject:sharedMsg forKey:@"textToShare"];
+                            [[NSUserDefaults standardUserDefaults] setObject:[news objectForKey:@"mediaURL"] forKey:@"imgToShare"];
+                        }
+                        
+                        [[NSUserDefaults standardUserDefaults] setObject:UIImagePNGRepresentation(image) forKey:@"currentImgData"];
+                        
+                        [[NSUserDefaults standardUserDefaults] setObject:sharedObjects forKey:@"objectsToShare"];
+                        [[NSUserDefaults standardUserDefaults] setObject:[self getShareLinkForId:[news objectForKey:@"id"]] forKey:@"theSavedNewsId"];
+                        [[NSUserDefaults standardUserDefaults] setObject:[news objectForKey:@"id"] forKey:@"commentsId"];
+                        [[NSUserDefaults standardUserDefaults] setObject:[news objectForKey:@"newsURL"] forKey:@"newsLinkToOpen"];
+                        [[NSUserDefaults standardUserDefaults] setObject:[news objectForKey:@"photos"] forKey:@"newsAllPhotos"];
+                        [[NSUserDefaults standardUserDefaults] setObject:[news objectForKey:@"videos"] forKey:@"newsAllVideos"];
+                        [[NSUserDefaults standardUserDefaults] setObject:[news objectForKey:@"body"] forKey:@"savedNewsTitle"];
+                        [[NSUserDefaults standardUserDefaults] setObject:[news objectForKey:@"fullBody"] forKey:@"savedNewsBody"];
+                        [[NSUserDefaults standardUserDefaults] synchronize];
+                        [[NSUserDefaults standardUserDefaults]setObject:[news objectForKey:@"newsURL"] forKey:@"newsUrlNotif"];
+                        
+                        [[NSNotificationCenter defaultCenter] postNotificationName:@"OpenDetailsNotification" object:self];
+                        
+                    }
+                });
+            });
+        }
+    }
 }
 
 @end
