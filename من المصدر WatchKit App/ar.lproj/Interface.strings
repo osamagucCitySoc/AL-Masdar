@@ -1,0 +1,27 @@
+
+/* Class = "WKInterfaceButton"; title = "المفضلة"; ObjectID = "KEk-ek-cbc"; */
+"KEk-ek-cbc.title" = "المفضلة";
+
+/* Class = "WKInterfaceLabel"; text = "لايوجد تفاصيل للخبر"; ObjectID = "TDS-eK-sNB"; */
+"TDS-eK-sNB.text" = "لايوجد تفاصيل للخبر";
+
+/* Class = "WKInterfaceButton"; title = "الأخبار"; ObjectID = "V31-oE-AdI"; */
+"V31-oE-AdI.title" = "الأخبار";
+
+/* Class = "WKInterfaceLabel"; text = "Alert Label"; ObjectID = "XkS-y5-khE"; */
+"XkS-y5-khE.text" = "Alert Label";
+
+/* Class = "WKInterfaceButton"; title = "تحميل المزيد"; ObjectID = "dME-k2-gsF"; */
+"dME-k2-gsF.title" = "تحميل المزيد";
+
+/* Class = "WKInterfaceLabel"; text = "عاجل"; ObjectID = "g78-av-aFk"; */
+"g78-av-aFk.text" = "عاجل";
+
+/* Class = "WKInterfaceLabel"; text = "--"; ObjectID = "gtF-Ue-nP3"; */
+"gtF-Ue-nP3.text" = "--";
+
+/* Class = "WKInterfaceLabel"; text = "--"; ObjectID = "mUm-kk-lbb"; */
+"mUm-kk-lbb.text" = "--";
+
+/* Class = "WKInterfaceButton"; title = "عاجل"; ObjectID = "prF-FD-4UL"; */
+"prF-FD-4UL.title" = "عاجل";

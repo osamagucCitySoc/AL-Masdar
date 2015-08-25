@@ -1,0 +1,295 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<document type="com.apple.InterfaceBuilder.WatchKit.Storyboard" version="3.0" toolsVersion="7531" systemVersion="14D136" targetRuntime="watchKit" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" initialViewController="AgC-eL-Hgc">
+    <dependencies>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="7520"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBWatchKitPlugin" version="3737"/>
+    </dependencies>
+    <customFonts key="customFonts">
+        <mutableArray key="DroidKufi-Bold.ttf">
+            <string>DroidArabicKufi-Bold</string>
+        </mutableArray>
+        <mutableArray key="DroidKufi-Regular.ttf">
+            <string>DroidArabicKufi</string>
+            <string>DroidArabicKufi</string>
+            <string>DroidArabicKufi</string>
+            <string>DroidArabicKufi</string>
+        </mutableArray>
+        <mutableArray key="JF.ttf">
+            <string>JFFlat-Regular</string>
+            <string>JFFlat-Regular</string>
+            <string>JFFlat-Regular</string>
+            <string>JFFlat-Regular</string>
+        </mutableArray>
+    </customFonts>
+    <scenes>
+        <!--Interface Controller-->
+        <scene sceneID="aou-V4-d1y">
+            <objects>
+                <controller id="AgC-eL-Hgc" customClass="InterfaceController">
+                    <items>
+                        <group width="130" height="40" alignment="center" verticalAlignment="center" id="xEo-Rk-jVQ">
+                            <items>
+                                <imageView alignment="right" verticalAlignment="center" image="timeline-watch-icon.png" id="Hky-jV-6dW">
+                                    <variation key="device=watch38mm" alignment="right" alpha="1" contentMode="scaleToFill" hidden="NO" image="timeline-watch-icon.png" verticalAlignment="center">
+                                        <nil key="tintColor"/>
+                                    </variation>
+                                    <variation key="device=watch42mm" alignment="right" alpha="1" contentMode="scaleToFill" hidden="NO" image="timeline-watch-icon.png" verticalAlignment="center">
+                                        <nil key="tintColor"/>
+                                    </variation>
+                                </imageView>
+                                <button width="103" height="37" alignment="left" verticalAlignment="center" title="الأخبار" id="V31-oE-AdI">
+                                    <color key="backgroundColor" red="0.26666666666666666" green="0.5490196078431373" blue="0.69019607843137254" alpha="1" colorSpace="calibratedRGB"/>
+                                    <fontDescription key="font" name="JFFlat-Regular" family="JF Flat" pointSize="14"/>
+                                    <variation key="device=watch38mm" height="37" width="103"/>
+                                    <variation key="device=watch42mm" height="40" width="115"/>
+                                    <connections>
+                                        <action selector="openNews" destination="AgC-eL-Hgc" id="k2X-zh-vNr"/>
+                                    </connections>
+                                </button>
+                            </items>
+                            <variation key="device=watch38mm" height="40" width="130">
+                                <mask key="items">
+                                    <include reference="Hky-jV-6dW"/>
+                                    <include reference="V31-oE-AdI"/>
+                                </mask>
+                            </variation>
+                            <variation key="device=watch42mm" height="50" width="144">
+                                <mask key="items">
+                                    <include reference="Hky-jV-6dW"/>
+                                    <include reference="V31-oE-AdI"/>
+                                </mask>
+                            </variation>
+                        </group>
+                        <group width="130" height="40" alignment="center" verticalAlignment="center" id="euo-IZ-AYl">
+                            <items>
+                                <imageView alignment="right" verticalAlignment="center" image="favorites-watch-icon.png" id="WRu-yg-Q0h">
+                                    <variation key="device=watch38mm" image="favorites-watch-icon.png"/>
+                                    <variation key="device=watch42mm" image="favorites-watch-icon.png"/>
+                                </imageView>
+                                <button width="103" height="37" alignment="left" verticalAlignment="center" title="المفضلة" id="KEk-ek-cbc">
+                                    <color key="titleColor" white="0.0" alpha="1" colorSpace="calibratedWhite"/>
+                                    <color key="backgroundColor" red="0.92941176470588238" green="0.92549019607843142" blue="0.035294117647058823" alpha="1" colorSpace="calibratedRGB"/>
+                                    <fontDescription key="font" name="JFFlat-Regular" family="JF Flat" pointSize="14"/>
+                                    <variation key="device=watch38mm" height="37" width="103"/>
+                                    <variation key="device=watch42mm" height="40" width="115"/>
+                                    <connections>
+                                        <action selector="openFav" destination="AgC-eL-Hgc" id="GFp-O8-9H3"/>
+                                    </connections>
+                                </button>
+                            </items>
+                            <variation key="device=watch38mm" height="40" width="130">
+                                <mask key="items">
+                                    <include reference="WRu-yg-Q0h"/>
+                                    <include reference="KEk-ek-cbc"/>
+                                </mask>
+                            </variation>
+                            <variation key="device=watch42mm" height="50" width="144">
+                                <mask key="items">
+                                    <include reference="WRu-yg-Q0h"/>
+                                    <include reference="KEk-ek-cbc"/>
+                                </mask>
+                            </variation>
+                        </group>
+                        <group width="130" height="40" alignment="center" verticalAlignment="center" id="KdU-yG-S1a">
+                            <items>
+                                <imageView alignment="right" verticalAlignment="center" image="breaking-watch-icon.png" id="36t-0K-yEg">
+                                    <variation key="device=watch38mm" image="breaking-watch-icon.png"/>
+                                    <variation key="device=watch42mm" image="breaking-watch-icon.png"/>
+                                </imageView>
+                                <button width="103" height="37" alignment="left" verticalAlignment="center" title="عاجل" id="prF-FD-4UL">
+                                    <color key="backgroundColor" red="0.89411764705882357" green="0.21568627450980393" blue="0.14117647058823529" alpha="1" colorSpace="calibratedRGB"/>
+                                    <fontDescription key="font" name="JFFlat-Regular" family="JF Flat" pointSize="14"/>
+                                    <variation key="device=watch38mm" height="37" width="103"/>
+                                    <variation key="device=watch42mm" height="40" width="115"/>
+                                    <connections>
+                                        <action selector="openBreaking" destination="AgC-eL-Hgc" id="aOv-Of-EVR"/>
+                                    </connections>
+                                </button>
+                            </items>
+                            <variation key="device=watch38mm" height="40" width="130">
+                                <mask key="items">
+                                    <include reference="36t-0K-yEg"/>
+                                    <include reference="prF-FD-4UL"/>
+                                </mask>
+                            </variation>
+                            <variation key="device=watch42mm" height="50" width="144">
+                                <mask key="items">
+                                    <include reference="36t-0K-yEg"/>
+                                    <include reference="prF-FD-4UL"/>
+                                </mask>
+                            </variation>
+                        </group>
+                    </items>
+                    <variation key="device=watch38mm">
+                        <mask key="items">
+                            <include reference="xEo-Rk-jVQ"/>
+                            <include reference="euo-IZ-AYl"/>
+                            <include reference="KdU-yG-S1a"/>
+                        </mask>
+                    </variation>
+                    <variation key="device=watch42mm">
+                        <mask key="items">
+                            <include reference="xEo-Rk-jVQ"/>
+                            <include reference="euo-IZ-AYl"/>
+                            <include reference="KdU-yG-S1a"/>
+                        </mask>
+                    </variation>
+                    <connections>
+                        <outlet property="breakingImg" destination="36t-0K-yEg" id="tBM-dv-VOm"/>
+                        <outlet property="favImg" destination="WRu-yg-Q0h" id="u4d-6n-y98"/>
+                        <outlet property="newsImg" destination="Hky-jV-6dW" id="83F-Mn-foh"/>
+                    </connections>
+                </controller>
+            </objects>
+            <point key="canvasLocation" x="235" y="347"/>
+        </scene>
+        <!--theTableSeg-->
+        <scene sceneID="6LA-s7-3tg">
+            <objects>
+                <controller identifier="theTableSeg" id="bnf-JY-lJJ" customClass="TableController">
+                    <items>
+                        <table alignment="left" id="j0a-i8-cut">
+                            <items>
+                                <tableRow identifier="myRow" id="2e7-OG-x9A" customClass="MyRowController">
+                                    <group key="rootItem" width="1" height="0.0" alignment="left" layout="vertical" id="VS8-ax-W6P">
+                                        <items>
+                                            <label width="123" height="29" alignment="center" verticalAlignment="center" text="--" textAlignment="right" id="mUm-kk-lbb">
+                                                <color key="textColor" red="0.30383776480000002" green="0.64676637290000005" blue="0.87990607860000003" alpha="1" colorSpace="calibratedRGB"/>
+                                                <fontDescription key="font" name="DroidArabicKufi-Bold" family="Droid Arabic Kufi" pointSize="15"/>
+                                                <variation key="device=watch38mm" height="25" width="148">
+                                                    <fontDescription key="font" name="DroidArabicKufi-Bold" family="Droid Arabic Kufi" pointSize="15"/>
+                                                </variation>
+                                                <variation key="device=watch42mm" height="25" width="148">
+                                                    <fontDescription key="font" name="DroidArabicKufi-Bold" family="Droid Arabic Kufi" pointSize="15"/>
+                                                </variation>
+                                            </label>
+                                            <label width="134" alignment="center" verticalAlignment="center" text="--" textAlignment="right" numberOfLines="99" id="gtF-Ue-nP3">
+                                                <color key="textColor" red="0.90196078431372551" green="0.90196078431372551" blue="0.90196078431372551" alpha="1" colorSpace="calibratedRGB"/>
+                                                <fontDescription key="font" name="DroidArabicKufi" family="Droid Arabic Kufi" pointSize="16"/>
+                                                <variation key="device=watch38mm" width="148">
+                                                    <fontDescription key="font" name="DroidArabicKufi" family="Droid Arabic Kufi" pointSize="16"/>
+                                                </variation>
+                                                <variation key="device=watch42mm" width="150">
+                                                    <fontDescription key="font" type="system" weight="light" pointSize="16"/>
+                                                </variation>
+                                            </label>
+                                            <separator alignment="center" verticalAlignment="bottom" id="ImL-Rh-nYG">
+                                                <color key="color" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                                            </separator>
+                                            <separator alignment="center" id="gYb-YV-cjn">
+                                                <color key="color" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                                            </separator>
+                                        </items>
+                                    </group>
+                                    <connections>
+                                        <outlet property="bodyLabel" destination="gtF-Ue-nP3" id="TfI-KQ-2Hv"/>
+                                        <outlet property="titleLabel" destination="mUm-kk-lbb" id="GkQ-fP-BaT"/>
+                                    </connections>
+                                </tableRow>
+                            </items>
+                        </table>
+                        <imageView alignment="center" verticalAlignment="center" hidden="YES" image="wait-watch-1.png" animationDuration="0.59999999999999998" id="9Ku-g4-oMt"/>
+                        <button width="1" alignment="center" verticalAlignment="bottom" hidden="YES" title="تحميل المزيد" id="dME-k2-gsF">
+                            <color key="backgroundColor" red="0.2666666667" green="0.54901960780000003" blue="0.69019607839999997" alpha="1" colorSpace="calibratedRGB"/>
+                            <fontDescription key="font" name="JFFlat-Regular" family="JF Flat" pointSize="13"/>
+                            <connections>
+                                <action selector="loadMoreNews" destination="bnf-JY-lJJ" id="1GB-zY-sg7"/>
+                            </connections>
+                        </button>
+                        <imageView alignment="center" verticalAlignment="center" hidden="YES" image="favorites-watch-icon.png" id="7hT-Iy-PgP">
+                            <variation key="device=watch38mm" image="favorites-watch-icon.png"/>
+                            <variation key="device=watch42mm" image="favorites-watch-icon.png"/>
+                        </imageView>
+                        <label alignment="center" verticalAlignment="center" hidden="YES" id="TPG-Y1-vay">
+                            <fontDescription key="font" name="DroidArabicKufi" family="Droid Arabic Kufi" pointSize="13"/>
+                        </label>
+                    </items>
+                    <connections>
+                        <outlet property="loadMoreButton" destination="dME-k2-gsF" id="zzr-uZ-lKM"/>
+                        <outlet property="noNewsImg" destination="7hT-Iy-PgP" id="HDK-H4-eCG"/>
+                        <outlet property="noNewsLabel" destination="TPG-Y1-vay" id="RuN-mL-Mk4"/>
+                        <outlet property="tableView" destination="j0a-i8-cut" id="0QE-4C-pUb"/>
+                        <outlet property="waitImg" destination="9Ku-g4-oMt" id="qYr-uh-oHB"/>
+                    </connections>
+                </controller>
+            </objects>
+            <point key="canvasLocation" x="517" y="357"/>
+        </scene>
+        <!--infoNewsSeg-->
+        <scene sceneID="euS-De-bFQ">
+            <objects>
+                <controller identifier="infoNewsSeg" id="rPx-il-mb1" customClass="InsideNewsController">
+                    <items>
+                        <label width="1" alignment="center" textAlignment="right" numberOfLines="100000" id="5OD-hh-v3W">
+                            <fontDescription key="font" name="DroidArabicKufi" family="Droid Arabic Kufi" pointSize="16"/>
+                        </label>
+                        <label width="1" height="30" alignment="center" verticalAlignment="center" hidden="YES" text="لايوجد تفاصيل للخبر" textAlignment="center" id="TDS-eK-sNB">
+                            <fontDescription key="font" name="DroidArabicKufi" family="Droid Arabic Kufi" pointSize="11"/>
+                        </label>
+                    </items>
+                    <connections>
+                        <outlet property="newsLabel" destination="5OD-hh-v3W" id="UWc-jk-IyT"/>
+                        <outlet property="noNewsLabel" destination="TDS-eK-sNB" id="e2V-ne-One"/>
+                    </connections>
+                </controller>
+            </objects>
+            <point key="canvasLocation" x="823" y="350"/>
+        </scene>
+        <!--Glance Interface Controller-->
+        <scene sceneID="BOz-TT-tkC">
+            <objects>
+                <glanceController spacing="0.0" id="0uZ-2p-rRc" customClass="GlanceController">
+                    <items>
+                        <group alignment="left" id="t8f-Gd-c4y">
+                            <items>
+                                <separator alignment="left" id="oeH-pe-LNf">
+                                    <color key="color" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                                </separator>
+                                <imageView alignment="left" verticalAlignment="center" image="breaking-watch-icon.png" id="EZs-Ma-R08"/>
+                                <label width="87" alignment="left" verticalAlignment="center" text="عاجل" id="g78-av-aFk">
+                                    <fontDescription key="font" type="boldSystem" pointSize="15"/>
+                                </label>
+                            </items>
+                        </group>
+                        <group alignment="left" layout="vertical" id="uCw-4Q-Ouw">
+                            <items>
+                                <label width="1" alignment="center" textAlignment="right" numberOfLines="0" id="2ad-pJ-0NK">
+                                    <fontDescription key="font" type="system" pointSize="15"/>
+                                </label>
+                            </items>
+                        </group>
+                    </items>
+                    <edgeInsets key="margins" left="0.0" right="0.0" top="0.0" bottom="14"/>
+                    <connections>
+                        <outlet property="breakingLabel" destination="2ad-pJ-0NK" id="X0D-iM-9dI"/>
+                        <outlet property="breakingName" destination="g78-av-aFk" id="0bO-Pb-xRc"/>
+                    </connections>
+                </glanceController>
+            </objects>
+            <point key="canvasLocation" x="235" y="672"/>
+        </scene>
+        <!--Static Notification Interface Controller-->
+        <scene sceneID="AEw-b0-oYE">
+            <objects>
+                <notificationController id="YCC-NB-fut">
+                    <items>
+                        <label alignment="left" text="Alert Label" numberOfLines="0" id="XkS-y5-khE"/>
+                    </items>
+                    <notificationCategory key="notificationCategory" identifier="myCategory" id="JfB-70-Muf"/>
+                    <connections>
+                        <outlet property="notificationAlertLabel" destination="XkS-y5-khE" id="49B-RR-99y"/>
+                        <segue destination="gdX-wl-uQE" kind="relationship" relationship="dynamicNotificationInterface" id="fKh-qV-3T2"/>
+                    </connections>
+                </notificationController>
+            </objects>
+            <point key="canvasLocation" x="235" y="1001"/>
+        </scene>
+        <!--Notification Controller-->
+        <scene sceneID="KIl-fV-djm">
+            <objects>
+                <controller id="gdX-wl-uQE" customClass="NotificationController"/>
+            </objects>
+            <point key="canvasLocation" x="553" y="1001"/>
+        </scene>
+    </scenes>
+</document>

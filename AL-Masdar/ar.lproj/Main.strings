@@ -1,0 +1,321 @@
+
+/* Class = "UIBarButtonItem"; title = "إلغاء"; ObjectID = "1LI-d4-56a"; */
+"1LI-d4-56a.title" = "إلغاء";
+
+/* Class = "UILabel"; text = "الألوان والمظهر"; ObjectID = "1WX-Wg-Ni2"; */
+"1WX-Wg-Ni2.text" = "الألوان والمظهر";
+
+/* Class = "UINavigationItem"; title = "مصادر التنبيه"; ObjectID = "1bs-r8-FuU"; */
+"1bs-r8-FuU.title" = "مصادر التنبيه";
+
+/* Class = "UILabel"; text = "اسحب الخبر لليمن لإضافته للمفضلة"; ObjectID = "1oY-Ly-EgP"; */
+"1oY-Ly-EgP.text" = "اسحب الخبر لليمن لإضافته للمفضلة";
+
+/* Class = "UITextField"; placeholder = "الإسم:"; ObjectID = "1qm-68-Kja"; */
+"1qm-68-Kja.placeholder" = "الإسم:";
+
+/* Class = "UINavigationItem"; title = "اختر اللون"; ObjectID = "2NY-uH-R3G"; */
+"2NY-uH-R3G.title" = "اختر اللون";
+
+/* Class = "UILabel"; text = "شكراً لك!"; ObjectID = "2SU-AI-2Fi"; */
+"2SU-AI-2Fi.text" = "شكراً لك!";
+
+/* Class = "UITextField"; placeholder = "بحث في المصادر"; ObjectID = "2fw-Mg-UyV"; */
+"2fw-Mg-UyV.placeholder" = "بحث في المصادر";
+
+/* Class = "UINavigationItem"; title = "الإعدادات"; ObjectID = "2ia-hb-5nl"; */
+"2ia-hb-5nl.title" = "الإعدادات";
+
+/* Class = "UILabel"; text = "تفعيل الوضع الليلي تلقائياً"; ObjectID = "3PS-tQ-okl"; */
+"3PS-tQ-okl.text" = "تفعيل الوضع الليلي تلقائياً";
+
+/* Class = "UILabel"; text = "المصدر"; ObjectID = "3SW-6O-PEr"; */
+"3SW-6O-PEr.text" = "المصدر";
+
+/* Class = "UILabel"; text = "فتح في سفاري"; ObjectID = "3cX-bR-MUD"; */
+"3cX-bR-MUD.text" = "فتح في سفاري";
+
+/* Class = "UILabel"; text = "إذا أعجبك تطبيق من المصدر، هل بالإمكان أخذ دقيقة من وقتك لتقييم التطبيق في متجر البرامج؟"; ObjectID = "4c8-RH-kUx"; */
+"4c8-RH-kUx.text" = "إذا أعجبك تطبيق من المصدر، هل بالإمكان أخذ دقيقة من وقتك لتقييم التطبيق في متجر البرامج؟";
+
+/* Class = "UIButton"; normalTitle = "رجوع"; ObjectID = "5mZ-DB-eXl"; */
+"5mZ-DB-eXl.normalTitle" = "رجوع";
+
+/* Class = "UIBarButtonItem"; title = "إرسال"; ObjectID = "5zw-0g-YZI"; */
+"5zw-0g-YZI.title" = "إرسال";
+
+/* Class = "UILabel"; text = "جاري تحميل صور الخبر"; ObjectID = "7Oy-6e-Zi1"; */
+"7Oy-6e-Zi1.text" = "جاري تحميل صور الخبر";
+
+/* Class = "UILabel"; text = "حفظ الصورة"; ObjectID = "7a1-rS-WHI"; */
+"7a1-rS-WHI.text" = "حفظ الصورة";
+
+/* Class = "UINavigationItem"; title = "التنبيه"; ObjectID = "8hP-fO-S0L"; */
+"8hP-fO-S0L.title" = "التنبيه";
+
+/* Class = "UINavigationItem"; title = "عن التطبيق"; ObjectID = "9LA-BU-dTa"; */
+"9LA-BU-dTa.title" = "عن التطبيق";
+
+/* Class = "UIBarButtonItem"; title = "حفظ"; ObjectID = "ApM-fg-Xj3"; */
+"ApM-fg-Xj3.title" = "حفظ";
+
+/* Class = "UINavigationItem"; title = "الأخبار"; ObjectID = "CEI-fV-Gtl"; */
+"CEI-fV-Gtl.title" = "الأخبار";
+
+/* Class = "UITableViewSection"; headerTitle = "عام"; ObjectID = "COc-hC-Rhp"; */
+"COc-hC-Rhp.headerTitle" = "عام";
+
+/* Class = "UILabel"; text = "تفاصيل الخبر"; ObjectID = "DAA-EH-2GQ"; */
+"DAA-EH-2GQ.text" = "تفاصيل الخبر";
+
+/* Class = "UILabel"; text = "فتح في سفاري"; ObjectID = "DZF-Tc-THK"; */
+"DZF-Tc-THK.text" = "فتح في سفاري";
+
+/* Class = "UISegmentedControl"; Eku-nU-KEB.segmentTitles[0] = "كل المصادر"; ObjectID = "Eku-nU-KEB"; */
+"Eku-nU-KEB.segmentTitles[0]" = "كل المصادر";
+
+/* Class = "UISegmentedControl"; Eku-nU-KEB.segmentTitles[1] = "مصادري فقط"; ObjectID = "Eku-nU-KEB"; */
+"Eku-nU-KEB.segmentTitles[1]" = "مصادري فقط";
+
+/* Class = "UIButton"; normalTitle = "تقييم الآن"; ObjectID = "Eob-D0-jUU"; */
+"Eob-D0-jUU.normalTitle" = "تقييم الآن";
+
+/* Class = "UIBarButtonItem"; title = "\"،\""; ObjectID = "FKf-aK-UeJ"; */
+"FKf-aK-UeJ.title" = "\"،\"";
+
+/* Class = "UINavigationItem"; title = "الخيارات"; ObjectID = "FOp-Ff-1O8"; */
+"FOp-Ff-1O8.title" = "الخيارات";
+
+/* Class = "UILabel"; text = "من المصدر"; ObjectID = "Hgw-0G-QaC"; */
+"Hgw-0G-QaC.text" = "من المصدر";
+
+/* Class = "UILabel"; text = "تفاصيل الخبر"; ObjectID = "IGH-qc-Ww1"; */
+"IGH-qc-Ww1.text" = "تفاصيل الخبر";
+
+/* Class = "UILabel"; text = "*"; ObjectID = "IaM-uv-xsR"; */
+"IaM-uv-xsR.text" = "*";
+
+/* Class = "UILabel"; text = "نسخ الخبر"; ObjectID = "Ja1-25-Vc5"; */
+"Ja1-25-Vc5.text" = "نسخ الخبر";
+
+/* Class = "UITableViewSection"; headerTitle = "المزيد"; ObjectID = "K1j-B3-HRq"; */
+"K1j-B3-HRq.headerTitle" = "المزيد";
+
+/* Class = "UIButton"; normalTitle = "أضف تعليق"; ObjectID = "KEY-R2-D5Q"; */
+"KEY-R2-D5Q.normalTitle" = "أضف تعليق";
+
+/* Class = "UILabel"; text = "من المصدر"; ObjectID = "KRA-pz-lqN"; */
+"KRA-pz-lqN.text" = "من المصدر";
+
+/* Class = "UILabel"; text = "مصدر الخبر"; ObjectID = "Kcd-H4-uCH"; */
+"Kcd-H4-uCH.text" = "مصدر الخبر";
+
+/* Class = "UILabel"; text = "--"; ObjectID = "Kxg-OS-WCR"; */
+"Kxg-OS-WCR.text" = "--";
+
+/* Class = "UILabel"; text = "المزيد"; ObjectID = "L2l-L8-zeB"; */
+"L2l-L8-zeB.text" = "المزيد";
+
+/* Class = "UIButton"; normalTitle = "المزيد من التطبيقات"; ObjectID = "LkY-s3-TuB"; */
+"LkY-s3-TuB.normalTitle" = "المزيد من التطبيقات";
+
+/* Class = "UILabel"; text = "عن التطبيق"; ObjectID = "LlZ-ke-TU8"; */
+"LlZ-ke-TU8.text" = "عن التطبيق";
+
+/* Class = "UIButton"; normalTitle = "إلغاء"; ObjectID = "MCd-dD-cOn"; */
+"MCd-dD-cOn.normalTitle" = "إلغاء";
+
+/* Class = "UIBarButtonItem"; title = "تعديل المصادر"; ObjectID = "MJ9-XO-4ZS"; */
+"MJ9-XO-4ZS.title" = "تعديل المصادر";
+
+/* Class = "UILabel"; text = "المزيد"; ObjectID = "MWb-2L-a7o"; */
+"MWb-2L-a7o.text" = "المزيد";
+
+/* Class = "UILabel"; text = "نسخ الخبر"; ObjectID = "Mme-lQ-UAX"; */
+"Mme-lQ-UAX.text" = "نسخ الخبر";
+
+/* Class = "UILabel"; text = "لبنان"; ObjectID = "Mu3-vN-pbe"; */
+"Mu3-vN-pbe.text" = "لبنان";
+
+/* Class = "UILabel"; text = "المزيد"; ObjectID = "NgB-eP-zdb"; */
+"NgB-eP-zdb.text" = "المزيد";
+
+/* Class = "UIButton"; normalTitle = "لا، شكراً"; ObjectID = "POj-0P-mwz"; */
+"POj-0P-mwz.normalTitle" = "لا، شكراً";
+
+/* Class = "UIBarButtonItem"; title = "بحث"; ObjectID = "RJW-Td-mjW"; */
+"RJW-Td-mjW.title" = "بحث";
+
+/* Class = "UIBarButtonItem"; title = "تعديل البيانات"; ObjectID = "RYB-od-NsI"; */
+"RYB-od-NsI.title" = "تعديل البيانات";
+
+/* Class = "UINavigationItem"; title = "التعليقات"; ObjectID = "RcO-6p-Lvr"; */
+"RcO-6p-Lvr.title" = "التعليقات";
+
+/* Class = "UILabel"; text = "--"; ObjectID = "RyG-Bt-pDl"; */
+"RyG-Bt-pDl.text" = "--";
+
+/* Class = "UIBarButtonItem"; title = "تحديد الكل"; ObjectID = "S8H-63-RCI"; */
+"S8H-63-RCI.title" = "تحديد الكل";
+
+/* Class = "UINavigationItem"; title = "الأهداف بالفيديو"; ObjectID = "SKb-xU-01T"; */
+"SKb-xU-01T.title" = "الأهداف بالفيديو";
+
+/* Class = "UITableViewSection"; headerTitle = "التنبيهات"; ObjectID = "SbG-Wd-6gk"; */
+"SbG-Wd-6gk.headerTitle" = "التنبيهات";
+
+/* Class = "UITextField"; placeholder = "للبحث عن أكثر من موضوع أدخل \"،\" بعد كل جملة أو كلمة."; ObjectID = "Scq-dW-j0m"; */
+"Scq-dW-j0m.placeholder" = "للبحث عن أكثر من موضوع أدخل \"،\" بعد كل جملة أو كلمة.";
+
+/* Class = "UILabel"; text = "أنت في قلب الحدث"; ObjectID = "SnC-pa-kvF"; */
+"SnC-pa-kvF.text" = "أنت في قلب الحدث";
+
+/* Class = "UILabel"; text = "التأثيرات الصوتية"; ObjectID = "UAh-D0-jBp"; */
+"UAh-D0-jBp.text" = "التأثيرات الصوتية";
+
+/* Class = "UITextField"; placeholder = "البريد الإلكتروني:"; ObjectID = "VfQ-eV-HMa"; */
+"VfQ-eV-HMa.placeholder" = "البريد الإلكتروني:";
+
+/* Class = "UILabel"; text = "--"; ObjectID = "VgN-9J-fgI"; */
+"VgN-9J-fgI.text" = "--";
+
+/* Class = "UIButton"; normalTitle = "--"; ObjectID = "WBp-qe-kiy"; */
+"WBp-qe-kiy.normalTitle" = "--";
+
+/* Class = "UILabel"; text = "يجب أن تكون متصلاً بالإنترنت"; ObjectID = "WSe-KJ-FYr"; */
+"WSe-KJ-FYr.text" = "يجب أن تكون متصلاً بالإنترنت";
+
+/* Class = "UINavigationItem"; title = "البحث"; ObjectID = "WiP-I9-9eQ"; */
+"WiP-I9-9eQ.title" = "البحث";
+
+/* Class = "UILabel"; text = "فتح في سفاري"; ObjectID = "Xdk-62-ofg"; */
+"Xdk-62-ofg.text" = "فتح في سفاري";
+
+/* Class = "UILabel"; text = "تابع السحب لإغلاق الخبر"; ObjectID = "Xia-KV-vNL"; */
+"Xia-KV-vNL.text" = "تابع السحب لإغلاق الخبر";
+
+/* Class = "UILabel"; text = "تقييم في متجر البرامج"; ObjectID = "Y6A-lf-iK5"; */
+"Y6A-lf-iK5.text" = "تقييم في متجر البرامج";
+
+/* Class = "UILabel"; text = "الإصدار: --"; ObjectID = "YhB-jb-R4e"; */
+"YhB-jb-R4e.text" = "الإصدار: --";
+
+/* Class = "UILabel"; text = "حفظ الصورة"; ObjectID = "Zhu-fr-OKM"; */
+"Zhu-fr-OKM.text" = "حفظ الصورة";
+
+/* Class = "UIBarButtonItem"; title = "اذهب"; ObjectID = "aTn-bu-iKk"; */
+"aTn-bu-iKk.title" = "اذهب";
+
+/* Class = "UILabel"; text = "مصر"; ObjectID = "agt-jS-8Fh"; */
+"agt-jS-8Fh.text" = "مصر";
+
+/* Class = "UIBarButtonItem"; title = "إلغاء"; ObjectID = "asc-Nl-e5b"; */
+"asc-Nl-e5b.title" = "إلغاء";
+
+/* Class = "UIButton"; normalTitle = "لا، شكراً"; ObjectID = "bAi-Uq-OxS"; */
+"bAi-Uq-OxS.normalTitle" = "لا، شكراً";
+
+/* Class = "UITextField"; placeholder = "أدخل كلمة أو جملة جديدة"; ObjectID = "bbp-dj-dYy"; */
+"bbp-dj-dYy.placeholder" = "أدخل كلمة أو جملة جديدة";
+
+/* Class = "UINavigationItem"; title = "تحديد المصادر الإخبارية"; ObjectID = "cJT-7n-Jeh"; */
+"cJT-7n-Jeh.title" = "تحديد المصادر الإخبارية";
+
+/* Class = "UILabel"; text = "منذ 2 ساعة"; ObjectID = "cgC-fS-J2I"; */
+"cgC-fS-J2I.text" = "منذ 2 ساعة";
+
+/* Class = "UILabel"; text = "اسم المصدر"; ObjectID = "csS-Pd-lxV"; */
+"csS-Pd-lxV.text" = "اسم المصدر";
+
+/* Class = "UIBarButtonItem"; title = "     "; ObjectID = "dsD-dW-eEL"; */
+"dsD-dW-eEL.title" = "     ";
+
+/* Class = "UIButton"; normalTitle = "تقييم الآن"; ObjectID = "eqH-a1-HA8"; */
+"eqH-a1-HA8.normalTitle" = "تقييم الآن";
+
+/* Class = "UIButton"; normalTitle = "حفظ البيانات"; ObjectID = "f6v-lK-JDR"; */
+"f6v-lK-JDR.normalTitle" = "حفظ البيانات";
+
+/* Class = "UINavigationItem"; title = "مصادر التنبيه"; ObjectID = "g4z-M0-dwj"; */
+"g4z-M0-dwj.title" = "مصادر التنبيه";
+
+/* Class = "UILabel"; text = "إذا أعجبك تطبيق من المصدر، هل بالإمكان أخذ دقيقة من وقتك لتقييم التطبيق في متجر البرامج؟"; ObjectID = "gO6-u5-Lpr"; */
+"gO6-u5-Lpr.text" = "إذا أعجبك تطبيق من المصدر، هل بالإمكان أخذ دقيقة من وقتك لتقييم التطبيق في متجر البرامج؟";
+
+/* Class = "UILabel"; text = "اسحب الخبر لليسار للمشاركة"; ObjectID = "gYQ-fU-N6G"; */
+"gYQ-fU-N6G.text" = "اسحب الخبر لليسار للمشاركة";
+
+/* Class = "UILabel"; text = "الدعم الفني"; ObjectID = "gp9-by-sAW"; */
+"gp9-by-sAW.text" = "الدعم الفني";
+
+/* Class = "UILabel"; text = "نسخ الخبر"; ObjectID = "hBy-h8-HtQ"; */
+"hBy-h8-HtQ.text" = "نسخ الخبر";
+
+/* Class = "UIButton"; normalTitle = "إلغاء"; ObjectID = "hCU-Bm-WDF"; */
+"hCU-Bm-WDF.normalTitle" = "إلغاء";
+
+/* Class = "UILabel"; text = "Copyright (c) 2015 SADAH Software Solutions, LLC. All rights reserved."; ObjectID = "hwJ-bH-DUB"; */
+"hwJ-bH-DUB.text" = "Copyright (c) 2015 SADAH Software Solutions, LLC. All rights reserved.";
+
+/* Class = "UILabel"; text = "Copyright (c) 2015 SADAH Software Solutions, LLC. All rights reserved."; ObjectID = "kF5-RL-Atd"; */
+"kF5-RL-Atd.text" = "Copyright (c) 2015 SADAH Software Solutions, LLC. All rights reserved.";
+
+/* Class = "UILabel"; text = "هدفي مارسيليا في يوفينتوس"; ObjectID = "lTC-7z-4dg"; */
+"lTC-7z-4dg.text" = "هدفي مارسيليا في يوفينتوس";
+
+/* Class = "UILabel"; text = "المصدر"; ObjectID = "lgG-hM-l4m"; */
+"lgG-hM-l4m.text" = "المصدر";
+
+/* Class = "UIBarButtonItem"; title = "مصادر التنبيه"; ObjectID = "mLe-La-bIe"; */
+"mLe-La-bIe.title" = "مصادر التنبيه";
+
+/* Class = "UILabel"; text = "اضغط مطولاً على الخبر لمشاهدة الصورة"; ObjectID = "mRT-Pp-ie4"; */
+"mRT-Pp-ie4.text" = "اضغط مطولاً على الخبر لمشاهدة الصورة";
+
+/* Class = "UILabel"; text = "مشاهدة فيديو شرح الإستخدام"; ObjectID = "mfF-ZO-Jf4"; */
+"mfF-ZO-Jf4.text" = "مشاهدة فيديو شرح الإستخدام";
+
+/* Class = "UINavigationItem"; title = "التفاصيل"; ObjectID = "mfz-gs-ejQ"; */
+"mfz-gs-ejQ.title" = "التفاصيل";
+
+/* Class = "UINavigationItem"; title = "اختر المصدر"; ObjectID = "n0t-TW-8uu"; */
+"n0t-TW-8uu.title" = "اختر المصدر";
+
+/* Class = "UILabel"; text = "اسم المصدر"; ObjectID = "o7L-Ig-Gpa"; */
+"o7L-Ig-Gpa.text" = "اسم المصدر";
+
+/* Class = "UILabel"; text = "تحديد مصادر الأخبار للتنبيه"; ObjectID = "onB-oi-736"; */
+"onB-oi-736.text" = "تحديد مصادر الأخبار للتنبيه";
+
+/* Class = "UILabel"; text = "حفظ الصورة"; ObjectID = "pGs-2d-ovS"; */
+"pGs-2d-ovS.text" = "حفظ الصورة";
+
+/* Class = "UIBarButtonItem"; title = "تحديد الكل"; ObjectID = "qUA-Xs-ls2"; */
+"qUA-Xs-ls2.title" = "تحديد الكل";
+
+/* Class = "UINavigationItem"; title = "مساعدة"; ObjectID = "qg8-Gf-vAw"; */
+"qg8-Gf-vAw.title" = "مساعدة";
+
+/* Class = "UIBarButtonItem"; title = "تم"; ObjectID = "rjL-IY-ivN"; */
+"rjL-IY-ivN.title" = "تم";
+
+/* Class = "UILabel"; text = "مصدر الخبر"; ObjectID = "rsD-hF-zg9"; */
+"rsD-hF-zg9.text" = "مصدر الخبر";
+
+/* Class = "UILabel"; text = "لايوجد نتائج"; ObjectID = "rwe-l1-DWg"; */
+"rwe-l1-DWg.text" = "لايوجد نتائج";
+
+/* Class = "UINavigationItem"; title = "مشاهدة"; ObjectID = "ttd-vK-I62"; */
+"ttd-vK-I62.title" = "مشاهدة";
+
+/* Class = "UILabel"; text = "التنبيه بالأخبار العاجلة"; ObjectID = "u9s-ID-qS4"; */
+"u9s-ID-qS4.text" = "التنبيه بالأخبار العاجلة";
+
+/* Class = "UIButton"; normalTitle = "إلغاء"; ObjectID = "vLd-hr-AXX"; */
+"vLd-hr-AXX.normalTitle" = "إلغاء";
+
+/* Class = "UILabel"; text = "شكراً لك!"; ObjectID = "z4t-1R-Etx"; */
+"z4t-1R-Etx.text" = "شكراً لك!";
+
+/* Class = "UILabel"; text = "منذ 2 ساعة"; ObjectID = "zZz-c3-ws3"; */
+"zZz-c3-ws3.text" = "منذ 2 ساعة";

@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>IDESourceControlProjectFavoriteDictionaryKey</key>
+	<false/>
+	<key>IDESourceControlProjectIdentifier</key>
+	<string>955F8AA2-A8DD-4219-AD0B-3ABAB12E05B4</string>
+	<key>IDESourceControlProjectName</key>
+	<string>AL-Masdar</string>
+	<key>IDESourceControlProjectOriginsDictionary</key>
+	<dict>
+		<key>6DF0CD4915BEC11574DD1419019A099937D45101</key>
+		<string>https://github.com/osamagucCitySoc/AL-Masdar.git</string>
+	</dict>
+	<key>IDESourceControlProjectPath</key>
+	<string>AL-Masdar.xcworkspace</string>
+	<key>IDESourceControlProjectRelativeInstallPathDictionary</key>
+	<dict>
+		<key>6DF0CD4915BEC11574DD1419019A099937D45101</key>
+		<string>..</string>
+	</dict>
+	<key>IDESourceControlProjectURL</key>
+	<string>https://github.com/osamagucCitySoc/AL-Masdar.git</string>
+	<key>IDESourceControlProjectVersion</key>
+	<integer>111</integer>
+	<key>IDESourceControlProjectWCCIdentifier</key>
+	<string>6DF0CD4915BEC11574DD1419019A099937D45101</string>
+	<key>IDESourceControlProjectWCConfigurations</key>
+	<array>
+		<dict>
+			<key>IDESourceControlRepositoryExtensionIdentifierKey</key>
+			<string>public.vcs.git</string>
+			<key>IDESourceControlWCCIdentifierKey</key>
+			<string>6DF0CD4915BEC11574DD1419019A099937D45101</string>
+			<key>IDESourceControlWCCName</key>
+			<string>AL-Masdar</string>
+		</dict>
+	</array>
+</dict>
+</plist>
